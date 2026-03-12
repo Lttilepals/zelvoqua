@@ -99,6 +99,9 @@ showProgress();
 <a href="YOUR_GOOGLE_FORM_LINK" target="_blank">
 <button>Submit Internship Projects</button>
 </a>
+<a href="id-card.html">
+<button>View Internship ID Card</button>
+</a>
 
 </body>
 </html>
