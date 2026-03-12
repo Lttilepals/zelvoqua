@@ -223,6 +223,36 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
       <div class="form-error" id="loginError"></div>
       <button class="btn-submit" onclick="handleLogin()">Login →</button>
       <div class="form-success" id="loginSuccess"></div>
+      <!DOCTYPE html>
+<html>
+<head>
+<title>Free Dashboard</title>
+</head>
+
+<body>
+
+<h2>Welcome to Zelvoqua</h2>
+<p>You are currently on the free dashboard.</p>
+
+<div style="position:fixed; top:20px; right:20px;">
+<button onclick="openCodeBox()">Enter Access Code</button>
+</div>
+
+<div id="codeBox" style="display:none;">
+<input type="text" id="accessCode" placeholder="Enter your code">
+<button onclick="verifyCode()">Submit</button>
+</div>
+
+<script>
+
+function openCodeBox(){
+document.getElementById("codeBox").style.display="block";
+}
+
+</script>
+
+</body>
+</html>
     </div>
     <div id="signupForm" style="display:none">
       <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
