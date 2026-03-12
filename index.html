@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvoqua — Bridge the Gap Between Learning & Earning</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #6c2bd9; --primary-light: #8b5cf6; --primary-dark: #4c1d95;
+  --accent: #f59e0b; --accent2: #10b981;
+  --dark: #0f0a1e; --darker: #07050f; --card: #1a1030; --card2: #150d28;
+  --border: rgba(108,43,217,0.2); --text: #e2d9f3; --muted: #9ca3af; --white: #ffffff;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:var(--text);overflow-x:hidden;}
+#motionCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;opacity:0.45;}
+nav,section,.stats,.cta-banner,footer,.modal-overlay{position:relative;z-index:1;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:68px;}
+.nav-logo{font-size:1.5rem;font-weight:800;color:var(--white);text-decoration:none;letter-spacing:-0.02em;}
+.nav-logo span{color:var(--primary-light);}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center;}
+.nav-links a{color:var(--muted);font-size:0.9rem;font-weight:500;text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-actions{display:flex;gap:0.75rem;align-items:center;}
+.btn-outline{border:1px solid var(--border);color:var(--text);padding:0.5rem 1.2rem;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;background:transparent;text-decoration:none;transition:border-color 0.2s,color 0.2s;font-family:inherit;}
+.btn-outline:hover{border-color:var(--primary-light);color:var(--white);}
+.btn-primary{background:var(--primary);color:white;padding:0.55rem 1.4rem;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer;border:none;text-decoration:none;transition:background 0.2s,transform 0.15s;display:inline-block;font-family:inherit;}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);}
+#userMenuBtn{display:none;align-items:center;gap:0.5rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.4rem 1rem;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;}
+
+/* HERO */
+.hero{padding:5rem 5% 4rem;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(108,43,217,0.18) 0%,transparent 60%),linear-gradient(180deg,var(--darker) 0%,var(--dark) 100%);text-align:center;overflow:hidden;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(108,43,217,0.15);border:1px solid rgba(108,43,217,0.3);color:var(--primary-light);padding:0.4rem 1rem;border-radius:2rem;font-size:0.8rem;font-weight:600;margin-bottom:1.5rem;letter-spacing:0.03em;}
+.dot{width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:pulse 1.5s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.15;letter-spacing:-0.03em;color:var(--white);max-width:800px;margin:0 auto 1.2rem;}
+.highlight{background:linear-gradient(90deg,var(--primary-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.05rem;color:var(--muted);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.btn-large{padding:0.85rem 2rem;font-size:1rem;font-weight:700;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s;font-family:inherit;border:none;}
+.btn-large.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 8px 24px rgba(108,43,217,0.35);}
+.btn-large.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(108,43,217,0.5);}
+.btn-large.ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.15);}
+.btn-large.ghost:hover{border-color:var(--primary-light);color:white;}
+.hero-trust{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.trust-item{font-size:0.85rem;color:var(--muted);font-weight:500;}
+
+/* STATS */
+.stats{padding:2.5rem 5%;background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;max-width:900px;margin:0 auto;}
+.stat-box{text-align:center;padding:1.2rem;}
+.stat-num{font-size:2.2rem;font-weight:800;color:var(--white);letter-spacing:-0.03em;line-height:1;}
+.stat-num span{color:var(--primary-light);}
+.stat-lbl{font-size:0.78rem;color:var(--muted);margin-top:0.3rem;font-weight:500;}
+.stat-divider{border-left:1px solid var(--border);}
+
+/* SECTIONS */
+.section{padding:5rem 5%;}
+.section-header{text-align:center;margin-bottom:3rem;}
+.section-tag{display:inline-block;background:rgba(108,43,217,0.12);border:1px solid rgba(108,43,217,0.25);color:var(--primary-light);padding:0.3rem 0.9rem;border-radius:2rem;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;}
+.section-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--white);letter-spacing:-0.02em;line-height:1.2;margin-bottom:0.75rem;}
+.section-sub{font-size:1rem;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7;}
+
+/* COURSES */
+.courses-bg{background:var(--dark);}
+.courses-tabs{display:flex;gap:0.5rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap;}
+.tab{padding:0.5rem 1.2rem;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all 0.2s;font-family:inherit;}
+.tab.active,.tab:hover{background:var(--primary);border-color:var(--primary);color:white;}
+.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
+#coursesContainer{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
+.course-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform 0.25s,border-color 0.25s,box-shadow 0.4s;cursor:pointer;position:relative;}
+.course-card:hover{transform:translateY(-4px);border-color:rgba(108,43,217,0.5);box-shadow:0 8px 40px rgba(108,43,217,0.25);}
+.course-card::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);transform:skewX(-20deg);transition:left 0.6s ease;z-index:1;}
+.course-card:hover::after{left:150%;}
+.course-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
+.course-thumb .ribbon{position:absolute;top:10px;left:10px;padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:700;z-index:2;}
+.badge-live{background:rgba(16,185,129,0.15);color:var(--accent2);}
+.badge-new{background:rgba(245,158,11,0.15);color:var(--accent);}
+.badge-hot{background:rgba(239,68,68,0.15);color:#f87171;}
+.course-body{padding:1.2rem;}
+.course-tag{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;color:var(--primary-light);}
+.course-title{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;line-height:1.4;}
+.course-meta{display:flex;gap:0.8rem;margin-bottom:0.8rem;flex-wrap:wrap;}
+.course-meta span{font-size:0.72rem;color:var(--muted);}
+.course-progress{margin-bottom:0.8rem;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-bottom:0.3rem;}
+.progress-bar{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--primary),var(--primary-light));transition:width 1.2s ease;}
+.course-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.8rem;border-top:1px solid var(--border);}
+.course-price{font-size:1rem;font-weight:800;color:var(--white);}
+.course-price .original{font-size:0.78rem;font-weight:400;color:var(--muted);text-decoration:line-through;margin-left:0.4rem;}
+.btn-enroll{background:var(--primary);color:white;border:none;padding:0.4rem 1rem;border-radius:6px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:inherit;}
+.btn-enroll:hover{background:var(--primary-light);}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:border-color 0.25s,transform 0.25s;}
+.feature-card:hover{border-color:rgba(108,43,217,0.5);transform:translateY(-3px);}
+.feature-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+.feature-title{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
+.feature-desc{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
+.testi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.8rem;transition:border-color 0.25s;}
+.testi-card:hover{border-color:rgba(108,43,217,0.4);}
+.testi-stars{color:var(--accent);font-size:0.9rem;margin-bottom:1rem;}
+.testi-quote{font-size:0.9rem;color:var(--text);line-height:1.7;margin-bottom:1.2rem;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:0.75rem;}
+.testi-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:var(--card2);border:1px solid var(--border);flex-shrink:0;}
+.testi-name{font-size:0.88rem;font-weight:700;color:var(--white);}
+.testi-pos{font-size:0.75rem;color:var(--muted);}
+
+/* CTA */
+.cta-banner{margin:0 5% 5rem;background:linear-gradient(135deg,var(--primary-dark),var(--primary),#7c3aed);border-radius:20px;padding:4rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.cta-banner h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:white;margin-bottom:1rem;position:relative;}
+.cta-banner p{color:rgba(255,255,255,0.75);margin-bottom:2rem;font-size:1rem;position:relative;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.6;}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-white{background:white;color:var(--primary-dark);padding:0.8rem 2rem;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;border:none;transition:transform 0.2s;text-decoration:none;display:inline-block;font-family:inherit;}
+.btn-white:hover{transform:translateY(-2px);}
+
+/* FOOTER */
+footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5rem 5% 1.5rem;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
+.footer-logo{font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:0.8rem;}
+.footer-logo span{color:var(--primary-light);}
+.footer-desc{font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem;}
+.footer-col h4{font-size:0.82rem;font-weight:700;color:var(--white);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.08em;}
+.footer-col ul{list-style:none;}
+.footer-col li{margin-bottom:0.6rem;}
+.footer-col a{font-size:0.85rem;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.footer-col a:hover{color:var(--white);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.footer-bottom p{font-size:0.8rem;color:var(--muted);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:420px;position:relative;animation:modalIn 0.3s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;}
+.modal h2{font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:0.4rem;}
+.modal p{font-size:0.88rem;color:var(--muted);margin-bottom:1.8rem;}
+.modal-tabs{display:flex;gap:0;margin-bottom:1.8rem;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.modal-tab{flex:1;padding:0.6rem;text-align:center;font-size:0.85rem;font-weight:700;cursor:pointer;background:transparent;border:none;color:var(--muted);font-family:inherit;transition:all 0.2s;}
+.modal-tab.active{background:var(--primary);color:white;}
+.form-group{margin-bottom:1.2rem;}
+.form-group label{display:block;font-size:0.8rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;}
+.form-group input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--white);font-size:0.95rem;font-family:inherit;outline:none;transition:border-color 0.2s;}
+.form-group input:focus{border-color:var(--primary-light);}
+.form-group input::placeholder{color:rgba(156,163,175,0.5);}
+.btn-submit{width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none;padding:0.9rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.2s,box-shadow 0.2s;margin-top:0.5rem;}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,43,217,0.4);}
+.form-error{color:#f87171;font-size:0.8rem;margin-top:0.5rem;display:none;}
+.form-success{color:var(--accent2);font-size:0.85rem;text-align:center;margin-top:0.8rem;display:none;}
+
+/* ENROLL MODAL */
+.enroll-modal{max-width:480px;}
+.enroll-course-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;}
+.enroll-emoji{font-size:2.5rem;}
+.enroll-title{font-size:0.95rem;font-weight:700;color:var(--white);}
+.enroll-price{font-size:1.3rem;font-weight:800;color:var(--accent);}
+.enroll-original{font-size:0.8rem;color:var(--muted);text-decoration:line-through;}
+.razorpay-btn{width:100%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;padding:0.9rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+.razorpay-btn:hover{transform:translateY(-1px);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;font-size:0.9rem;color:var(--white);z-index:99999;transform:translateX(120%);transition:transform 0.3s ease;max-width:300px;}
+.toast.show{transform:translateX(0);}
+.toast.success{border-color:var(--accent2);color:var(--accent2);}
+.toast.error{border-color:#f87171;color:#f87171;}
+
+/* DASHBOARD */
+.dashboard-section{display:none;padding:3rem 5%;min-height:60vh;}
+.dashboard-section.active{display:block;}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.dash-title{font-size:1.8rem;font-weight:800;color:var(--white);}
+.enrolled-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.enrolled-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color 0.25s;}
+.enrolled-card:hover{border-color:rgba(108,43,217,0.4);}
+.enrolled-emoji{font-size:2rem;margin-bottom:0.8rem;}
+.enrolled-title{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.4rem;}
+.enrolled-meta{font-size:0.78rem;color:var(--muted);}
+.btn-continue{background:var(--primary);color:white;border:none;padding:0.5rem 1.2rem;border-radius:6px;font-size:0.82rem;font-weight:700;cursor:pointer;margin-top:1rem;font-family:inherit;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:repeat(2,1fr);}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .nav-links{display:none;}
+}
+@media(max-width:600px){
+  #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<canvas id="motionCanvas"></canvas>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <h2>Welcome to Zelvoqua</h2>
+    <p>Start your learning journey today</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+      <button class="modal-tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div id="loginForm">
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+      <div class="form-error" id="loginError"></div>
+      <button class="btn-submit" onclick="handleLogin()">Login →</button>
+      <div class="form-success" id="loginSuccess"></div>
+    </div>
+    <div id="signupForm" style="display:none">
+      <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 6 characters"></div>
+      <div class="form-error" id="signupError"></div>
+      <button class="btn-submit" onclick="handleSignup()">Create Account →</button>
+      <div class="form-success" id="signupSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENROLL MODAL -->
+<div class="modal-overlay" id="enrollModal">
+  <div class="modal enroll-modal">
+    <button class="modal-close" onclick="closeModal('enrollModal')">✕</button>
+    <h2>Enroll in Course</h2>
+    <p>Complete your enrollment below</p>
+    <div class="enroll-course-info">
+      <div class="enroll-emoji" id="enrollEmoji">💻</div>
+      <div>
+        <div class="enroll-title" id="enrollTitle">Course Name</div>
+        <div><span class="enroll-price" id="enrollPrice">₹499</span> <span class="enroll-original">₹4,999</span></div>
+      </div>
+    </div>
+    <button class="razorpay-btn" onclick="handlePayment()">💳 Pay & Enroll Now</button>
+    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--muted);">🔒 Secure payment via Razorpay · 100% refund if not satisfied</div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showHome()">Zelvo<span>qua</span></a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showHome()">Courses</a></li>
+    <li><a href="#features">Why Us</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-outline" onclick="openModal('authModal')" id="loginBtn">Login</button>
+    <button class="btn-primary" onclick="openModal('authModal')" id="signupBtn">Enroll Free</button>
+    <button id="userMenuBtn" onclick="handleLogout()">👤 <span id="userNameNav">User</span> · Logout</button>
+  </div>
+</nav>
+
+<!-- HOME SECTIONS -->
+<div id="homeSections">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> India's Rising EdTech Platform</div>
+  <h1>Bridge the Gap Between <span class="highlight">Learning & Earning</span></h1>
+  <p>Master in-demand skills with live mentorship, real projects, and guaranteed internships.</p>
+  <div class="hero-cta">
+    <button class="btn-large primary" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🚀 Explore Courses</button>
+    <button class="btn-large ghost">▶ Watch Demo</button>
+  </div>
+  <div class="hero-trust">
+    <span class="trust-item">✅ Free Certificate</span>
+    <span class="trust-item">🎯 Live Mentorship</span>
+    <span class="trust-item">💼 Paid Internships</span>
+    <span class="trust-item">⭐ 4.9/5 Rating</span>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-num" id="statStudents">0<span>K+</span></div><div class="stat-lbl">Students Enrolled</div></div>
+    <div class="stat-box stat-divider"><div class="stat-num">50<span>+</span></div><div class="stat-lbl">Expert Mentors</div></div>
+    <div class="stat-box stat-divider"><div class="stat-num">95<span>%</span></div><div class="stat-lbl">Placement Rate</div></div>
+    <div class="stat-box stat-divider"><div class="stat-num">4.9<span>★</span></div><div class="stat-lbl">Average Rating</div></div>
+  </div>
+</div>
+
+<!-- COURSES -->
+<section class="section courses-bg" id="coursesSection">
+  <div class="section-header reveal">
+    <div class="section-tag">Our Programs</div>
+    <h2 class="section-title">Courses Built for the Real World</h2>
+    <p class="section-sub">Live classes, real projects, and mentorship from industry professionals.</p>
+  </div>
+  <div class="courses-tabs reveal">
+    <button class="tab active" onclick="filterCourses('all')">All Courses</button>
+    <button class="tab" onclick="filterCourses('Web Development')">Web Dev</button>
+    <button class="tab" onclick="filterCourses('Data Science')">Data Science</button>
+    <button class="tab" onclick="filterCourses('Design')">Design</button>
+    <button class="tab" onclick="filterCourses('Marketing')">Marketing</button>
+  </div>
+  <div id="coursesContainer">
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">Loading courses...</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-header reveal">
+    <div class="section-tag">Why Zelvoqua</div>
+    <h2 class="section-title">Not Just a Course. A Career Launchpad.</h2>
+    <p class="section-sub">Live learning, real mentorship, and actual job opportunities.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(108,43,217,0.15)">🎙️</div><div class="feature-title">Live Mentorship</div><div class="feature-desc">Weekly sessions with professionals from Google, Microsoft, Adobe and more.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(16,185,129,0.15)">💼</div><div class="feature-title">Paid Internship</div><div class="feature-desc">Complete your fellowship and get placed in a paid internship immediately.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(245,158,11,0.15)">🏗️</div><div class="feature-title">Project-Based</div><div class="feature-desc">Build 20–40 real projects per course. Graduate with a job-winning portfolio.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(239,68,68,0.15)">🎓</div><div class="feature-title">Certificate</div><div class="feature-desc">Recognized by 200+ hiring partners. Instantly credible on LinkedIn.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(59,130,246,0.15)">🤝</div><div class="feature-title">Placement Support</div><div class="feature-desc">Resume reviews, mock interviews, direct referrals until you're placed.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon" style="background:rgba(168,85,247,0.15)">🌐</div><div class="feature-title">Community</div><div class="feature-desc">Join 10,000+ learners on Discord and LinkedIn. Grow together.</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+  <div class="section-header reveal">
+    <div class="section-tag">Student Reviews</div>
+    <h2 class="section-title">Real Students. Real Results.</h2>
+    <p class="section-sub">Hear from learners who transformed their careers with Zelvoqua.</p>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Zero coding to ₹7 LPA in 4 months. The mentors are incredible and projects genuinely challenging."</p><div class="testi-author"><div class="testi-ava">😊</div><div><div class="testi-name">Rohit Patel</div><div class="testi-pos">Junior Developer @ TCS</div></div></div></div>
+    <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"I started earning ₹15,000/month during the course itself! Got 3 interview calls in my first week."</p><div class="testi-author"><div class="testi-ava">👩</div><div><div class="testi-name">Ananya Singh</div><div class="testi-pos">Data Analyst @ Infosys</div></div></div></div>
+    <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Best ₹499 I've ever spent. Live sessions with engineers are unbelievably valuable."</p><div class="testi-author"><div class="testi-ava">🧑</div><div><div class="testi-name">Vikram Nair</div><div class="testi-pos">SDE-1 @ Wipro</div></div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <h2>Start Your Career Journey Today 🚀</h2>
+  <p>Join thousands of learners building real skills and launching careers with Zelvoqua.</p>
+  <div class="cta-btns">
+    <button class="btn-white" onclick="openModal('authModal')">Enroll for Free</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Zelvo<span>qua</span></div>
+      <p class="footer-desc">Bridging the gap between learning and earning. India's next-gen EdTech platform.</p>
+    </div>
+    <div class="footer-col"><h4>Courses</h4><ul><li><a href="#">Full Stack Dev</a></li><li><a href="#">Machine Learning</a></li><li><a href="#">Data Science</a></li><li><a href="#">UI/UX Design</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Mentors</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Refund Policy</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Zelvoqua EdTech Pvt. Ltd.</p>
+    <p>Made with ❤️ for India's learners</p>
+  </div>
+</footer>
+
+</div><!-- end homeSections -->
+
+<!-- STUDENT DASHBOARD -->
+<div class="dashboard-section" id="dashboardSection">
+  <div class="dash-header">
+    <div class="dash-title">👋 My Dashboard</div>
+    <button class="btn-primary" onclick="showHome()">← Browse Courses</button>
+  </div>
+  <div class="section-tag" style="margin-bottom:1.5rem">My Enrolled Courses</div>
+  <div class="enrolled-grid" id="enrolledCoursesGrid">
+    <div style="color:var(--muted);font-size:0.9rem">Loading your courses...</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── SUPABASE INIT ───
+const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let allCourses = [];
+let selectedCourse = null;
+
+// ─── MOTION BLUR CANVAS ───
+const canvas = document.getElementById('motionCanvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+const blobs = Array.from({length:6},(_,i)=>({
+  x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
+  vx:(Math.random()-0.5)*0.6, vy:(Math.random()-0.5)*0.6,
+  r:180+Math.random()*220,
+  color:['rgba(108,43,217,','rgba(139,92,246,','rgba(76,29,149,','rgba(16,185,129,','rgba(245,158,11,','rgba(124,58,237,'][i],
+  alpha:0.06+Math.random()*0.07, phase:Math.random()*Math.PI*2
+}));
+let frame=0;
+function drawBlur(){
+  ctx.fillStyle='rgba(7,5,15,0.18)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  frame++;
+  blobs.forEach((b,i)=>{
+    b.phase+=0.008; b.x+=b.vx+Math.sin(b.phase+i)*0.3; b.y+=b.vy+Math.cos(b.phase+i*0.7)*0.3;
+    if(b.x<-b.r)b.x=canvas.width+b.r; if(b.x>canvas.width+b.r)b.x=-b.r;
+    if(b.y<-b.r)b.y=canvas.height+b.r; if(b.y>canvas.height+b.r)b.y=-b.r;
+    const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+    g.addColorStop(0,b.color+b.alpha+')'); g.addColorStop(0.5,b.color+(b.alpha*0.5)+')'); g.addColorStop(1,b.color+'0)');
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    if(frame%3===0){ ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-b.vx*40,b.y-b.vy*40); ctx.strokeStyle=b.color+'0.03)'; ctx.lineWidth=b.r*0.4; ctx.lineCap='round'; ctx.stroke(); }
+  });
+  requestAnimationFrame(drawBlur);
+}
+drawBlur();
+
+// ─── SCROLL REVEAL ───
+const revObs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{ if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),i*70); revObs.unobserve(e.target); } });
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+// ─── TOAST ───
+function showToast(msg, type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ─── MODAL ───
+function openModal(id){ document.getElementById(id).classList.add('active'); }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{ m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('active'); }); });
+
+// ─── AUTH TABS ───
+function switchTab(tab){
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('signupForm').style.display = tab==='signup'?'block':'none';
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+}
+
+// ─── SIGNUP ───
+async function handleSignup(){
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPassword').value;
+  const err=document.getElementById('signupError');
+  const succ=document.getElementById('signupSuccess');
+  err.style.display='none'; succ.style.display='none';
+  if(!name||!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
+  if(pass.length<6){ err.textContent='Password must be at least 6 characters'; err.style.display='block'; return; }
+  const {data,error} = await sb.auth.signUp({ email, password:pass, options:{ data:{ full_name:name } } });
+  if(error){ err.textContent=error.message; err.style.display='block'; return; }
+  succ.textContent='✅ Account created! Please check your email to verify.';
+  succ.style.display='block';
+}
+
+// ─── LOGIN ───
+async function handleLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  const err=document.getElementById('loginError');
+  err.style.display='none';
+  if(!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
+  const {data,error} = await sb.auth.signInWithPassword({ email, password:pass });
+  if(error){ err.textContent=error.message; err.style.display='block'; return; }
+  closeModal('authModal');
+  setUser(data.user);
+  showToast('Welcome back! 🎉');
+}
+
+// ─── LOGOUT ───
+async function handleLogout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  document.getElementById('loginBtn').style.display='inline-block';
+  document.getElementById('signupBtn').style.display='inline-block';
+  document.getElementById('userMenuBtn').style.display='none';
+  showHome();
+  showToast('Logged out successfully');
+}
+
+// ─── SET USER ───
+function setUser(user){
+  currentUser=user;
+  const name = user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('userNameNav').textContent=name;
+  document.getElementById('loginBtn').style.display='none';
+  document.getElementById('signupBtn').style.display='none';
+  document.getElementById('userMenuBtn').style.display='flex';
+}
+
+// ─── CHECK SESSION ───
+async function checkSession(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ setUser(session.user); }
+}
+
+// ─── LOAD COURSES ───
+async function loadCourses(){
+  const {data,error} = await sb.from('courses').select('*').order('id');
+  if(error||!data||data.length===0){
+    // Use default courses if DB empty
+    allCourses = getDefaultCourses();
+  } else {
+    allCourses = data;
+  }
+  renderCourses(allCourses);
+  // Update student count
+  const {count} = await sb.from('enrollments').select('*',{count:'exact',head:true});
+  if(count){ document.getElementById('statStudents').innerHTML = Math.max(count,10)+'<span>+</span>'; }
+}
+
+function getDefaultCourses(){
+  return [
+    {id:1,title:'Full Stack Web Development Fellowship',category:'Web Development',price:499,duration:'12 Weeks',thumbnail_emoji:'💻',seats_total:100,seats_filled:78,description:'Learn HTML, CSS, JS, React, Node.js, MongoDB with 40+ real projects.',badge:'LIVE',badge_type:'live'},
+    {id:2,title:'Machine Learning & AI Fellowship',category:'Data Science',price:499,duration:'10 Weeks',thumbnail_emoji:'🤖',seats_total:80,seats_filled:36,description:'Python, ML algorithms, deep learning, real industry projects.',badge:'NEW',badge_type:'new'},
+    {id:3,title:'Data Science & Analytics Fellowship',category:'Data Science',price:499,duration:'8 Weeks',thumbnail_emoji:'📊',seats_total:90,seats_filled:82,description:'Excel, SQL, Python, Tableau — become a data analyst fast.',badge:'HOT',badge_type:'hot'},
+    {id:4,title:'UI/UX Design Fellowship with Figma',category:'Design',price:499,duration:'8 Weeks',thumbnail_emoji:'🎨',seats_total:60,seats_filled:36,description:'Figma, design systems, prototyping, real client projects.',badge:'',badge_type:''},
+    {id:5,title:'Digital Marketing Fellowship',category:'Marketing',price:499,duration:'6 Weeks',thumbnail_emoji:'📣',seats_total:70,seats_filled:39,description:'SEO, social media, Google Ads, content marketing.',badge:'LIVE',badge_type:'live'},
+    {id:6,title:'Cloud Computing & DevOps Fellowship',category:'Web Development',price:499,duration:'10 Weeks',thumbnail_emoji:'☁️',seats_total:50,seats_filled:15,description:'AWS, Docker, CI/CD, Kubernetes for modern deployments.',badge:'NEW',badge_type:'new'},
+  ];
+}
+
+// ─── RENDER COURSES ───
+function renderCourses(courses){
+  const container = document.getElementById('coursesContainer');
+  if(!courses.length){ container.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:3rem">No courses found</div>'; return; }
+  const thumbBgs = {
+    'Web Development':'linear-gradient(135deg,#1e1535,#2d1b5e)',
+    'Data Science':'linear-gradient(135deg,#0f2620,#134e3a)',
+    'Design':'linear-gradient(135deg,#1a0a2e,#3d1d6b)',
+    'Marketing':'linear-gradient(135deg,#0a1a2e,#1a3d6b)',
+    'default':'linear-gradient(135deg,#1a1200,#3d2c00)'
+  };
+  container.innerHTML = courses.map(c=>{
+    const bg = thumbBgs[c.category]||thumbBgs['default'];
+    const pct = c.seats_total ? Math.round((c.seats_filled/c.seats_total)*100) : 50;
+    const badgeType = c.badge_type||'';
+    const badgeHtml = c.badge ? `<span class="ribbon badge-${badgeType}">${c.badge==='LIVE'?'🔴 LIVE':c.badge==='NEW'?'✨ NEW':c.badge==='HOT'?'🔥 HOT':c.badge}</span>` : '';
+    const seatLabel = pct>=90?'Almost Full!':pct>=70?'Filling Fast':'Seats Available';
+    return `
+    <div class="course-card reveal" onclick="openEnrollModal(${c.id})">
+      <div class="course-thumb" style="background:${bg}">
+        <span style="position:relative;z-index:2;font-size:3.5rem">${c.thumbnail_emoji||'📚'}</span>
+        ${badgeHtml}
+      </div>
+      <div class="course-body">
+        <div class="course-tag">${c.category||'Course'}</div>
+        <div class="course-title">${c.title}</div>
+        <div class="course-meta"><span>⏱ ${c.duration||'8 Weeks'}</span><span>🎓 Certificate</span></div>
+        <div class="course-progress">
+          <div class="progress-label"><span>${seatLabel}</span><span>${pct}%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">₹${c.price||499} <span class="original">₹4,999</span></div>
+          <button class="btn-enroll">Enroll Now</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Re-observe reveal
+  document.querySelectorAll('.course-card.reveal').forEach(el=>revObs.observe(el));
+}
+
+// ─── FILTER COURSES ───
+function filterCourses(cat){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  const filtered = cat==='all' ? allCourses : allCourses.filter(c=>c.category===cat);
+  renderCourses(filtered);
+}
+
+// ─── ENROLL MODAL ───
+function openEnrollModal(courseId){
+  selectedCourse = allCourses.find(c=>c.id===courseId);
+  if(!selectedCourse) return;
+  document.getElementById('enrollEmoji').textContent = selectedCourse.thumbnail_emoji||'📚';
+  document.getElementById('enrollTitle').textContent = selectedCourse.title;
+  document.getElementById('enrollPrice').textContent = '₹'+(selectedCourse.price||499);
+  openModal('enrollModal');
+}
+
+// ─── PAYMENT ───
+async function handlePayment(){
+  if(!currentUser){ closeModal('enrollModal'); openModal('authModal'); showToast('Please login first!','error'); return; }
+  // Check if already enrolled
+  const {data:existing} = await sb.from('enrollments').select('id').eq('user_id',currentUser.id).eq('course_id',selectedCourse.id).single();
+  if(existing){ showToast('You are already enrolled in this course! ✅'); closeModal('enrollModal'); return; }
+
+  // Razorpay integration
+  const options = {
+    key: 'rzp_test_YourKeyHere', // Replace with your Razorpay test key
+    amount: (selectedCourse.price||499)*100,
+    currency: 'INR',
+    name: 'Zelvoqua',
+    description: selectedCourse.title,
+    image: '',
+    handler: async function(response){
+      // Save enrollment to Supabase
+      const {error} = await sb.from('enrollments').insert({
+        user_id: currentUser.id,
+        course_id: selectedCourse.id,
+        payment_status: 'paid',
+        payment_id: response.razorpay_payment_id
+      });
+      if(!error){
+        closeModal('enrollModal');
+        showToast('🎉 Enrolled successfully! Check your dashboard.');
+        loadEnrolledCourses();
+      }
+    },
+    prefill:{ email: currentUser.email },
+    theme:{ color:'#6c2bd9' }
+  };
+  if(typeof Razorpay !== 'undefined'){
+    new Razorpay(options).open();
+  } else {
+    // Fallback: direct enroll without payment (for testing)
+    const {error} = await sb.from('enrollments').insert({
+      user_id: currentUser.id,
+      course_id: selectedCourse.id,
+      payment_status: 'free_enrolled'
+    });
+    if(!error){ closeModal('enrollModal'); showToast('🎉 Enrolled successfully!'); }
+    else showToast('Error: '+error.message,'error');
+  }
+}
+
+// ─── DASHBOARD ───
+function showHome(){
+  document.getElementById('homeSections').style.display='block';
+  document.getElementById('dashboardSection').classList.remove('active');
+}
+
+async function loadEnrolledCourses(){
+  if(!currentUser) return;
+  document.getElementById('homeSections').style.display='none';
+  document.getElementById('dashboardSection').classList.add('active');
+  const {data,error} = await sb.from('enrollments').select('course_id, payment_status, enrolled_at').eq('user_id',currentUser.id);
+  const grid = document.getElementById('enrolledCoursesGrid');
+  if(!data||data.length===0){ grid.innerHTML='<div style="color:var(--muted);padding:2rem;grid-column:1/-1">You have not enrolled in any courses yet. <a href="#" onclick="showHome()" style="color:var(--primary-light)">Browse courses →</a></div>'; return; }
+  const courseIds = data.map(e=>e.course_id);
+  grid.innerHTML = data.map(e=>{
+    const c = allCourses.find(x=>x.id===e.course_id)||{title:'Course #'+e.course_id,thumbnail_emoji:'📚',duration:'—',category:'—'};
+    return `<div class="enrolled-card">
+      <div class="enrolled-emoji">${c.thumbnail_emoji||'📚'}</div>
+      <div class="enrolled-title">${c.title}</div>
+      <div class="enrolled-meta">${c.category} · ${c.duration} · ${e.payment_status==='paid'?'✅ Paid':'✅ Enrolled'}</div>
+      <button class="btn-continue">Continue Learning →</button>
+    </div>`;
+  }).join('');
+}
+
+// Show dashboard on username click
+document.getElementById('userMenuBtn').addEventListener('click', function(e){
+  // Show dashboard on single click, logout on double - simplified: show dashboard
+  loadEnrolledCourses();
+  e.stopPropagation();
+});
+
+// Override logout to be separate
+document.getElementById('userMenuBtn').addEventListener('dblclick', handleLogout);
+
+// ─── INIT ───
+checkSession();
+loadCourses();
+</script>
+</body>
+</html>
