@@ -159,6 +159,12 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 .form-error{color:#f87171;font-size:0.8rem;margin-top:0.5rem;display:none;}
 .form-success{color:var(--accent2);font-size:0.85rem;text-align:center;margin-top:0.8rem;display:none;}
 
+.user-type-btn{padding:0.9rem;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);font-family:inherit;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;width:100%;}
+.user-type-btn .type-icon{font-size:1.6rem;display:block;margin-bottom:0.3rem;}
+.user-type-btn.active{border-color:var(--primary-light);background:rgba(108,43,217,0.15);color:var(--white);}
+.admin-only-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:var(--accent);padding:0.3rem 0.8rem;border-radius:4px;font-size:0.72rem;font-weight:700;margin-bottom:1rem;}
+.btn-submit.admin-btn{background:linear-gradient(135deg,#92400e,#d97706);}
+
 /* ENROLL MODAL */
 .enroll-modal{max-width:480px;}
 .enroll-course-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;}
@@ -212,60 +218,61 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
   <div class="modal">
     <button class="modal-close" onclick="closeModal('authModal')">✕</button>
     <h2>Welcome to Zelvoqua</h2>
-    <p>Start your learning journey today</p>
-    <div class="modal-tabs">
-      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
-      <button class="modal-tab" onclick="switchTab('signup')">Sign Up</button>
+    <p>Select how you want to continue</p>
+
+    <!-- USER TYPE SELECTION -->
+    <div id="userTypeSelect">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+        <button class="user-type-btn active" id="btnStudent" onclick="selectUserType('student')">
+          <span class="type-icon">🎓</span>
+          Student
+          <div style="font-size:0.7rem;color:var(--muted);font-weight:400;margin-top:0.2rem">Learn & Grow</div>
+        </button>
+        <button class="user-type-btn" id="btnAdmin" onclick="selectUserType('admin')">
+          <span class="type-icon">🔐</span>
+          Admin
+          <div style="font-size:0.7rem;color:var(--muted);font-weight:400;margin-top:0.2rem">Manage Platform</div>
+        </button>
+      </div>
     </div>
-    <div id="loginForm">
-      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-      <div class="form-group">
-<label>Access Code (optional)</label>
-<input type="text" id="accessCode" placeholder="Enter access code if you have one">
-</div>
-      <div class="form-error" id="loginError"></div>
-      <button class="btn-submit" onclick="handleLogin()">Login →</button>
-      <div class="form-success" id="loginSuccess"></div>
-      <!DOCTYPE html>
-<html>
-<head>
-<title>Free Dashboard</title>
-</head>
 
-<body>
-
-<h2>Welcome to Zelvoqua</h2>
-<p>You are currently on the free dashboard.</p>
-
-<div style="position:fixed; top:20px; right:20px;">
-<button onclick="openCodeBox()">Enter Access Code</button>
-</div>
-
-<div id="codeBox" style="display:none;">
-<input type="text" id="accessCode" placeholder="Enter your code">
-<button onclick="verifyCode()">Submit</button>
-</div>
-
-<script>
-
-function openCodeBox(){
-document.getElementById("codeBox").style.display="block";
-}
-
-</script>
-
-</body>
-</html>
+    <!-- STUDENT SECTION -->
+    <div id="studentSection">
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+        <button class="modal-tab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      <div id="loginForm">
+        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+        <div class="form-group">
+          <label>Access Code <span style="color:var(--muted);font-weight:400;text-transform:none">(optional — if you have one)</span></label>
+          <input type="text" id="loginAccessCode" placeholder="e.g. ZEL-2025-XXXX" style="letter-spacing:0.08em;text-transform:uppercase">
+        </div>
+        <div class="form-error" id="loginError"></div>
+        <button class="btn-submit" onclick="handleLogin()">🎓 Login →</button>
+        <div class="form-success" id="loginSuccess"></div>
+      </div>
+      <div id="signupForm" style="display:none">
+        <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 6 characters"></div>
+        <div class="form-error" id="signupError"></div>
+        <button class="btn-submit" onclick="handleSignup()">Create Student Account →</button>
+        <div class="form-success" id="signupSuccess"></div>
+      </div>
     </div>
-    <div id="signupForm" style="display:none">
-      <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
-      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 6 characters"></div>
-      <div class="form-error" id="signupError"></div>
-      <button class="btn-submit" onclick="handleSignup()">Create Account →</button>
-      <div class="form-success" id="signupSuccess"></div>
+
+    <!-- ADMIN SECTION -->
+    <div id="adminSection" style="display:none">
+      <div class="admin-only-badge">🔒 Authorized Personnel Only</div>
+      <div class="form-group"><label>Admin Email</label><input type="email" id="adminLoginEmail" placeholder="admin@zelvoqua.com"></div>
+      <div class="form-group"><label>Admin Password</label><input type="password" id="adminLoginPassword" placeholder="••••••••"></div>
+      <div class="form-error" id="adminLoginError"></div>
+      <button class="btn-submit admin-btn" onclick="handleAdminLogin()">🔐 Admin Login →</button>
+      <div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:0.8rem">Admin access is restricted. Contact support if locked out.</div>
     </div>
+
   </div>
 </div>
 
@@ -483,6 +490,31 @@ function openModal(id){ document.getElementById(id).classList.add('active'); }
 function closeModal(id){ document.getElementById(id).classList.remove('active'); }
 document.querySelectorAll('.modal-overlay').forEach(m=>{ m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('active'); }); });
 
+// ─── USER TYPE SELECTION ───
+function selectUserType(type){
+  document.getElementById('btnStudent').classList.toggle('active', type==='student');
+  document.getElementById('btnAdmin').classList.toggle('active', type==='admin');
+  document.getElementById('studentSection').style.display = type==='student'?'block':'none';
+  document.getElementById('adminSection').style.display = type==='admin'?'block':'none';
+  // Update modal title
+  document.querySelector('#authModal h2').textContent = type==='student' ? 'Welcome to Zelvoqua' : 'Admin Access';
+}
+
+// ─── ADMIN LOGIN FROM MAIN SITE ───
+async function handleAdminLogin(){
+  const email = document.getElementById('adminLoginEmail').value.trim();
+  const pass = document.getElementById('adminLoginPassword').value;
+  const err = document.getElementById('adminLoginError');
+  err.style.display='none';
+  if(!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
+  const {data,error} = await sb.auth.signInWithPassword({email, password:pass});
+  if(error){ err.textContent='Invalid admin credentials'; err.style.display='block'; return; }
+  // Redirect to admin panel
+  closeModal('authModal');
+  showToast('Redirecting to Admin Panel... 🔐');
+  setTimeout(()=>{ window.location.href='admin.html'; }, 1200);
+}
+
 // ─── AUTH TABS ───
 function switchTab(tab){
   document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
@@ -510,6 +542,7 @@ async function handleSignup(){
 async function handleLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPassword').value;
+  const accessCode=document.getElementById('loginAccessCode').value.trim().toUpperCase();
   const err=document.getElementById('loginError');
   err.style.display='none';
   if(!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
@@ -518,6 +551,36 @@ async function handleLogin(){
   closeModal('authModal');
   setUser(data.user);
   showToast('Welcome back! 🎉');
+
+  // ─── If access code entered at login time, verify it ───
+  if(accessCode){
+    await verifyAndEnroll(data.user, accessCode);
+    return;
+  }
+
+  // ─── Check enrollment → redirect ───
+  await redirectBasedOnEnrollment(data.user);
+}
+
+async function redirectBasedOnEnrollment(user){
+  const {data:enrollment} = await sb.from('enrollments').select('*').eq('user_id', user.id).limit(1).maybeSingle();
+  if(enrollment){
+    window.location.href='student-dashboard.html';
+  } else {
+    window.location.href='free-dashboard.html';
+  }
+}
+
+async function verifyAndEnroll(user, code){
+  const {data:codeData} = await sb.from('access_codes').select('*').eq('code', code).eq('used', false).maybeSingle();
+  if(!codeData){ showToast('❌ Invalid access code', 'error'); window.location.href='free-dashboard.html'; return; }
+  if(codeData.assigned_email && codeData.assigned_email.toLowerCase()!==user.email.toLowerCase()){
+    showToast('❌ Code not assigned to your email', 'error'); window.location.href='free-dashboard.html'; return;
+  }
+  await sb.from('enrollments').insert({ user_id:user.id, course_id:codeData.course_id, payment_status:'paid', payment_id:'ACCESS_CODE_'+code });
+  await sb.from('access_codes').update({ used:true, used_by:user.id, used_at:new Date().toISOString() }).eq('code', code);
+  showToast('🎉 Access granted! Loading your dashboard...');
+  setTimeout(()=>{ window.location.href='student-dashboard.html'; }, 1500);
 }
 
 // ─── LOGOUT ───

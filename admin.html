@@ -5,34 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zelvoqua Admin Panel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-
-async function checkAdminAccess() {
-
-const { data: { user } } = await supabase.auth.getUser();
-
-if (!user) {
-alert("Please login first");
-window.location.href = "index.html";
-return;
-}
-
-const { data, error } = await supabase
-.from("admin_users")
-.select("*")
-.eq("email", user.email)
-.single();
-
-if (error || !data) {
-alert("Access denied. Admin only.");
-window.location.href = "index.html";
-}
-
-}
-
-checkAdminAccess();
-
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#6c2bd9;--primary-light:#8b5cf6;--accent:#f59e0b;--accent2:#10b981;--dark:#0f0a1e;--darker:#07050f;--card:#1a1030;--card2:#150d28;--border:rgba(108,43,217,0.2);--text:#e2d9f3;--muted:#9ca3af;--white:#fff;--danger:#ef4444;}
