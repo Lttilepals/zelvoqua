@@ -1,30 +1,275 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Free Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvoqua — Free Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #6c2bd9; --primary-light: #8b5cf6; --primary-dark: #4c1d95;
+  --accent: #f59e0b; --accent2: #10b981; --danger: #ef4444;
+  --dark: #0f0a1e; --darker: #07050f; --card: #1a1030; --card2: #150d28;
+  --border: rgba(108,43,217,0.2); --text: #e2d9f3; --muted: #9ca3af; --white: #ffffff;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:var(--text);min-height:100vh;}
+
+/* CANVAS BG */
+#motionCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;opacity:0.3;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--primary-light);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.user-pill{background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.4rem 1rem;border-radius:20px;font-size:0.82rem;font-weight:600;}
+.btn-logout{background:transparent;border:1px solid rgba(239,68,68,0.3);color:#f87171;padding:0.4rem 1rem;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.btn-logout:hover{background:rgba(239,68,68,0.1);border-color:#ef4444;}
+
+/* MAIN */
+main{position:relative;z-index:1;padding:2.5rem 5%;max-width:1200px;margin:0 auto;}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,rgba(108,43,217,0.2),rgba(139,92,246,0.1));border:1px solid rgba(108,43,217,0.3);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.welcome-text h1{font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;}
+.welcome-text p{color:var(--muted);font-size:0.92rem;}
+.free-badge{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:20px;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;}
+
+/* ACCESS CODE SECTION */
+.access-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2.5rem;position:relative;overflow:hidden;}
+.access-section::before{content:'🔑';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.06;}
+.access-section h2{font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;}
+.access-section p{color:var(--muted);font-size:0.85rem;margin-bottom:1.2rem;}
+.access-form{display:flex;gap:0.75rem;flex-wrap:wrap;}
+.access-input{flex:1;min-width:200px;background:var(--card2);border:1.5px solid var(--border);border-radius:8px;padding:0.75rem 1.2rem;color:var(--white);font-size:0.95rem;font-family:inherit;outline:none;transition:border-color 0.2s;letter-spacing:0.1em;text-transform:uppercase;}
+.access-input:focus{border-color:var(--primary-light);}
+.access-input::placeholder{letter-spacing:0;text-transform:none;color:rgba(156,163,175,0.5);}
+.btn-unlock{background:linear-gradient(135deg,var(--accent),#d97706);color:#000;border:none;padding:0.75rem 1.8rem;border-radius:8px;font-size:0.92rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;}
+.btn-unlock:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(245,158,11,0.3);}
+.access-msg{margin-top:0.75rem;font-size:0.85rem;display:none;}
+.access-msg.error{color:#f87171;}
+.access-msg.success{color:var(--accent2);}
+
+/* UPGRADE BANNER */
+.upgrade-banner{background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(6,95,70,0.1));border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:1rem 1.5rem;margin-bottom:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.upgrade-banner p{font-size:0.88rem;color:var(--text);}
+.upgrade-banner p span{color:var(--accent2);font-weight:700;}
+.btn-upgrade{background:var(--accent2);color:#000;border:none;padding:0.5rem 1.2rem;border-radius:6px;font-size:0.82rem;font-weight:800;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
+
+/* SECTION TITLE */
+.section-title{font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.5rem;}
+.section-title .lock-icon{background:rgba(108,43,217,0.15);border:1px solid var(--border);padding:0.2rem 0.6rem;border-radius:4px;font-size:0.7rem;color:var(--primary-light);}
+
+/* COURSES GRID */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-bottom:3rem;}
+.course-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden;transition:transform 0.2s,border-color 0.2s;}
+.course-card:hover{transform:translateY(-3px);border-color:rgba(108,43,217,0.4);}
+.course-card.locked{opacity:0.7;}
+.course-card.locked::after{content:'🔒 Unlock with Access Code';position:absolute;inset:0;background:rgba(7,5,15,0.7);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;color:var(--accent);border-radius:14px;}
+.card-emoji{font-size:2.2rem;margin-bottom:0.8rem;display:block;}
+.card-badge{position:absolute;top:1rem;right:1rem;padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:800;letter-spacing:0.05em;}
+.badge-live{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.badge-new{background:rgba(16,185,129,0.15);color:var(--accent2);border:1px solid rgba(16,185,129,0.3);}
+.badge-hot{background:rgba(245,158,11,0.15);color:var(--accent);border:1px solid rgba(245,158,11,0.3);}
+.card-title{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.4rem;line-height:1.3;}
+.card-desc{font-size:0.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;}
+.card-meta{display:flex;align-items:center;justify-content:space-between;}
+.card-price{font-size:1rem;font-weight:800;color:var(--accent);}
+.card-price span{font-size:0.75rem;color:var(--muted);text-decoration:line-through;margin-left:0.3rem;}
+.card-duration{font-size:0.75rem;color:var(--muted);background:var(--card2);padding:0.2rem 0.6rem;border-radius:4px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;font-size:0.88rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(16,185,129,0.4);color:var(--accent2);}
+.toast.error{border-color:rgba(239,68,68,0.4);color:#f87171;}
+
+/* LOADING */
+.loading{text-align:center;padding:3rem;color:var(--muted);}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary-light);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
-
 <body>
+<canvas id="motionCanvas"></canvas>
 
-<h2>Welcome to Zelvoqua</h2>
-<p>You are currently on the free dashboard.</p>
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Zelvo<span>qua</span></a>
+  <div class="nav-right">
+    <div class="user-pill">🎓 <span id="userEmail">Loading...</span></div>
+    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+  </div>
+</nav>
 
-<div style="position:fixed; top:20px; right:20px;">
-<button onclick="openCodeBox()">Enter Access Code</button>
-</div>
+<main>
+  <!-- WELCOME -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h1>Welcome, <span id="userName">Student</span>! 👋</h1>
+      <p>You're on the Free Plan. Enter your access code to unlock a course.</p>
+    </div>
+    <div class="free-badge">FREE PLAN</div>
+  </div>
 
-<div id="codeBox" style="display:none;">
-<input type="text" id="accessCode" placeholder="Enter your code">
-<button onclick="verifyCode()">Submit</button>
-</div>
+  <!-- ACCESS CODE -->
+  <div class="access-section">
+    <h2>🔑 Have an Access Code?</h2>
+    <p>Enter your internship access code below to unlock your paid dashboard and start learning.</p>
+    <div class="access-form">
+      <input type="text" class="access-input" id="accessCodeInput" placeholder="Enter code e.g. ZEL-2025-XXXX" maxlength="20">
+      <button class="btn-unlock" onclick="verifyAccessCode()">🚀 Unlock Now</button>
+    </div>
+    <div class="access-msg" id="accessMsg"></div>
+  </div>
+
+  <!-- UPGRADE BANNER -->
+  <div class="upgrade-banner">
+    <p>💡 Don't have a code? <span>Enroll in any course</span> and get your access code instantly!</p>
+    <a href="index.html#courses" class="btn-upgrade">Explore Courses →</a>
+  </div>
+
+  <!-- COURSES -->
+  <div class="section-title">
+    Available Internships
+    <span class="lock-icon">🔒 Unlock with code</span>
+  </div>
+  <div class="courses-grid" id="coursesGrid">
+    <div class="loading"><div class="spinner"></div>Loading courses...</div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
 
 <script>
+// ─── SUPABASE ───
+const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function openCodeBox(){
-document.getElementById("codeBox").style.display="block";
+let currentUser = null;
+
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'), 3500);
 }
 
-</script>
+// ─── AUTH CHECK ───
+async function init(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ window.location.href='index.html'; return; }
+  currentUser = session.user;
 
+  // Check if already enrolled — redirect to student dashboard
+  const {data:enrollment} = await sb.from('enrollments').select('*').eq('user_id', currentUser.id).limit(1).single();
+  if(enrollment){ window.location.href='student-dashboard.html'; return; }
+
+  // Show user info
+  const name = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userEmail').textContent = currentUser.email;
+
+  loadCourses();
+}
+
+// ─── LOAD COURSES ───
+async function loadCourses(){
+  const {data:courses} = await sb.from('courses').select('*').order('id');
+  const grid = document.getElementById('coursesGrid');
+  if(!courses||!courses.length){ grid.innerHTML='<p style="color:var(--muted)">No courses found.</p>'; return; }
+
+  grid.innerHTML = courses.map(c=>`
+    <div class="course-card locked">
+      ${c.badge ? `<span class="card-badge badge-${c.badge_type}">${c.badge}</span>` : ''}
+      <span class="card-emoji">${c.thumbnail_emoji||'📚'}</span>
+      <div class="card-title">${c.title}</div>
+      <div class="card-desc">${c.description||''}</div>
+      <div class="card-meta">
+        <div class="card-price">₹${c.price||499} <span>₹${c.original_price||4999}</span></div>
+        <div class="card-duration">⏱ ${c.duration||'8 Weeks'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── VERIFY ACCESS CODE ───
+async function verifyAccessCode(){
+  const code = document.getElementById('accessCodeInput').value.trim().toUpperCase();
+  const msg = document.getElementById('accessMsg');
+  msg.style.display='none';
+
+  if(!code){ msg.textContent='Please enter your access code.'; msg.className='access-msg error'; msg.style.display='block'; return; }
+  if(code.length < 4){ msg.textContent='Invalid code format.'; msg.className='access-msg error'; msg.style.display='block'; return; }
+
+  // Check code in DB
+  const {data:codeData, error} = await sb.from('access_codes')
+    .select('*')
+    .eq('code', code)
+    .eq('used', false)
+    .single();
+
+  if(error || !codeData){
+    msg.textContent='❌ Invalid or already used code. Please check and try again.';
+    msg.className='access-msg error'; msg.style.display='block'; return;
+  }
+
+  // Check if code assigned to this email
+  if(codeData.assigned_email && codeData.assigned_email.toLowerCase() !== currentUser.email.toLowerCase()){
+    msg.textContent='❌ This code is not assigned to your email.';
+    msg.className='access-msg error'; msg.style.display='block'; return;
+  }
+
+  // Create enrollment
+  await sb.from('enrollments').insert({
+    user_id: currentUser.id,
+    course_id: codeData.course_id,
+    payment_status: 'paid',
+    payment_id: 'ACCESS_CODE_'+code
+  });
+
+  // Mark code as used
+  await sb.from('access_codes').update({used:true, used_by:currentUser.id, used_at:new Date().toISOString()}).eq('code', code);
+
+  msg.textContent='✅ Access granted! Redirecting to your dashboard...';
+  msg.className='access-msg success'; msg.style.display='block';
+  showToast('🎉 Welcome to your internship!', 'success');
+  setTimeout(()=>{ window.location.href='student-dashboard.html'; }, 2000);
+}
+
+// ─── LOGOUT ───
+async function handleLogout(){
+  await sb.auth.signOut();
+  window.location.href='index.html';
+}
+
+// ─── MOTION CANVAS ───
+const canvas=document.getElementById('motionCanvas');
+const ctx=canvas.getContext('2d');
+const blobs=[
+  {x:0.2,y:0.3,r:300,dx:0.0002,dy:0.0003,color:'rgba(108,43,217,0.4)'},
+  {x:0.7,y:0.6,r:250,dx:-0.0003,dy:0.0002,color:'rgba(139,92,246,0.3)'},
+  {x:0.5,y:0.1,r:200,dx:0.0001,dy:-0.0002,color:'rgba(245,158,11,0.2)'},
+];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+function drawBlobs(t){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  blobs.forEach(b=>{
+    const x=(b.x+Math.sin(t*b.dx*1000)*0.15)*canvas.width;
+    const y=(b.y+Math.cos(t*b.dy*1000)*0.15)*canvas.height;
+    const g=ctx.createRadialGradient(x,y,0,x,y,b.r);
+    g.addColorStop(0,b.color); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,b.r,0,Math.PI*2); ctx.fill();
+  });
+}
+let start=null;
+function animate(ts){if(!start)start=ts;drawBlobs(ts-start);requestAnimationFrame(animate);}
+resizeCanvas(); window.addEventListener('resize',resizeCanvas); animate(0);
+
+init();
+</script>
 </body>
 </html>
