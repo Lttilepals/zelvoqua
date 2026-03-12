@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Free Dashboard</title>
+</head>
+
+<body>
+
+<h2>Welcome to Zelvoqua</h2>
+<p>You are currently on the free dashboard.</p>
+
+<div style="position:fixed; top:20px; right:20px;">
+<button onclick="openCodeBox()">Enter Access Code</button>
+</div>
+
+<div id="codeBox" style="display:none;">
+<input type="text" id="accessCode" placeholder="Enter your code">
+<button onclick="verifyCode()">Submit</button>
+</div>
+
+<script>
+
+function openCodeBox(){
+document.getElementById("codeBox").style.display="block";
+}
+
+</script>
+<script>
+
+async function checkAccess(){
+
+const { data: { user } } = await supabase.auth.getUser();
+
+const { data } = await supabase
+.from("enrollments")
+.select("*")
+.eq("user_id", user.id);
+
+if(!data || data.length === 0){
+
+window.location.href="free-dashboard.html";
+
+}
+
+}
+
+checkAccess();
+
+</script>
+
+</body>
+</html>
