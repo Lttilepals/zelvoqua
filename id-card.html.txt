@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Internship ID Card</title>
+</head>
+
+<body>
+
+<h2>ZELVOQUA INTERNSHIP ID</h2>
+
+<div style="border:1px solid black;padding:20px;width:300px">
+
+<p><b>Name:</b> <span id="name"></span></p>
+
+<p><b>Email:</b> <span id="email"></span></p>
+
+<p><b>Course:</b> <span id="course"></span></p>
+
+<p><b>Internship Duration:</b> 30 Days</p>
+
+<p><b>Status:</b> Active</p>
+
+</div>
+
+<script>
+
+async function loadStudent(){
+
+const { data: { user } } = await supabase.auth.getUser();
+
+document.getElementById("email").innerText = user.email;
+
+const { data } = await supabase
+.from("enrollments")
+.select("course_id")
+.eq("user_id", user.id)
+.single();
+
+document.getElementById("course").innerText = data.course_id;
+
+}
+
+loadStudent();
+
+</script>
+
+</body>
+
+</html>
