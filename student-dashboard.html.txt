@@ -47,6 +47,58 @@ window.location.href="free-dashboard.html";
 checkAccess();
 
 </script>
+<h2>Internship Progress</h2>
+
+<div style="width:400px;background:#eee;border-radius:10px;">
+  <div id="progressBar" 
+       style="width:0%;background:#4CAF50;color:white;padding:5px;border-radius:10px;">
+  </div>
+</div>
+
+<p id="progressText"></p>
+<script>
+
+async function showProgress(){
+
+const { data: { user } } = await supabase.auth.getUser();
+
+const { data } = await supabase
+.from("enrollments")
+.select("created_at")
+.eq("user_id", user.id)
+.single();
+
+if(!data) return;
+
+const startDate = new Date(data.created_at);
+const today = new Date();
+
+const diffTime = today - startDate;
+const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+const progress = Math.min((days / 30) * 100, 100);
+
+document.getElementById("progressBar").style.width = progress + "%";
+
+document.getElementById("progressText").innerText =
+"Internship Day: " + days + " / 30";
+
+}
+
+showProgress();
+
+</script>
+<h3>Internship Tasks</h3>
+
+<ul>
+<li>Day 1-14 → Learning phase</li>
+<li>Day 15 → Submit Project 1</li>
+<li>Day 16-29 → Internship practice</li>
+<li>Day 30 → Final Project Submission</li>
+</ul>
+<a href="YOUR_GOOGLE_FORM_LINK" target="_blank">
+<button>Submit Internship Projects</button>
+</a>
 
 </body>
 </html>
