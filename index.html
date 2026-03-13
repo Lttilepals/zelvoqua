@@ -43,12 +43,6 @@ nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filt
 .highlight{background:linear-gradient(90deg,var(--primary-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .hero p{font-size:1.05rem;color:var(--muted);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;}
 .hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
-.access-panel{max-width:760px;margin:0 auto 3rem;display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;text-align:left;}
-.access-card{background:rgba(26,16,48,0.82);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.25rem 1.1rem;backdrop-filter:blur(8px);box-shadow:0 18px 40px rgba(0,0,0,0.18);}
-.access-label{font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary-light);margin-bottom:0.5rem;}
-.access-card h3{font-size:1.15rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
-.access-card p{font-size:0.88rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
-.access-actions{display:flex;gap:0.75rem;flex-wrap:wrap;}
 .btn-large{padding:0.85rem 2rem;font-size:1rem;font-weight:700;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s;font-family:inherit;border:none;}
 .btn-large.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 8px 24px rgba(108,43,217,0.35);}
 .btn-large.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(108,43,217,0.5);}
@@ -197,7 +191,6 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 
 /* RESPONSIVE */
 @media(max-width:900px){
-  .access-panel{grid-template-columns:1fr;}
   #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:repeat(2,1fr);}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr 1fr;}
@@ -289,25 +282,6 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <button class="btn-large primary" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🚀 Explore Courses</button>
     <a href="admin.html" class="btn-large ghost">Admin Login</a>
   </div>
-  <div class="access-panel reveal">
-    <div class="access-card">
-      <div class="access-label">Student Access</div>
-      <h3>Student login and signup yahin se</h3>
-      <p>Students account bana sakte hain, login kar sakte hain, courses dekh sakte hain aur dashboard open kar sakte hain.</p>
-      <div class="access-actions">
-        <button class="btn-primary" onclick="openModal('authModal')">Student Login</button>
-        <button class="btn-outline" onclick="openModal('authModal')">Student Sign Up</button>
-      </div>
-    </div>
-    <div class="access-card">
-      <div class="access-label">Admin Access</div>
-      <h3>Admin panel direct open karo</h3>
-      <p>Admins ke liye alag secure route hai jahan se courses, students aur enrollments manage honge.</p>
-      <div class="access-actions">
-        <a class="btn-primary" href="admin.html">Admin Login</a>
-      </div>
-    </div>
-  </div>
   <div class="hero-trust">
     <span class="trust-item">✅ Free Certificate</span>
     <span class="trust-item">🎯 Live Mentorship</span>
@@ -333,12 +307,8 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <h2 class="section-title">Courses Built for the Real World</h2>
     <p class="section-sub">Live classes, real projects, and mentorship from industry professionals.</p>
   </div>
-  <div class="courses-tabs reveal">
-    <button class="tab active" onclick="filterCourses('all')">All Courses</button>
-    <button class="tab" onclick="filterCourses('Web Development')">Web Dev</button>
-    <button class="tab" onclick="filterCourses('Data Science')">Data Science</button>
-    <button class="tab" onclick="filterCourses('Design')">Design</button>
-    <button class="tab" onclick="filterCourses('Marketing')">Marketing</button>
+  <div class="courses-tabs reveal" id="coursesTabs">
+    <button class="tab active" type="button" onclick="filterCourses('all', this)">All Courses</button>
   </div>
   <div id="coursesContainer">
     <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">Loading courses...</div>
@@ -434,6 +404,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let allCourses = [];
 let selectedCourse = null;
+let currentCourseFilter = 'all';
 
 // ─── MOTION BLUR CANVAS ───
 const canvas = document.getElementById('motionCanvas');
@@ -566,10 +537,11 @@ async function loadCourses(){
   } else {
     allCourses = data;
   }
+  renderCourseTabs();
+  currentCourseFilter = 'all';
   renderCourses(allCourses);
-  // Update student count
-  const {count} = await sb.from('enrollments').select('*',{count:'exact',head:true});
-  if(count){ document.getElementById('statStudents').innerHTML = Math.max(count,10)+'<span>+</span>'; }
+  // Keep homepage marketing stats fixed instead of showing live enrollment data.
+  document.getElementById('statStudents').innerHTML = '10<span>K+</span>';
 }
 
 function getDefaultCourses(){
@@ -626,9 +598,19 @@ function renderCourses(courses){
 }
 
 // ─── FILTER COURSES ───
-function filterCourses(cat){
+function renderCourseTabs(){
+  const tabs = document.getElementById('coursesTabs');
+  const categories = [...new Set(allCourses.map(c => c.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  tabs.innerHTML = [
+    `<button class="tab ${currentCourseFilter==='all'?'active':''}" type="button" onclick="filterCourses('all', this)">All Courses</button>`,
+    ...categories.map(cat => `<button class="tab ${currentCourseFilter===cat?'active':''}" type="button" onclick="filterCourses(${JSON.stringify(cat)}, this)">${cat}</button>`)
+  ].join('');
+}
+
+function filterCourses(cat, btn){
+  currentCourseFilter = cat;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
+  if(btn){ btn.classList.add('active'); }
   const filtered = cat==='all' ? allCourses : allCourses.filter(c=>c.category===cat);
   renderCourses(filtered);
 }
