@@ -537,8 +537,8 @@ async function loadCourses(){
   } else {
     allCourses = data;
   }
-  renderCourseTabs();
   currentCourseFilter = 'all';
+  renderCourseTabs();
   renderCourses(allCourses);
   // Keep homepage marketing stats fixed instead of showing live enrollment data.
   document.getElementById('statStudents').innerHTML = '10<span>K+</span>';
@@ -602,18 +602,34 @@ function renderCourseTabs(){
   const tabs = document.getElementById('coursesTabs');
   const categories = [...new Set(allCourses.map(c => c.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   tabs.innerHTML = [
-    `<button class="tab ${currentCourseFilter==='all'?'active':''}" type="button" onclick="filterCourses('all', this)">All Courses</button>`,
-    ...categories.map(cat => `<button class="tab ${currentCourseFilter===cat?'active':''}" type="button" onclick="filterCourses(${JSON.stringify(cat)}, this)">${cat}</button>`)
+    `<button class="tab ${currentCourseFilter==='all'?'active':''}" type="button" data-category="all">All Courses</button>`,
+    ...categories.map(cat => `<button class="tab ${currentCourseFilter===cat?'active':''}" type="button" data-category="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`)
   ].join('');
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replace(/&/g,'&amp;')
+    .replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
 }
 
 function filterCourses(cat, btn){
   currentCourseFilter = cat;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   if(btn){ btn.classList.add('active'); }
-  const filtered = cat==='all' ? allCourses : allCourses.filter(c=>c.category===cat);
+  const filtered = cat==='all'
+    ? allCourses
+    : allCourses.filter(c => String(c.category || '').trim().toLowerCase() === String(cat).trim().toLowerCase());
   renderCourses(filtered);
 }
+
+document.getElementById('coursesTabs').addEventListener('click', function(event){
+  const btn = event.target.closest('.tab');
+  if(!btn) return;
+  filterCourses(btn.dataset.category || 'all', btn);
+});
 
 // ─── ENROLL MODAL ───
 function openEnrollModal(courseId){
