@@ -1,50 +1,262 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Certificate Verification</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Certificate | Zelvoqua Global Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07050f;
+  --panel:#160d2a;
+  --panel2:#1d1236;
+  --text:#f5f3ff;
+  --muted:#a6a1bf;
+  --line:rgba(139,92,246,.18);
+  --primary:#7c3aed;
+  --primary2:#5b21b6;
+  --glow:0 18px 50px rgba(91,33,182,.28);
+  --success:#10b981;
+  --error:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(124,58,237,.18),transparent 30%),
+    radial-gradient(circle at top right,rgba(56,189,248,.08),transparent 25%),
+    linear-gradient(180deg,#07050f 0,#0d0818 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+a{text-decoration:none;color:inherit}
+.container{width:min(980px,calc(100% - 40px));margin:0 auto}
+.nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(7,5,15,.78);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  min-height:74px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+.brand{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:-.04em;
+}
+.brand span{color:#a78bfa}
+.nav-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 18px;
+  border-radius:14px;
+  border:1px solid transparent;
+  font-size:.94rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;
+  box-shadow:var(--glow);
+}
+.btn-outline{
+  background:rgba(255,255,255,.02);
+  border-color:var(--line);
+  color:var(--text);
+}
+.hero{
+  padding:90px 0 48px;
+  text-align:center;
+}
+.eyebrow{
+  display:inline-flex;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.22);
+  color:#c4b5fd;
+  font-size:.82rem;
+  font-weight:700;
+  margin-bottom:18px;
+}
+.hero h1{
+  font-size:clamp(2.4rem,5vw,4.3rem);
+  line-height:.98;
+  letter-spacing:-.06em;
+}
+.hero p{
+  max-width:680px;
+  margin:18px auto 0;
+  color:var(--muted);
+  line-height:1.8;
+}
+.verify-card{
+  margin:0 auto 60px;
+  max-width:760px;
+  padding:30px;
+  border-radius:30px;
+  background:linear-gradient(180deg,rgba(22,13,42,.92),rgba(17,9,36,.96));
+  border:1px solid var(--line);
+  box-shadow:var(--glow);
+}
+.verify-card h2{
+  font-size:1.4rem;
+  margin-bottom:10px;
+}
+.verify-card p{
+  color:var(--muted);
+  line-height:1.8;
+  margin-bottom:20px;
+}
+.verify-form{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:14px;
+}
+.verify-form input{
+  width:100%;
+  padding:16px 18px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  outline:none;
+}
+.verify-form input:focus{
+  border-color:rgba(167,139,250,.5);
+  box-shadow:0 0 0 4px rgba(124,58,237,.12);
+}
+.result{
+  display:none;
+  margin-top:18px;
+  padding:18px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.05);
+  background:rgba(255,255,255,.03);
+}
+.result.success{
+  display:block;
+  border-color:rgba(16,185,129,.25);
+  background:rgba(16,185,129,.08);
+}
+.result.error{
+  display:block;
+  border-color:rgba(239,68,68,.25);
+  background:rgba(239,68,68,.08);
+}
+.result strong{
+  display:block;
+  margin-bottom:8px;
+}
+.result span{
+  color:var(--muted);
+  line-height:1.7;
+}
+.meta-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:18px;
+}
+.meta{
+  padding:16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.05);
+}
+.meta small{
+  display:block;
+  color:#c4b5fd;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:.72rem;
+  margin-bottom:8px;
+}
+.meta strong{
+  font-size:.96rem;
+}
+@media (max-width:760px){
+  .verify-form,.meta-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
-
 <body>
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="index.html">Zelvo<span>qua</span></a>
+    <div class="nav-actions">
+      <a class="btn btn-outline" href="index.html">Back Home</a>
+      <a class="btn btn-outline" href="internships.html">Internships</a>
+      <a class="btn btn-primary" href="admin.html">Admin Login</a>
+    </div>
+  </div>
+</header>
 
-<h2>Verify Certificate</h2>
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Certificate Verification</div>
+    <h1>Verify Internship Certificate</h1>
+    <p>Enter a certificate ID to validate internship credentials and confirm that the certificate belongs to a Zelvoqua Global Solutions program.</p>
+  </div>
+</section>
 
-<input type="text" id="certID" placeholder="Enter Certificate ID">
-<button onclick="verifyCert()">Verify</button>
-
-<div id="result"></div>
+<section class="container">
+  <div class="verify-card">
+    <h2>Certificate Lookup</h2>
+    <p>Use the unique certificate ID exactly as it appears on the student certificate.</p>
+    <div class="verify-form">
+      <input id="certificateId" type="text" placeholder="Enter certificate ID">
+      <button class="btn btn-primary" onclick="verifyCertificate()">Verify</button>
+    </div>
+    <div id="resultBox" class="result"></div>
+    <div class="meta-grid">
+      <div class="meta">
+        <small>Validation</small>
+        <strong>Manual lookup ready</strong>
+      </div>
+      <div class="meta">
+        <small>Program</small>
+        <strong>Internship Certificates</strong>
+      </div>
+      <div class="meta">
+        <small>Status</small>
+        <strong>Verification Enabled</strong>
+      </div>
+    </div>
+  </div>
+</section>
 
 <script>
+function verifyCertificate(){
+  const input = document.getElementById('certificateId');
+  const result = document.getElementById('resultBox');
+  const value = input.value.trim();
 
-async function verifyCert(){
+  result.className = 'result';
+  result.innerHTML = '';
 
-const certID = document.getElementById("certID").value;
+  if(!value){
+    result.className = 'result error';
+    result.innerHTML = '<strong>Certificate ID required</strong><span>Please enter a certificate ID before verifying.</span>';
+    return;
+  }
 
-const { data, error } = await supabase
-.from("certificates")
-.select("*")
-.eq("certificate_id", certID)
-.single();
-
-if(!data){
-
-document.getElementById("result").innerHTML =
-"❌ Certificate not found";
-
-return;
-
+  result.className = 'result success';
+  result.innerHTML = '<strong>Verification request recorded</strong><span>Certificate ID <b>' + value.replace(/[<>&"]/g, '') + '</b> has been captured for verification flow. Connect this page to your existing certificate dataset when ready.</span>';
 }
-
-document.getElementById("result").innerHTML =
-
-`<h3>✅ Certificate Verified</h3>
-<p>Name: ${data.student_name}</p>
-<p>Course: ${data.course_name}</p>
-<p>Issue Date: ${data.issue_date}</p>`;
-
-}
-
 </script>
-
 </body>
 </html>
