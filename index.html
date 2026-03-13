@@ -235,6 +235,19 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 .about-desc{font-size:0.92rem;color:var(--muted);line-height:1.8;margin-bottom:1rem;}
 .about-tags{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1.2rem 0;}
 .about-tag{background:rgba(108,43,217,0.12);border:1px solid rgba(108,43,217,0.25);color:var(--text);padding:0.35rem 0.9rem;border-radius:20px;font-size:0.78rem;font-weight:600;}
+.clickable-tag{cursor:pointer;transition:all 0.2s;user-select:none;}
+.clickable-tag:hover{background:rgba(108,43,217,0.25);border-color:var(--primary-light);color:var(--white);}
+.clickable-tag.active{background:rgba(108,43,217,0.35);border-color:var(--primary-light);color:var(--white);}
+.region-tag-wrap{position:relative;display:inline-block;}
+.region-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#1a0d3a;border:1px solid rgba(108,43,217,0.4);border-radius:12px;padding:0.75rem;min-width:240px;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,0.5);animation:dropIn 0.2s ease;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.region-dropdown.open{display:block;}
+.rd-title{font-size:0.72rem;font-weight:700;color:var(--primary-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(108,43,217,0.2);}
+.rd-item{display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.4rem;border-radius:8px;transition:background 0.15s;cursor:default;}
+.rd-item:hover{background:rgba(108,43,217,0.15);}
+.rd-logo{font-size:1.3rem;flex-shrink:0;}
+.rd-name{font-size:0.82rem;font-weight:700;color:var(--white);}
+.rd-desc{font-size:0.72rem;color:var(--muted);margin-top:0.1rem;}
 .about-founded{display:flex;gap:2rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
 .founded-item{text-align:center;}
 .founded-val{display:block;font-size:1.6rem;font-weight:800;color:var(--white);}
@@ -451,11 +464,47 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
       <h2 class="about-title">Transforming Careers <br><span class="highlight">Across the Globe</span></h2>
       <p class="about-desc">Founded in 2021 and headquartered in <strong>Singapore</strong>, Zelvoqua EdTech operates across <strong>India, UAE, UK, and Southeast Asia</strong> — helping students and professionals unlock real-world career opportunities through structured internships, live mentorship, and industry-grade training.</p>
       <p class="about-desc">We bridge the gap between theoretical education and practical industry experience. Our programs are designed by senior professionals from companies like Deloitte, McKinsey, Google, and HDFC — ensuring every student gets world-class guidance.</p>
-      <div class="about-tags">
-        <span class="about-tag">🇸🇬 Singapore HQ</span>
-        <span class="about-tag">🇮🇳 India Operations</span>
-        <span class="about-tag">🇦🇪 UAE Office</span>
-        <span class="about-tag">🇬🇧 UK Partner</span>
+      <div class="about-tags" id="aboutTags">
+        <div class="region-tag-wrap">
+          <span class="about-tag clickable-tag" onclick="toggleRegion('sg', this)">🇸🇬 Singapore HQ ▾</span>
+          <div class="region-dropdown" id="region-sg">
+            <div class="rd-title">🇸🇬 Singapore Partners</div>
+            <div class="rd-item"><span class="rd-logo">🏦</span><div><div class="rd-name">DBS Bank</div><div class="rd-desc">Banking & Finance Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">Deloitte SEA</div><div class="rd-desc">Consulting & Talent Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">SkillsFuture SG</div><div class="rd-desc">Govt. Training Alliance</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🚀</span><div><div class="rd-name">NTU Career Hub</div><div class="rd-desc">Campus Placement Partner</div></div></div>
+          </div>
+        </div>
+        <div class="region-tag-wrap">
+          <span class="about-tag clickable-tag" onclick="toggleRegion('in', this)">🇮🇳 India Operations ▾</span>
+          <div class="region-dropdown" id="region-in">
+            <div class="rd-title">🇮🇳 India Partners</div>
+            <div class="rd-item"><span class="rd-logo">🏢</span><div><div class="rd-name">HDFC Bank</div><div class="rd-desc">Finance & Internship Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">💡</span><div><div class="rd-name">Infosys BPM</div><div class="rd-desc">Tech Talent Alliance</div></div></div>
+            <div class="rd-item"><span class="rd-logo">📊</span><div><div class="rd-name">ICICI Securities</div><div class="rd-desc">Finance Training Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🎓</span><div><div class="rd-name">NIIT Foundation</div><div class="rd-desc">Skilling & Certification</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🌟</span><div><div class="rd-name">Wipro TalentNext</div><div class="rd-desc">Corporate HR Partner</div></div></div>
+          </div>
+        </div>
+        <div class="region-tag-wrap">
+          <span class="about-tag clickable-tag" onclick="toggleRegion('ae', this)">🇦🇪 UAE Office ▾</span>
+          <div class="region-dropdown" id="region-ae">
+            <div class="rd-title">🇦🇪 UAE Partners</div>
+            <div class="rd-item"><span class="rd-logo">🏦</span><div><div class="rd-name">Emirates NBD</div><div class="rd-desc">Banking & Finance Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">Dubai Future Academy</div><div class="rd-desc">Govt. Skills Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">PwC Middle East</div><div class="rd-desc">Consulting Alliance</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🚀</span><div><div class="rd-name">DIFC FinTech Hive</div><div class="rd-desc">FinTech Ecosystem Partner</div></div></div>
+          </div>
+        </div>
+        <div class="region-tag-wrap">
+          <span class="about-tag clickable-tag" onclick="toggleRegion('uk', this)">🇬🇧 UK Partner ▾</span>
+          <div class="region-dropdown" id="region-uk">
+            <div class="rd-title">🇬🇧 UK Partners</div>
+            <div class="rd-item"><span class="rd-logo">🎓</span><div><div class="rd-name">London Business School</div><div class="rd-desc">Academic Alliance</div></div></div>
+            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">KPMG UK</div><div class="rd-desc">Finance & Consulting Partner</div></div></div>
+            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">British Council</div><div class="rd-desc">Education & Skills Partner</div></div></div>
+          </div>
+        </div>
       </div>
       <div class="about-founded">
         <div class="founded-item"><span class="founded-val">2021</span><span class="founded-lbl">Founded</span></div>
@@ -756,6 +805,88 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ─── EMAIL SYSTEM (RESEND) ───
+const RESEND_KEY = 're_a2CBo11s_FNzzQnhf58tJtoKiuzFCnAHj';
+
+async function sendEmail(to, toName, type, data={}){
+  const templates = {
+    welcome: {
+      subject: '🎉 Welcome to Zelvoqua — Your Career Journey Begins!',
+      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1><p style="color:#6b7280;font-size:13px;margin:4px 0 0;">Bridge the Gap Between Learning & Earning</p></div>
+  <div style="background:#1a0d3a;border:1px solid rgba(139,92,246,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
+    <h2 style="color:white;font-size:22px;margin:0 0 12px;">Welcome aboard, ${toName}! 🚀</h2>
+    <p style="color:#9ca3af;font-size:15px;line-height:1.7;margin:0 0 24px;">You've just taken the first step toward building a career that matters. At Zelvoqua, we don't just teach — we build real professionals.</p>
+    <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <p style="color:#8b5cf6;font-weight:700;font-size:13px;margin:0 0 12px;text-transform:uppercase;">What's Next?</p>
+      <p style="color:#e5e7eb;font-size:14px;margin:0 0 8px;">📚 Browse 35+ internship programs</p>
+      <p style="color:#e5e7eb;font-size:14px;margin:0 0 8px;">🎯 Use our free AI ATS Resume Checker</p>
+      <p style="color:#e5e7eb;font-size:14px;margin:0;">💼 Enroll in your dream program today</p>
+    </div>
+    <a href="https://lttilepals.github.io/zelvoqua/" style="display:block;text-align:center;background:linear-gradient(135deg,#6c2bd9,#8b5cf6);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Explore Programs →</a>
+  </div>
+  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd. | Singapore HQ</p>
+</div></body></html>`
+    },
+    enrollment: {
+      subject: `✅ Enrollment Confirmed — ${data.courseName||''}`,
+      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1></div>
+  <div style="background:#1a0d3a;border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
+    <div style="text-align:center;margin-bottom:24px;"><span style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:50px;padding:8px 20px;color:#10b981;font-weight:700;font-size:13px;">✅ ENROLLMENT CONFIRMED</span></div>
+    <h2 style="color:white;font-size:20px;margin:0 0 8px;text-align:center;">You're In, ${toName}!</h2>
+    <p style="color:#9ca3af;font-size:14px;text-align:center;margin:0 0 28px;">Your internship journey starts now.</p>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <p style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">Enrolled Program</p>
+      <p style="color:white;font-size:18px;font-weight:800;margin:0 0 16px;">${data.courseName||''}</p>
+      <div style="display:flex;gap:16px;">
+        <div style="flex:1;background:rgba(108,43,217,0.1);border-radius:8px;padding:12px;text-align:center;"><div style="color:#8b5cf6;font-weight:800;font-size:16px;">₹${data.price||''}</div><div style="color:#6b7280;font-size:11px;margin-top:2px;">Amount Paid</div></div>
+        <div style="flex:1;background:rgba(16,185,129,0.1);border-radius:8px;padding:12px;text-align:center;"><div style="color:#10b981;font-weight:800;font-size:16px;">${data.duration||''}</div><div style="color:#6b7280;font-size:11px;margin-top:2px;">Duration</div></div>
+      </div>
+    </div>
+    <a href="https://lttilepals.github.io/zelvoqua/student-dashboard.html" style="display:block;text-align:center;background:linear-gradient(135deg,#065f46,#10b981);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Go to My Dashboard →</a>
+  </div>
+  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd.</p>
+</div></body></html>`
+    },
+    accessCode: {
+      subject: `🎟️ Your Zelvoqua Access Code`,
+      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1></div>
+  <div style="background:#1a0d3a;border:1px solid rgba(245,158,11,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
+    <h2 style="color:white;font-size:20px;margin:0 0 8px;">Hey ${toName}, here's your access code! 🎟️</h2>
+    <p style="color:#9ca3af;font-size:14px;margin:0 0 28px;">Use this to unlock <strong style="color:white;">${data.courseName||'your course'}</strong></p>
+    <div style="background:rgba(245,158,11,0.08);border:2px dashed rgba(245,158,11,0.4);border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+      <p style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">Your Access Code</p>
+      <p style="color:#f59e0b;font-size:28px;font-weight:900;letter-spacing:0.15em;margin:0;font-family:monospace;">${data.code||''}</p>
+    </div>
+    <p style="color:#9ca3af;font-size:13px;line-height:1.8;margin:0 0 24px;">1️⃣ Login to Zelvoqua &nbsp; 2️⃣ Go to Dashboard &nbsp; 3️⃣ Enter code to unlock!</p>
+    <a href="https://lttilepals.github.io/zelvoqua/" style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,#f59e0b);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Use My Code Now →</a>
+  </div>
+  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd.</p>
+</div></body></html>`
+    }
+  };
+
+  const tpl = templates[type];
+  if(!tpl) return;
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method:'POST',
+      headers:{'Authorization':`Bearer ${RESEND_KEY}`,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        from:'Zelvoqua EdTech <onboarding@resend.dev>',
+        to:[to],
+        subject: tpl.subject,
+        html: tpl.html
+      })
+    });
+  } catch(e){ console.log('Email error:',e); }
+}
+
 let currentUser = null;
 let allCourses = [];
 let selectedCourse = null;
@@ -1042,7 +1173,9 @@ async function handleSignup(){
   if(pass.length<6){ err.textContent='Password must be at least 6 characters'; err.style.display='block'; return; }
   const {data,error} = await sb.auth.signUp({ email, password:pass, options:{ data:{ full_name:name } } });
   if(error){ err.textContent=error.message; err.style.display='block'; return; }
-  succ.textContent='✅ Account created! Please check your email to verify.';
+  // Send welcome email
+  sendEmail(email, name, 'welcome');
+  succ.textContent='✅ Account created! Check your email for a welcome message!';
   succ.style.display='block';
 }
 
@@ -1185,6 +1318,30 @@ function renderCourses(courses){
   // Re-observe reveal
   document.querySelectorAll('.course-card.reveal').forEach(el=>revObs.observe(el));
 }
+
+// ─── REGION DROPDOWN ───
+function toggleRegion(id, btn){
+  const dropdown = document.getElementById('region-' + id);
+  const isOpen = dropdown.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
+  if(!isOpen){
+    dropdown.classList.add('open');
+    btn.classList.add('active');
+  }
+}
+// Close on outside click or scroll
+document.addEventListener('click', e => {
+  if(!e.target.closest('.region-tag-wrap')){
+    document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
+  }
+});
+window.addEventListener('scroll', () => {
+  document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
+}, {passive:true});
 
 // ─── MAIN TAB + SUB TAB SYSTEM ───
 const subCategories = {
@@ -1355,7 +1512,6 @@ async function handlePayment(){
     description: selectedCourse.title,
     image: '',
     handler: async function(response){
-      // Save enrollment to Supabase
       const {error} = await sb.from('enrollments').insert({
         user_id: currentUser.id,
         course_id: selectedCourse.id,
@@ -1363,8 +1519,15 @@ async function handlePayment(){
         payment_id: response.razorpay_payment_id
       });
       if(!error){
+        // Send enrollment confirmation email
+        const userName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+        sendEmail(currentUser.email, userName, 'enrollment', {
+          courseName: selectedCourse.title,
+          price: selectedCourse.price,
+          duration: selectedCourse.duration
+        });
         closeModal('enrollModal');
-        showToast('🎉 Enrolled successfully! Check your dashboard.');
+        showToast('🎉 Enrolled! Check your email for confirmation.');
         loadEnrolledCourses();
       }
     },
