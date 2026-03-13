@@ -288,8 +288,13 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const internships = [
+    const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const fallbackInternships = [
       {
         category: 'Finance',
         title: 'Financial Analytics Internship',
@@ -346,7 +351,56 @@
       }
     ];
 
+    let internships = [];
     let activeFilter = 'All';
+
+    function deriveSkills(item) {
+      const category = String(item.category || '').toLowerCase();
+      const title = String(item.title || '').toLowerCase();
+
+      if (category.includes('finance') || title.includes('finance')) {
+        return ['Financial Analysis', 'Excel', 'Business Reporting'];
+      }
+      if (category.includes('human') || category.includes('hr') || title.includes('hr')) {
+        return ['Recruitment', 'HR Operations', 'People Analytics'];
+      }
+      if (category.includes('supply') || title.includes('supply')) {
+        return ['Inventory Planning', 'Logistics', 'Process Mapping'];
+      }
+      if (category.includes('market') || title.includes('marketing')) {
+        return ['Campaign Planning', 'Content Strategy', 'Performance Tracking'];
+      }
+      if (category.includes('analytic') || title.includes('analytics')) {
+        return ['Data Analysis', 'Dashboards', 'Decision Support'];
+      }
+      if (category.includes('business') || category.includes('management') || title.includes('consult')) {
+        return ['Business Strategy', 'Research', 'Problem Solving'];
+      }
+      return ['Project Work', 'Structured Learning', 'Career Skills'];
+    }
+
+    function normalizeCourse(course) {
+      return {
+        category: course.category || 'General',
+        title: course.title || 'Internship Program',
+        duration: course.duration || '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: deriveSkills(course),
+        description: course.description || 'Structured internship program with guided projects and practical business learning.'
+      };
+    }
+
+    async function loadInternships() {
+      try {
+        const { data, error } = await sb.from('courses').select('*').order('id');
+        if (error) throw error;
+        internships = (data && data.length ? data.map(normalizeCourse) : fallbackInternships);
+      } catch (_error) {
+        internships = fallbackInternships;
+      }
+      renderCards();
+    }
 
     function renderCards() {
       const query = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -399,7 +453,7 @@
 
     document.getElementById('searchInput').addEventListener('input', renderCards);
 
-    renderCards();
+    loadInternships();
   </script>
 </body>
 </html>
