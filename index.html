@@ -205,6 +205,24 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
   #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr;}
 }
+/* LIVE TICKER */
+.live-ticker-wrap{background:rgba(16,185,129,0.06);border-top:1px solid rgba(16,185,129,0.15);border-bottom:1px solid rgba(16,185,129,0.15);padding:0.75rem 5%;display:flex;align-items:center;gap:1.5rem;overflow:hidden;position:relative;z-index:1;}
+.ticker-label{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;font-weight:700;color:var(--accent2);white-space:nowrap;flex-shrink:0;}
+.live-dot{width:8px;height:8px;background:var(--accent2);border-radius:50%;animation:pulse 1.5s ease infinite;display:inline-block;}
+.ticker-track{display:flex;gap:2.5rem;animation:tickerScroll 28s linear infinite;white-space:nowrap;}
+.ticker-track:hover{animation-play-state:paused;}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:var(--text);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:0.3rem 0.9rem;border-radius:20px;white-space:nowrap;}
+.ticker-item .t-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:white;flex-shrink:0;}
+.ticker-item .t-name{font-weight:700;color:var(--white);}
+.ticker-item .t-course{color:var(--muted);}
+.ticker-item .t-time{color:var(--accent2);font-size:0.72rem;}
+
+.hero-cta2{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;}
+.btn-program{background:white;color:#1a1030;padding:0.8rem 2rem;border-radius:50px;font-size:0.95rem;font-weight:700;cursor:pointer;border:none;font-family:inherit;display:flex;align-items:center;gap:0.5rem;transition:all 0.2s;box-shadow:0 4px 15px rgba(255,255,255,0.15);}
+.btn-program:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,255,255,0.2);}
+.btn-internship{background:transparent;color:white;padding:0.8rem 2rem;border-radius:50px;font-size:0.95rem;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,0.3);font-family:inherit;display:flex;align-items:center;gap:0.5rem;transition:all 0.2s;}
+.btn-internship:hover{border-color:white;background:rgba(255,255,255,0.08);transform:translateY(-2px);}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 </style>
@@ -321,6 +339,10 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <button class="btn-large primary" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🚀 Explore Courses</button>
     <button class="btn-large ghost">▶ Watch Demo</button>
   </div>
+  <div class="hero-cta2">
+    <button class="btn-program" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🎯 Explore Programs</button>
+    <button class="btn-internship" onclick="openModal('authModal')">💼 Apply for Internship</button>
+  </div>
   <div class="hero-trust">
     <span class="trust-item">✅ Free Certificate</span>
     <span class="trust-item">🎯 Live Mentorship</span>
@@ -332,11 +354,17 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 <!-- STATS -->
 <div class="stats">
   <div class="stats-grid">
-    <div class="stat-box"><div class="stat-num" id="statStudents">0<span>K+</span></div><div class="stat-lbl">Students Enrolled</div></div>
+    <div class="stat-box"><div class="stat-num" id="statStudents">10<span>K+</span></div><div class="stat-lbl">Students Enrolled</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">50<span>+</span></div><div class="stat-lbl">Expert Mentors</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">95<span>%</span></div><div class="stat-lbl">Placement Rate</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">4.9<span>★</span></div><div class="stat-lbl">Average Rating</div></div>
   </div>
+</div>
+
+<!-- LIVE ENROLLMENTS TICKER -->
+<div class="live-ticker-wrap">
+  <div class="ticker-label"><span class="live-dot"></span> Live Activity</div>
+  <div class="ticker-track" id="tickerTrack"></div>
 </div>
 
 <!-- COURSES -->
@@ -471,6 +499,45 @@ function drawBlur(){
   requestAnimationFrame(drawBlur);
 }
 drawBlur();
+
+// ─── LIVE ENROLLMENT TICKER ───
+const tickerData=[
+  {name:'Rahul S.',course:'Full Stack Web Dev',time:'2 min ago',emoji:'💻'},
+  {name:'Priya M.',course:'Machine Learning & AI',time:'5 min ago',emoji:'🤖'},
+  {name:'Arjun K.',course:'Data Science',time:'8 min ago',emoji:'📊'},
+  {name:'Sneha R.',course:'UI/UX Design',time:'12 min ago',emoji:'🎨'},
+  {name:'Vikram T.',course:'Digital Marketing',time:'15 min ago',emoji:'📣'},
+  {name:'Ananya P.',course:'Cloud & DevOps',time:'18 min ago',emoji:'☁️'},
+  {name:'Rohan D.',course:'Full Stack Web Dev',time:'22 min ago',emoji:'💻'},
+  {name:'Meera J.',course:'Machine Learning & AI',time:'25 min ago',emoji:'🤖'},
+  {name:'Karan B.',course:'Data Science',time:'30 min ago',emoji:'📊'},
+  {name:'Divya N.',course:'UI/UX Design',time:'35 min ago',emoji:'🎨'},
+  {name:'Aditya V.',course:'Digital Marketing',time:'40 min ago',emoji:'📣'},
+  {name:'Pooja S.',course:'Cloud & DevOps',time:'45 min ago',emoji:'☁️'},
+];
+
+function buildTicker(){
+  const track=document.getElementById('tickerTrack');
+  if(!track) return;
+  // Duplicate for seamless loop
+  const allItems=[...tickerData,...tickerData];
+  track.innerHTML=allItems.map(t=>{
+    const initials=t.name.split(' ').map(n=>n[0]).join('');
+    return `<div class="ticker-item">
+      <div class="t-avatar">${initials}</div>
+      <span class="t-name">${t.name}</span>
+      <span class="t-course">enrolled for ${t.emoji} ${t.course}</span>
+      <span class="t-time">· ${t.time}</span>
+    </div>`;
+  }).join('');
+}
+buildTicker();
+
+// Rotate times every 30 seconds to feel live
+setInterval(()=>{
+  tickerData.forEach((t,i)=>{ t.time = `${(i+1)*3 + Math.floor(Math.random()*3)} min ago`; });
+  buildTicker();
+}, 30000);
 
 // ─── SCROLL REVEAL ───
 const revObs = new IntersectionObserver(entries=>{
