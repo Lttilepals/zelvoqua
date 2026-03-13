@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zelvoqua — Bridge the Gap Between Learning & Earning</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -42,6 +43,12 @@ nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filt
 .highlight{background:linear-gradient(90deg,var(--primary-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .hero p{font-size:1.05rem;color:var(--muted);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;}
 .hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.access-panel{max-width:760px;margin:0 auto 3rem;display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;text-align:left;}
+.access-card{background:rgba(26,16,48,0.82);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.25rem 1.1rem;backdrop-filter:blur(8px);box-shadow:0 18px 40px rgba(0,0,0,0.18);}
+.access-label{font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary-light);margin-bottom:0.5rem;}
+.access-card h3{font-size:1.15rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
+.access-card p{font-size:0.88rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
+.access-actions{display:flex;gap:0.75rem;flex-wrap:wrap;}
 .btn-large{padding:0.85rem 2rem;font-size:1rem;font-weight:700;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s;font-family:inherit;border:none;}
 .btn-large.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 8px 24px rgba(108,43,217,0.35);}
 .btn-large.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(108,43,217,0.5);}
@@ -68,12 +75,7 @@ nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filt
 
 /* COURSES */
 .courses-bg{background:var(--dark);}
-.courses-tabs{display:flex;gap:0.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;overflow-x:auto;scrollbar-width:none;padding-bottom:0.25rem;}
-.sub-tabs{display:flex;gap:0.5rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap;animation:fadeIn 0.25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.sub-tab{background:transparent;border:1px solid rgba(108,43,217,0.25);color:var(--muted);padding:0.35rem 1rem;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;}
-.sub-tab:hover{border-color:var(--primary-light);color:var(--white);}
-.sub-tab.active{background:rgba(108,43,217,0.2);border-color:var(--primary-light);color:var(--white);}
+.courses-tabs{display:flex;gap:0.5rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap;}
 .tab{padding:0.5rem 1.2rem;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all 0.2s;font-family:inherit;}
 .tab.active,.tab:hover{background:var(--primary);border-color:var(--primary);color:white;}
 .courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
@@ -111,7 +113,7 @@ nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filt
 .feature-desc{font-size:0.88rem;color:var(--muted);line-height:1.65;}
 
 /* TESTIMONIALS */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1100px;margin:0 auto;}
+.testi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;max-width:1200px;margin:0 auto;}
 .testi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.8rem;transition:border-color 0.25s;}
 .testi-card:hover{border-color:rgba(108,43,217,0.4);}
 .testi-stars{color:var(--accent);font-size:0.9rem;margin-bottom:1rem;}
@@ -164,12 +166,6 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 .form-error{color:#f87171;font-size:0.8rem;margin-top:0.5rem;display:none;}
 .form-success{color:var(--accent2);font-size:0.85rem;text-align:center;margin-top:0.8rem;display:none;}
 
-.user-type-btn{padding:0.9rem;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);font-family:inherit;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;width:100%;}
-.user-type-btn .type-icon{font-size:1.6rem;display:block;margin-bottom:0.3rem;}
-.user-type-btn.active{border-color:var(--primary-light);background:rgba(108,43,217,0.15);color:var(--white);}
-.admin-only-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:var(--accent);padding:0.3rem 0.8rem;border-radius:4px;font-size:0.72rem;font-weight:700;margin-bottom:1rem;}
-.btn-submit.admin-btn{background:linear-gradient(135deg,#92400e,#d97706);}
-
 /* ENROLL MODAL */
 .enroll-modal{max-width:480px;}
 .enroll-course-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:center;}
@@ -201,6 +197,7 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 
 /* RESPONSIVE */
 @media(max-width:900px){
+  .access-panel{grid-template-columns:1fr;}
   #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:repeat(2,1fr);}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr 1fr;}
@@ -209,124 +206,6 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 @media(max-width:600px){
   #coursesContainer,.features-grid,.testi-grid,.enrolled-grid{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr;}
-}
-/* LIVE TICKER */
-.live-ticker-wrap{background:rgba(16,185,129,0.06);border-top:1px solid rgba(16,185,129,0.15);border-bottom:1px solid rgba(16,185,129,0.15);padding:0.75rem 5%;display:flex;align-items:center;gap:1.5rem;overflow:hidden;position:relative;z-index:1;}
-.ticker-label{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;font-weight:700;color:var(--accent2);white-space:nowrap;flex-shrink:0;}
-.live-dot{width:8px;height:8px;background:var(--accent2);border-radius:50%;animation:pulse 1.5s ease infinite;display:inline-block;}
-.ticker-track{display:flex;gap:2.5rem;animation:tickerScroll 28s linear infinite;white-space:nowrap;}
-.ticker-track:hover{animation-play-state:paused;}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-item{display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:var(--text);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:0.3rem 0.9rem;border-radius:20px;white-space:nowrap;}
-.ticker-item .t-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:white;flex-shrink:0;}
-.ticker-item .t-name{font-weight:700;color:var(--white);}
-.ticker-item .t-course{color:var(--muted);}
-.ticker-item .t-time{color:var(--accent2);font-size:0.72rem;}
-
-.hero-cta2{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;}
-.btn-program{background:white;color:#1a1030;padding:0.8rem 2rem;border-radius:50px;font-size:0.95rem;font-weight:700;cursor:pointer;border:none;font-family:inherit;display:flex;align-items:center;gap:0.5rem;transition:all 0.2s;box-shadow:0 4px 15px rgba(255,255,255,0.15);}
-.btn-program:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,255,255,0.2);}
-.btn-internship{background:transparent;color:white;padding:0.8rem 2rem;border-radius:50px;font-size:0.95rem;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,0.3);font-family:inherit;display:flex;align-items:center;gap:0.5rem;transition:all 0.2s;}
-.btn-internship:hover{border-color:white;background:rgba(255,255,255,0.08);transform:translateY(-2px);}
-/* ABOUT SECTION */
-.about-section{padding:5rem 5%;background:linear-gradient(180deg,var(--darker) 0%,var(--dark) 100%);position:relative;z-index:1;}
-.about-top{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:4rem;}
-.about-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;color:var(--white);line-height:1.2;margin:0.75rem 0 1rem;}
-.about-desc{font-size:0.92rem;color:var(--muted);line-height:1.8;margin-bottom:1rem;}
-.about-tags{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1.2rem 0;}
-.about-tag{background:rgba(108,43,217,0.12);border:1px solid rgba(108,43,217,0.25);color:var(--text);padding:0.35rem 0.9rem;border-radius:20px;font-size:0.78rem;font-weight:600;}
-.clickable-tag{cursor:pointer;transition:all 0.2s;user-select:none;}
-.clickable-tag:hover{background:rgba(108,43,217,0.25);border-color:var(--primary-light);color:var(--white);}
-.clickable-tag.active{background:rgba(108,43,217,0.35);border-color:var(--primary-light);color:var(--white);}
-.region-tag-wrap{position:relative;display:inline-block;}
-.region-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:0;background:#1a0d3a;border:1px solid rgba(108,43,217,0.4);border-radius:12px;padding:0.75rem;min-width:240px;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,0.5);animation:dropIn 0.2s ease;}
-@keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.region-dropdown.open{display:block;}
-.rd-title{font-size:0.72rem;font-weight:700;color:var(--primary-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(108,43,217,0.2);}
-.rd-item{display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.4rem;border-radius:8px;transition:background 0.15s;cursor:default;}
-.rd-item:hover{background:rgba(108,43,217,0.15);}
-.rd-logo{font-size:1.3rem;flex-shrink:0;}
-.rd-name{font-size:0.82rem;font-weight:700;color:var(--white);}
-.rd-desc{font-size:0.72rem;color:var(--muted);margin-top:0.1rem;}
-.about-founded{display:flex;gap:2rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
-.founded-item{text-align:center;}
-.founded-val{display:block;font-size:1.6rem;font-weight:800;color:var(--white);}
-.founded-lbl{font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
-
-/* OFFICE ILLUSTRATIONS */
-.about-images{position:relative;}
-.img-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:1rem;}
-.img-card{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
-.img-main{grid-column:1/-1;}
-.img-placeholder{background:var(--card);height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.img-placeholder.small{height:130px;}
-.office-illustration{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:1rem;}
-.main-office{background:linear-gradient(135deg,#0f0a2e,#1a1040);}
-.office-windows{display:flex;gap:8px;margin-bottom:12px;}
-.window{width:40px;height:30px;background:rgba(139,92,246,0.3);border:1px solid rgba(139,92,246,0.4);border-radius:4px;}
-.office-desks{display:flex;gap:16px;margin-bottom:8px;}
-.desk{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.monitor{width:28px;height:20px;background:rgba(108,43,217,0.4);border:1px solid var(--primary-light);border-radius:3px;}
-.person{width:14px;height:14px;background:rgba(245,158,11,0.6);border-radius:50%;}
-.office-floor{width:100%;height:4px;background:rgba(108,43,217,0.2);border-radius:2px;}
-.office-label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:var(--white);padding:0.2rem 0.8rem;border-radius:20px;font-size:0.72rem;font-weight:700;white-space:nowrap;}
-.small-office{padding:0.5rem;}
-.india{background:linear-gradient(135deg,#0a1f0a,#0f3010);}
-.uae{background:linear-gradient(135deg,#1a1000,#2d1f00);}
-.mini-office{display:flex;flex-direction:column;align-items:center;gap:6px;}
-.mini-windows{display:flex;gap:6px;}
-.mw{width:24px;height:18px;background:rgba(16,185,129,0.3);border:1px solid rgba(16,185,129,0.4);border-radius:3px;}
-.mini-people{font-size:1.5rem;}
-.small-lbl{font-size:0.68rem;}
-
-/* WHAT WE DO */
-.wwd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-width:1100px;margin:0 auto;}
-.wwd-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all 0.2s;}
-.wwd-card:hover{transform:translateY(-3px);border-color:rgba(108,43,217,0.4);}
-.wwd-icon{font-size:2rem;margin-bottom:0.8rem;}
-.wwd-title{font-size:0.95rem;font-weight:800;color:var(--white);margin-bottom:0.5rem;}
-.wwd-desc{font-size:0.8rem;color:var(--muted);line-height:1.6;}
-
-@media(max-width:900px){
-  .about-top{grid-template-columns:1fr;}
-  .wwd-grid{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:600px){
-  .wwd-grid{grid-template-columns:1fr;}
-  .about-founded{gap:1rem;}
-}
-
-/* ATS SECTION */
-.ats-section{background:linear-gradient(180deg,var(--dark) 0%,var(--darker) 100%);}
-.ats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:1100px;margin:0 auto;}
-.ats-card-full{grid-column:1/-1;}
-.ats-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:border-color 0.2s;}
-.ats-card:hover{border-color:rgba(108,43,217,0.4);}
-.ats-card-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
-.ats-icon{font-size:2.2rem;flex-shrink:0;}
-.ats-card-title{font-size:1.05rem;font-weight:800;color:var(--white);}
-.ats-card-sub{font-size:0.8rem;color:var(--muted);margin-top:0.2rem;}
-.ats-free-badge{margin-left:auto;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--accent2);padding:0.3rem 0.8rem;border-radius:20px;font-size:0.72rem;font-weight:700;white-space:nowrap;}
-.ats-label{display:block;font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.05em;}
-.ats-textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--white);font-size:0.88rem;font-family:inherit;outline:none;resize:vertical;min-height:130px;transition:border-color 0.2s;}
-.ats-textarea:focus{border-color:var(--primary-light);}
-.ats-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:0.7rem 1rem;color:var(--white);font-size:0.88rem;font-family:inherit;outline:none;margin-bottom:0.75rem;transition:border-color 0.2s;}
-.ats-input:focus{border-color:var(--primary-light);}
-.ats-btn{width:100%;margin-top:1rem;padding:0.85rem;border-radius:8px;border:none;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;transition:all 0.2s;}
-.ats-btn.green{background:linear-gradient(135deg,#065f46,var(--accent2));}
-.ats-btn.purple{background:linear-gradient(135deg,#4c1d95,var(--primary-light));}
-.ats-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(108,43,217,0.3);}
-.ats-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-.ats-result{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-top:1rem;font-size:0.85rem;line-height:1.7;color:var(--text);white-space:pre-wrap;}
-.ats-builder-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
-.ats-score{font-size:3rem;font-weight:800;text-align:center;margin:0.5rem 0;}
-.score-high{color:var(--accent2);}
-.score-mid{color:var(--accent);}
-.score-low{color:#f87171;}
-@media(max-width:768px){
-  .ats-grid{grid-template-columns:1fr;}
-  .ats-builder-grid{grid-template-columns:1fr;}
-  .ats-card-full{grid-column:1;}
 }
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
@@ -341,61 +220,26 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
   <div class="modal">
     <button class="modal-close" onclick="closeModal('authModal')">✕</button>
     <h2>Welcome to Zelvoqua</h2>
-    <p>Select how you want to continue</p>
-
-    <!-- USER TYPE SELECTION -->
-    <div id="userTypeSelect">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
-        <button class="user-type-btn active" id="btnStudent" onclick="selectUserType('student')">
-          <span class="type-icon">🎓</span>
-          Student
-          <div style="font-size:0.7rem;color:var(--muted);font-weight:400;margin-top:0.2rem">Learn & Grow</div>
-        </button>
-        <button class="user-type-btn" id="btnAdmin" onclick="selectUserType('admin')">
-          <span class="type-icon">🔐</span>
-          Admin
-          <div style="font-size:0.7rem;color:var(--muted);font-weight:400;margin-top:0.2rem">Manage Platform</div>
-        </button>
-      </div>
+    <p>Start your learning journey today</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+      <button class="modal-tab" onclick="switchTab('signup')">Sign Up</button>
     </div>
-
-    <!-- STUDENT SECTION -->
-    <div id="studentSection">
-      <div class="modal-tabs">
-        <button class="modal-tab active" onclick="switchTab('login')">Login</button>
-        <button class="modal-tab" onclick="switchTab('signup')">Sign Up</button>
-      </div>
-      <div id="loginForm">
-        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-        <div class="form-group">
-          <label>Access Code <span style="color:var(--muted);font-weight:400;text-transform:none">(optional — if you have one)</span></label>
-          <input type="text" id="loginAccessCode" placeholder="e.g. ZEL-2025-XXXX" style="letter-spacing:0.08em;text-transform:uppercase">
-        </div>
-        <div class="form-error" id="loginError"></div>
-        <button class="btn-submit" onclick="handleLogin()">🎓 Login →</button>
-        <div class="form-success" id="loginSuccess"></div>
-      </div>
-      <div id="signupForm" style="display:none">
-        <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
-        <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 6 characters"></div>
-        <div class="form-error" id="signupError"></div>
-        <button class="btn-submit" onclick="handleSignup()">Create Student Account →</button>
-        <div class="form-success" id="signupSuccess"></div>
-      </div>
+    <div id="loginForm">
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+      <div class="form-error" id="loginError"></div>
+      <button class="btn-submit" onclick="handleLogin()">Login →</button>
+      <div class="form-success" id="loginSuccess"></div>
     </div>
-
-    <!-- ADMIN SECTION -->
-    <div id="adminSection" style="display:none">
-      <div class="admin-only-badge">🔒 Authorized Personnel Only</div>
-      <div class="form-group"><label>Admin Email</label><input type="email" id="adminLoginEmail" placeholder="admin@zelvoqua.com"></div>
-      <div class="form-group"><label>Admin Password</label><input type="password" id="adminLoginPassword" placeholder="••••••••"></div>
-      <div class="form-error" id="adminLoginError"></div>
-      <button class="btn-submit admin-btn" onclick="handleAdminLogin()">🔐 Admin Login →</button>
-      <div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:0.8rem">Admin access is restricted. Contact support if locked out.</div>
+    <div id="signupForm" style="display:none">
+      <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 6 characters"></div>
+      <div class="form-error" id="signupError"></div>
+      <button class="btn-submit" onclick="handleSignup()">Create Account →</button>
+      <div class="form-success" id="signupSuccess"></div>
     </div>
-
   </div>
 </div>
 
@@ -426,9 +270,10 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <li><a href="#testimonials">Reviews</a></li>
   </ul>
   <div class="nav-actions">
-    <button class="btn-outline" onclick="openModal('authModal')" id="loginBtn">Login</button>
-    <button class="btn-primary" onclick="openModal('authModal')" id="signupBtn">Enroll Free</button>
-    <button id="userMenuBtn" onclick="handleLogout()">👤 <span id="userNameNav">User</span> · Logout</button>
+    <button class="btn-outline" onclick="openModal('authModal')" id="loginBtn">Student Login</button>
+    <a class="btn-outline" href="admin.html">Admin Login</a>
+    <button class="btn-primary" onclick="openModal('authModal')" id="signupBtn">Student Sign Up</button>
+    <button id="userMenuBtn">👤 <span id="userNameNav">My Dashboard</span></button>
   </div>
 </nav>
 
@@ -442,11 +287,26 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
   <p>Master in-demand skills with live mentorship, real projects, and guaranteed internships.</p>
   <div class="hero-cta">
     <button class="btn-large primary" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🚀 Explore Courses</button>
-    <button class="btn-large ghost">▶ Watch Demo</button>
+    <a href="admin.html" class="btn-large ghost">Admin Login</a>
   </div>
-  <div class="hero-cta2">
-    <button class="btn-program" onclick="document.getElementById('coursesSection').scrollIntoView({behavior:'smooth'})">🎯 Explore Programs</button>
-    <button class="btn-internship" onclick="window.location.href='internships.html'">💼 Apply for Internship</button>
+  <div class="access-panel reveal">
+    <div class="access-card">
+      <div class="access-label">Student Access</div>
+      <h3>Student login and signup yahin se</h3>
+      <p>Students account bana sakte hain, login kar sakte hain, courses dekh sakte hain aur dashboard open kar sakte hain.</p>
+      <div class="access-actions">
+        <button class="btn-primary" onclick="openModal('authModal')">Student Login</button>
+        <button class="btn-outline" onclick="openModal('authModal')">Student Sign Up</button>
+      </div>
+    </div>
+    <div class="access-card">
+      <div class="access-label">Admin Access</div>
+      <h3>Admin panel direct open karo</h3>
+      <p>Admins ke liye alag secure route hai jahan se courses, students aur enrollments manage honge.</p>
+      <div class="access-actions">
+        <a class="btn-primary" href="admin.html">Admin Login</a>
+      </div>
+    </div>
   </div>
   <div class="hero-trust">
     <span class="trust-item">✅ Free Certificate</span>
@@ -456,160 +316,14 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
   </div>
 </section>
 
-<!-- ABOUT SECTION -->
-<section class="about-section" id="about">
-  <div class="about-top">
-    <div class="about-text reveal">
-      <div class="section-tag">Who We Are</div>
-      <h2 class="about-title">Transforming Careers <br><span class="highlight">Across the Globe</span></h2>
-      <p class="about-desc">Founded in 2021 and headquartered in <strong>Singapore</strong>, Zelvoqua EdTech operates across <strong>India, UAE, UK, and Southeast Asia</strong> — helping students and professionals unlock real-world career opportunities through structured internships, live mentorship, and industry-grade training.</p>
-      <p class="about-desc">We bridge the gap between theoretical education and practical industry experience. Our programs are designed by senior professionals from companies like Deloitte, McKinsey, Google, and HDFC — ensuring every student gets world-class guidance.</p>
-      <div class="about-tags" id="aboutTags">
-        <div class="region-tag-wrap">
-          <span class="about-tag clickable-tag" onclick="toggleRegion('sg', this)">🇸🇬 Singapore HQ ▾</span>
-          <div class="region-dropdown" id="region-sg">
-            <div class="rd-title">🇸🇬 Singapore Partners</div>
-            <div class="rd-item"><span class="rd-logo">🏦</span><div><div class="rd-name">DBS Bank</div><div class="rd-desc">Banking & Finance Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">Deloitte SEA</div><div class="rd-desc">Consulting & Talent Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">SkillsFuture SG</div><div class="rd-desc">Govt. Training Alliance</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🚀</span><div><div class="rd-name">NTU Career Hub</div><div class="rd-desc">Campus Placement Partner</div></div></div>
-          </div>
-        </div>
-        <div class="region-tag-wrap">
-          <span class="about-tag clickable-tag" onclick="toggleRegion('in', this)">🇮🇳 India Operations ▾</span>
-          <div class="region-dropdown" id="region-in">
-            <div class="rd-title">🇮🇳 India Partners</div>
-            <div class="rd-item"><span class="rd-logo">🏢</span><div><div class="rd-name">HDFC Bank</div><div class="rd-desc">Finance & Internship Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">💡</span><div><div class="rd-name">Infosys BPM</div><div class="rd-desc">Tech Talent Alliance</div></div></div>
-            <div class="rd-item"><span class="rd-logo">📊</span><div><div class="rd-name">ICICI Securities</div><div class="rd-desc">Finance Training Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🎓</span><div><div class="rd-name">NIIT Foundation</div><div class="rd-desc">Skilling & Certification</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🌟</span><div><div class="rd-name">Wipro TalentNext</div><div class="rd-desc">Corporate HR Partner</div></div></div>
-          </div>
-        </div>
-        <div class="region-tag-wrap">
-          <span class="about-tag clickable-tag" onclick="toggleRegion('ae', this)">🇦🇪 UAE Office ▾</span>
-          <div class="region-dropdown" id="region-ae">
-            <div class="rd-title">🇦🇪 UAE Partners</div>
-            <div class="rd-item"><span class="rd-logo">🏦</span><div><div class="rd-name">Emirates NBD</div><div class="rd-desc">Banking & Finance Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">Dubai Future Academy</div><div class="rd-desc">Govt. Skills Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">PwC Middle East</div><div class="rd-desc">Consulting Alliance</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🚀</span><div><div class="rd-name">DIFC FinTech Hive</div><div class="rd-desc">FinTech Ecosystem Partner</div></div></div>
-          </div>
-        </div>
-        <div class="region-tag-wrap">
-          <span class="about-tag clickable-tag" onclick="toggleRegion('uk', this)">🇬🇧 UK Partner ▾</span>
-          <div class="region-dropdown" id="region-uk">
-            <div class="rd-title">🇬🇧 UK Partners</div>
-            <div class="rd-item"><span class="rd-logo">🎓</span><div><div class="rd-name">London Business School</div><div class="rd-desc">Academic Alliance</div></div></div>
-            <div class="rd-item"><span class="rd-logo">💼</span><div><div class="rd-name">KPMG UK</div><div class="rd-desc">Finance & Consulting Partner</div></div></div>
-            <div class="rd-item"><span class="rd-logo">🌐</span><div><div class="rd-name">British Council</div><div class="rd-desc">Education & Skills Partner</div></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="about-founded">
-        <div class="founded-item"><span class="founded-val">2021</span><span class="founded-lbl">Founded</span></div>
-        <div class="founded-item"><span class="founded-val">12+</span><span class="founded-lbl">Countries</span></div>
-        <div class="founded-item"><span class="founded-val">200+</span><span class="founded-lbl">Industry Partners</span></div>
-        <div class="founded-item"><span class="founded-val">35+</span><span class="founded-lbl">Programs</span></div>
-      </div>
-    </div>
-
-    <div class="about-images reveal">
-      <div class="img-grid">
-
-        <!-- SINGAPORE HQ -->
-        <div class="img-card img-main" style="position:relative;overflow:hidden;border-radius:12px;">
-          <img src="singapore.jpg" alt="Zelvoqua Singapore HQ" style="width:100%;height:260px;object-fit:cover;display:block;">
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,5,30,0.75) 0%,transparent 50%);">
-            <div style="position:absolute;top:12px;left:12px;background:rgba(108,43,217,0.85);color:white;padding:0.3rem 1rem;border-radius:20px;font-size:0.82rem;font-weight:700;backdrop-filter:blur(4px);">🇸🇬 Singapore HQ</div>
-            <div style="position:absolute;bottom:16px;left:16px;">
-              <div style="font-size:1rem;font-weight:800;color:white;">Zelvoqua Global HQ</div>
-              <div style="font-size:0.75rem;color:rgba(255,255,255,0.75);">One Raffles Place, Singapore 048616</div>
-            </div>
-            <div style="position:absolute;bottom:16px;right:16px;background:rgba(108,43,217,0.8);color:white;padding:0.25rem 0.8rem;border-radius:8px;font-size:0.72rem;font-weight:700;">Est. 2021</div>
-          </div>
-        </div>
-
-        <!-- INDIA OFFICE -->
-        <div class="img-card img-small" style="position:relative;overflow:hidden;border-radius:12px;">
-          <img src="india.jpg" alt="Zelvoqua India Office" style="width:100%;height:160px;object-fit:cover;display:block;object-position:center top;">
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(5,20,10,0.8) 0%,transparent 55%);">
-            <div style="position:absolute;top:10px;left:10px;background:rgba(16,185,129,0.85);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-size:0.75rem;font-weight:700;">🇮🇳 India Office</div>
-            <div style="position:absolute;bottom:12px;left:12px;">
-              <div style="font-size:0.88rem;font-weight:800;color:white;">Zelvoqua India</div>
-              <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Gurugram, Haryana</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- UAE OFFICE -->
-        <div class="img-card img-small" style="position:relative;overflow:hidden;border-radius:12px;">
-          <img src="uae.jpg" alt="Zelvoqua UAE Office" style="width:100%;height:160px;object-fit:cover;display:block;object-position:center top;">
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(30,20,0,0.75) 0%,transparent 55%);">
-            <div style="position:absolute;top:10px;left:10px;background:rgba(212,160,23,0.85);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-size:0.75rem;font-weight:700;">🇦🇪 UAE Office</div>
-            <div style="position:absolute;bottom:12px;left:12px;">
-              <div style="font-size:0.88rem;font-weight:800;color:white;">Zelvoqua UAE</div>
-              <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Dubai Media City, UAE</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- WHAT WE DO -->
-  <div class="what-we-do reveal">
-    <div class="section-tag" style="text-align:center;margin-bottom:1rem">What We Do</div>
-    <div class="wwd-grid">
-      <div class="wwd-card">
-        <div class="wwd-icon">🎓</div>
-        <div class="wwd-title">Industry Internships</div>
-        <div class="wwd-desc">Structured 45–90 day internship programs across Finance, Marketing, HR, Management and Tech domains.</div>
-      </div>
-      <div class="wwd-card">
-        <div class="wwd-icon">🧑‍🏫</div>
-        <div class="wwd-title">Live Mentorship</div>
-        <div class="wwd-desc">1-on-1 sessions with senior professionals from top MNCs. Real guidance, not recorded videos.</div>
-      </div>
-      <div class="wwd-card">
-        <div class="wwd-icon">📜</div>
-        <div class="wwd-title">Verified Certificates</div>
-        <div class="wwd-desc">Blockchain-verified certificates recognised by 200+ hiring partners across India and abroad.</div>
-      </div>
-      <div class="wwd-card">
-        <div class="wwd-icon">💼</div>
-        <div class="wwd-title">Placement Support</div>
-        <div class="wwd-desc">Resume building, mock interviews and direct referrals to our hiring partner network.</div>
-      </div>
-      <div class="wwd-card">
-        <div class="wwd-icon">🤖</div>
-        <div class="wwd-title">AI Career Tools</div>
-        <div class="wwd-desc">Free ATS checker, resume builder and career advisor powered by advanced AI technology.</div>
-      </div>
-      <div class="wwd-card">
-        <div class="wwd-icon">🌍</div>
-        <div class="wwd-title">Global Network</div>
-        <div class="wwd-desc">Access to a 10,000+ alumni network across 12 countries for referrals, collaboration and growth.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- STATS -->
 <div class="stats">
   <div class="stats-grid">
-    <div class="stat-box"><div class="stat-num" id="statStudents">10<span>K+</span></div><div class="stat-lbl">Students Enrolled</div></div>
+    <div class="stat-box"><div class="stat-num" id="statStudents">0<span>K+</span></div><div class="stat-lbl">Students Enrolled</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">50<span>+</span></div><div class="stat-lbl">Expert Mentors</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">95<span>%</span></div><div class="stat-lbl">Placement Rate</div></div>
     <div class="stat-box stat-divider"><div class="stat-num">4.9<span>★</span></div><div class="stat-lbl">Average Rating</div></div>
   </div>
-</div>
-
-<!-- LIVE ENROLLMENTS TICKER -->
-<div class="live-ticker-wrap">
-  <div class="ticker-label"><span class="live-dot"></span> Live Activity</div>
-  <div class="ticker-track" id="tickerTrack"></div>
 </div>
 
 <!-- COURSES -->
@@ -619,23 +333,13 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <h2 class="section-title">Courses Built for the Real World</h2>
     <p class="section-sub">Live classes, real projects, and mentorship from industry professionals.</p>
   </div>
-
-  <!-- MAIN TABS -->
-  <div class="courses-tabs reveal" id="mainTabs">
-    <button class="tab active" onclick="selectMainTab('all', this)">All</button>
-    <button class="tab" onclick="selectMainTab('Marketing', this)">📣 Marketing</button>
-    <button class="tab" onclick="selectMainTab('Finance', this)">💰 Finance</button>
-    <button class="tab" onclick="selectMainTab('Management', this)">💼 Management</button>
-    <button class="tab" onclick="selectMainTab('HR', this)">👥 HR</button>
-    <button class="tab" onclick="selectMainTab('Supply Chain', this)">🚚 Supply Chain</button>
-    <button class="tab" onclick="selectMainTab('Tech', this)">💻 Tech</button>
+  <div class="courses-tabs reveal">
+    <button class="tab active" onclick="filterCourses('all')">All Courses</button>
+    <button class="tab" onclick="filterCourses('Web Development')">Web Dev</button>
+    <button class="tab" onclick="filterCourses('Data Science')">Data Science</button>
+    <button class="tab" onclick="filterCourses('Design')">Design</button>
+    <button class="tab" onclick="filterCourses('Marketing')">Marketing</button>
   </div>
-
-  <!-- SUB TABS -->
-  <div class="sub-tabs" id="subTabs" style="display:none;">
-    <button class="sub-tab active" id="subAll" onclick="filterCourses('__all__')">All</button>
-  </div>
-
   <div id="coursesContainer">
     <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">Loading courses...</div>
   </div>
@@ -669,6 +373,7 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Zero coding to ₹7 LPA in 4 months. The mentors are incredible and projects genuinely challenging."</p><div class="testi-author"><div class="testi-ava">😊</div><div><div class="testi-name">Rohit Patel</div><div class="testi-pos">Junior Developer @ TCS</div></div></div></div>
     <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"I started earning ₹15,000/month during the course itself! Got 3 interview calls in my first week."</p><div class="testi-author"><div class="testi-ava">👩</div><div><div class="testi-name">Ananya Singh</div><div class="testi-pos">Data Analyst @ Infosys</div></div></div></div>
     <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"Best ₹499 I've ever spent. Live sessions with engineers are unbelievably valuable."</p><div class="testi-author"><div class="testi-ava">🧑</div><div><div class="testi-name">Vikram Nair</div><div class="testi-pos">SDE-1 @ Wipro</div></div></div></div>
+    <div class="testi-card reveal"><div class="testi-stars">★★★★★</div><p class="testi-quote">"The roadmap was clear, the mentors were available, and I finally had enough confidence to apply for internships."</p><div class="testi-author"><div class="testi-ava">👨</div><div><div class="testi-name">Aman Verma</div><div class="testi-pos">Frontend Intern @ Accenture</div></div></div></div>
   </div>
 </section>
 
@@ -680,89 +385,6 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
     <button class="btn-white" onclick="openModal('authModal')">Enroll for Free</button>
   </div>
 </div>
-
-<!-- ATS CHECKER SECTION -->
-<section class="section ats-section" id="atsSection">
-  <div class="section-header reveal">
-    <div class="section-tag">Free AI Tools</div>
-    <h2 class="section-title">AI-Powered Career Tools</h2>
-    <p class="section-sub">Get your resume ATS-ready and land your dream internship faster.</p>
-  </div>
-
-  <div class="ats-grid reveal">
-    <!-- ATS CHECKER CARD -->
-    <div class="ats-card" id="atsCheckerCard">
-      <div class="ats-card-header">
-        <span class="ats-icon">🎯</span>
-        <div>
-          <div class="ats-card-title">ATS Score Checker</div>
-          <div class="ats-card-sub">Check how well your resume passes ATS filters</div>
-        </div>
-      </div>
-      <div class="ats-input-area">
-        <label class="ats-label">Paste your Resume Text</label>
-        <textarea id="resumeText" class="ats-textarea" placeholder="Paste your full resume text here..."></textarea>
-        <label class="ats-label" style="margin-top:0.75rem">Job Description (optional but recommended)</label>
-        <textarea id="jobDesc" class="ats-textarea" style="height:80px" placeholder="Paste the job description to get targeted ATS score..."></textarea>
-        <button class="ats-btn" onclick="checkATS()">
-          <span id="atsBtnText">🔍 Check ATS Score</span>
-        </button>
-      </div>
-      <div class="ats-result" id="atsResult" style="display:none"></div>
-    </div>
-
-    <!-- RESUME CHECKER CARD -->
-    <div class="ats-card" id="resumeCheckerCard">
-      <div class="ats-card-header">
-        <span class="ats-icon">📋</span>
-        <div>
-          <div class="ats-card-title">Resume Reviewer</div>
-          <div class="ats-card-sub">Get detailed feedback to improve your resume</div>
-        </div>
-      </div>
-      <div class="ats-input-area">
-        <label class="ats-label">Paste your Resume Text</label>
-        <textarea id="resumeReviewText" class="ats-textarea" placeholder="Paste your full resume text here..."></textarea>
-        <label class="ats-label" style="margin-top:0.75rem">Target Role</label>
-        <input type="text" id="targetRole" class="ats-input" placeholder="e.g. Digital Marketing Intern, HR Executive...">
-        <button class="ats-btn green" onclick="reviewResume()">
-          <span id="reviewBtnText">✨ Review My Resume</span>
-        </button>
-      </div>
-      <div class="ats-result" id="reviewResult" style="display:none"></div>
-    </div>
-
-    <!-- RESUME BUILDER CARD -->
-    <div class="ats-card ats-card-full" id="resumeBuilderCard">
-      <div class="ats-card-header">
-        <span class="ats-icon">📝</span>
-        <div>
-          <div class="ats-card-title">AI Resume Builder</div>
-          <div class="ats-card-sub">Generate a professional resume in seconds</div>
-        </div>
-        <span class="ats-free-badge">FREE</span>
-      </div>
-      <div class="ats-builder-grid">
-        <div class="ats-input-area">
-          <label class="ats-label">Full Name</label>
-          <input type="text" id="rbName" class="ats-input" placeholder="Rahul Sharma">
-          <label class="ats-label">Target Role</label>
-          <input type="text" id="rbRole" class="ats-input" placeholder="Digital Marketing Intern">
-          <label class="ats-label">Skills (comma separated)</label>
-          <input type="text" id="rbSkills" class="ats-input" placeholder="SEO, Google Ads, Content Writing, Canva">
-          <label class="ats-label">Education</label>
-          <input type="text" id="rbEducation" class="ats-input" placeholder="B.Com, Delhi University, 2024">
-          <label class="ats-label">Experience / Projects</label>
-          <textarea id="rbExperience" class="ats-textarea" style="height:80px" placeholder="Any internships, projects or achievements..."></textarea>
-          <button class="ats-btn purple" onclick="buildResume()">
-            <span id="buildBtnText">🚀 Build My Resume</span>
-          </button>
-        </div>
-        <div class="ats-result" id="buildResult" style="display:none;flex:1"></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- FOOTER -->
 <footer>
@@ -787,7 +409,10 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 <div class="dashboard-section" id="dashboardSection">
   <div class="dash-header">
     <div class="dash-title">👋 My Dashboard</div>
-    <button class="btn-primary" onclick="showHome()">← Browse Courses</button>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+      <button class="btn-outline" onclick="handleLogout()">Logout</button>
+      <button class="btn-primary" onclick="showHome()">← Browse Courses</button>
+    </div>
   </div>
   <div class="section-tag" style="margin-bottom:1.5rem">My Enrolled Courses</div>
   <div class="enrolled-grid" id="enrolledCoursesGrid">
@@ -802,90 +427,9 @@ footer{background:var(--darker);border-top:1px solid var(--border);padding:3.5re
 // ─── SUPABASE INIT ───
 const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const RAZORPAY_KEY = 'rzp_test_YourKeyHere';
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// ─── EMAIL SYSTEM (RESEND) ───
-const RESEND_KEY = 're_a2CBo11s_FNzzQnhf58tJtoKiuzFCnAHj';
-
-async function sendEmail(to, toName, type, data={}){
-  const templates = {
-    welcome: {
-      subject: '🎉 Welcome to Zelvoqua — Your Career Journey Begins!',
-      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
-  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1><p style="color:#6b7280;font-size:13px;margin:4px 0 0;">Bridge the Gap Between Learning & Earning</p></div>
-  <div style="background:#1a0d3a;border:1px solid rgba(139,92,246,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
-    <h2 style="color:white;font-size:22px;margin:0 0 12px;">Welcome aboard, ${toName}! 🚀</h2>
-    <p style="color:#9ca3af;font-size:15px;line-height:1.7;margin:0 0 24px;">You've just taken the first step toward building a career that matters. At Zelvoqua, we don't just teach — we build real professionals.</p>
-    <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:20px;margin-bottom:24px;">
-      <p style="color:#8b5cf6;font-weight:700;font-size:13px;margin:0 0 12px;text-transform:uppercase;">What's Next?</p>
-      <p style="color:#e5e7eb;font-size:14px;margin:0 0 8px;">📚 Browse 35+ internship programs</p>
-      <p style="color:#e5e7eb;font-size:14px;margin:0 0 8px;">🎯 Use our free AI ATS Resume Checker</p>
-      <p style="color:#e5e7eb;font-size:14px;margin:0;">💼 Enroll in your dream program today</p>
-    </div>
-    <a href="https://lttilepals.github.io/zelvoqua/" style="display:block;text-align:center;background:linear-gradient(135deg,#6c2bd9,#8b5cf6);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Explore Programs →</a>
-  </div>
-  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd. | Singapore HQ</p>
-</div></body></html>`
-    },
-    enrollment: {
-      subject: `✅ Enrollment Confirmed — ${data.courseName||''}`,
-      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
-  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1></div>
-  <div style="background:#1a0d3a;border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
-    <div style="text-align:center;margin-bottom:24px;"><span style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:50px;padding:8px 20px;color:#10b981;font-weight:700;font-size:13px;">✅ ENROLLMENT CONFIRMED</span></div>
-    <h2 style="color:white;font-size:20px;margin:0 0 8px;text-align:center;">You're In, ${toName}!</h2>
-    <p style="color:#9ca3af;font-size:14px;text-align:center;margin:0 0 28px;">Your internship journey starts now.</p>
-    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:24px;">
-      <p style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">Enrolled Program</p>
-      <p style="color:white;font-size:18px;font-weight:800;margin:0 0 16px;">${data.courseName||''}</p>
-      <div style="display:flex;gap:16px;">
-        <div style="flex:1;background:rgba(108,43,217,0.1);border-radius:8px;padding:12px;text-align:center;"><div style="color:#8b5cf6;font-weight:800;font-size:16px;">₹${data.price||''}</div><div style="color:#6b7280;font-size:11px;margin-top:2px;">Amount Paid</div></div>
-        <div style="flex:1;background:rgba(16,185,129,0.1);border-radius:8px;padding:12px;text-align:center;"><div style="color:#10b981;font-weight:800;font-size:16px;">${data.duration||''}</div><div style="color:#6b7280;font-size:11px;margin-top:2px;">Duration</div></div>
-      </div>
-    </div>
-    <a href="https://lttilepals.github.io/zelvoqua/student-dashboard.html" style="display:block;text-align:center;background:linear-gradient(135deg,#065f46,#10b981);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Go to My Dashboard →</a>
-  </div>
-  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd.</p>
-</div></body></html>`
-    },
-    accessCode: {
-      subject: `🎟️ Your Zelvoqua Access Code`,
-      html: `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:600px;margin:0 auto;padding:40px 20px;">
-  <div style="text-align:center;margin-bottom:32px;"><h1 style="color:#8b5cf6;font-size:28px;margin:0;">Zelvo<span style="color:white;">qua</span></h1></div>
-  <div style="background:#1a0d3a;border:1px solid rgba(245,158,11,0.3);border-radius:16px;padding:40px;margin-bottom:24px;">
-    <h2 style="color:white;font-size:20px;margin:0 0 8px;">Hey ${toName}, here's your access code! 🎟️</h2>
-    <p style="color:#9ca3af;font-size:14px;margin:0 0 28px;">Use this to unlock <strong style="color:white;">${data.courseName||'your course'}</strong></p>
-    <div style="background:rgba(245,158,11,0.08);border:2px dashed rgba(245,158,11,0.4);border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-      <p style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">Your Access Code</p>
-      <p style="color:#f59e0b;font-size:28px;font-weight:900;letter-spacing:0.15em;margin:0;font-family:monospace;">${data.code||''}</p>
-    </div>
-    <p style="color:#9ca3af;font-size:13px;line-height:1.8;margin:0 0 24px;">1️⃣ Login to Zelvoqua &nbsp; 2️⃣ Go to Dashboard &nbsp; 3️⃣ Enter code to unlock!</p>
-    <a href="https://lttilepals.github.io/zelvoqua/" style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,#f59e0b);color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;">Use My Code Now →</a>
-  </div>
-  <p style="color:#4b5563;font-size:12px;text-align:center;margin:0;">© 2025 Zelvoqua EdTech Pvt. Ltd.</p>
-</div></body></html>`
-    }
-  };
-
-  const tpl = templates[type];
-  if(!tpl) return;
-  try {
-    await fetch('https://api.resend.com/emails', {
-      method:'POST',
-      headers:{'Authorization':`Bearer ${RESEND_KEY}`,'Content-Type':'application/json'},
-      body: JSON.stringify({
-        from:'Zelvoqua EdTech <onboarding@resend.dev>',
-        to:[to],
-        subject: tpl.subject,
-        html: tpl.html
-      })
-    });
-  } catch(e){ console.log('Email error:',e); }
-}
 
 let currentUser = null;
 let allCourses = [];
@@ -920,197 +464,6 @@ function drawBlur(){
 }
 drawBlur();
 
-// ─── LIVE ENROLLMENT TICKER ───
-const tickerData=[
-  {name:'Rahul S.',course:'Digital Marketing',time:'2 min ago',emoji:'📣'},
-  {name:'Priya M.',course:'Financial Analysis',time:'5 min ago',emoji:'📈'},
-  {name:'Arjun K.',course:'HR Management',time:'8 min ago',emoji:'💼'},
-  {name:'Sneha R.',course:'Social Media Management',time:'12 min ago',emoji:'📱'},
-  {name:'Vikram T.',course:'Market Research',time:'15 min ago',emoji:'🔍'},
-  {name:'Ananya P.',course:'Finance Fundamentals',time:'18 min ago',emoji:'💰'},
-  {name:'Rohan D.',course:'Operations Management',time:'22 min ago',emoji:'⚙️'},
-  {name:'Meera J.',course:'Full Stack Web Dev',time:'25 min ago',emoji:'💻'},
-  {name:'Karan B.',course:'Machine Learning & AI',time:'30 min ago',emoji:'🤖'},
-  {name:'Divya N.',course:'UI/UX Design',time:'35 min ago',emoji:'🎨'},
-  {name:'Aditya V.',course:'Data Science',time:'40 min ago',emoji:'📊'},
-  {name:'Pooja S.',course:'Digital Marketing',time:'45 min ago',emoji:'📣'},
-  {name:'Nikhil R.',course:'Financial Analysis',time:'50 min ago',emoji:'📈'},
-  {name:'Simran K.',course:'HR Management',time:'55 min ago',emoji:'💼'},
-];
-
-function buildTicker(){
-  const track=document.getElementById('tickerTrack');
-  if(!track) return;
-  // Duplicate for seamless loop
-  const allItems=[...tickerData,...tickerData];
-  track.innerHTML=allItems.map(t=>{
-    const initials=t.name.split(' ').map(n=>n[0]).join('');
-    return `<div class="ticker-item">
-      <div class="t-avatar">${initials}</div>
-      <span class="t-name">${t.name}</span>
-      <span class="t-course">enrolled for ${t.emoji} ${t.course}</span>
-      <span class="t-time">· ${t.time}</span>
-    </div>`;
-  }).join('');
-}
-buildTicker();
-
-// Rotate times every 30 seconds to feel live
-setInterval(()=>{
-  tickerData.forEach((t,i)=>{ t.time = `${(i+1)*3 + Math.floor(Math.random()*3)} min ago`; });
-  buildTicker();
-}, 30000);
-
-// ─── AI ATS CHECKER ───
-async function checkATS(){
-  const resume = document.getElementById('resumeText').value.trim();
-  const jd = document.getElementById('jobDesc').value.trim();
-  if(!resume){ showToast('Please paste your resume text first!','error'); return; }
-  const btn = document.getElementById('atsBtnText');
-  btn.textContent = '⏳ Analyzing...';
-  document.querySelector('#atsCheckerCard .ats-btn').disabled = true;
-  const result = document.getElementById('atsResult');
-  result.style.display = 'block';
-  result.innerHTML = '<div style="color:var(--muted);text-align:center;padding:1rem">🤖 AI is analyzing your resume...</div>';
-  try {
-    const prompt = `You are an expert ATS (Applicant Tracking System) analyzer. Analyze this resume and give:
-
-1. ATS SCORE: X/100 (be realistic)
-2. KEY STRENGTHS (3-4 points)
-3. CRITICAL ISSUES (what ATS will reject)
-4. MISSING KEYWORDS (suggest 5-8 important keywords)
-5. QUICK FIXES (3-4 actionable improvements)
-${jd ? `\nJob Description to match against:\n${jd}` : ''}
-
-Resume:
-${resume}
-
-Format your response clearly with emojis and sections. Be specific and actionable.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user', content:prompt}]
-      })
-    });
-    const data = await response.json();
-    const text = data.content[0].text;
-    result.innerHTML = `<div style="font-size:0.88rem;line-height:1.8;white-space:pre-wrap">${text}</div>`;
-  } catch(e) {
-    result.innerHTML = '<div style="color:#f87171">Error analyzing resume. Please try again.</div>';
-  }
-  btn.textContent = '🔍 Check ATS Score';
-  document.querySelector('#atsCheckerCard .ats-btn').disabled = false;
-}
-
-// ─── AI RESUME REVIEWER ───
-async function reviewResume(){
-  const resume = document.getElementById('resumeReviewText').value.trim();
-  const role = document.getElementById('targetRole').value.trim();
-  if(!resume){ showToast('Please paste your resume text first!','error'); return; }
-  const btn = document.getElementById('reviewBtnText');
-  btn.textContent = '⏳ Reviewing...';
-  document.querySelector('#resumeCheckerCard .ats-btn').disabled = true;
-  const result = document.getElementById('reviewResult');
-  result.style.display = 'block';
-  result.innerHTML = '<div style="color:var(--muted);text-align:center;padding:1rem">✨ AI is reviewing your resume...</div>';
-  try {
-    const prompt = `You are a professional resume coach and HR expert. Review this resume${role ? ` for the role of ${role}` : ''} and provide:
-
-1. OVERALL IMPRESSION (2-3 lines)
-2. FORMAT & STRUCTURE (what works, what doesn't)
-3. CONTENT QUALITY (impact, achievements, clarity)
-4. SECTION-BY-SECTION FEEDBACK (Education, Skills, Experience, etc.)
-5. TOP 5 IMPROVEMENTS TO MAKE RIGHT NOW
-6. FINAL RATING: X/10
-
-Resume:
-${resume}
-
-Be honest, specific, and encouraging. Use emojis to make it readable.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user', content:prompt}]
-      })
-    });
-    const data = await response.json();
-    result.innerHTML = `<div style="font-size:0.88rem;line-height:1.8;white-space:pre-wrap">${data.content[0].text}</div>`;
-  } catch(e) {
-    result.innerHTML = '<div style="color:#f87171">Error reviewing resume. Please try again.</div>';
-  }
-  btn.textContent = '✨ Review My Resume';
-  document.querySelector('#resumeCheckerCard .ats-btn').disabled = false;
-}
-
-// ─── AI RESUME BUILDER ───
-async function buildResume(){
-  const name = document.getElementById('rbName').value.trim();
-  const role = document.getElementById('rbRole').value.trim();
-  const skills = document.getElementById('rbSkills').value.trim();
-  const education = document.getElementById('rbEducation').value.trim();
-  const experience = document.getElementById('rbExperience').value.trim();
-  if(!name||!role){ showToast('Please fill Name and Target Role!','error'); return; }
-  const btn = document.getElementById('buildBtnText');
-  btn.textContent = '⏳ Building...';
-  document.querySelector('#resumeBuilderCard .ats-btn').disabled = true;
-  const result = document.getElementById('buildResult');
-  result.style.display = 'block';
-  result.innerHTML = '<div style="color:var(--muted);text-align:center;padding:1rem">🚀 AI is building your resume...</div>';
-  try {
-    const prompt = `Create a professional, ATS-optimized resume for:
-Name: ${name}
-Target Role: ${role}
-Skills: ${skills||'Not provided'}
-Education: ${education||'Not provided'}
-Experience/Projects: ${experience||'Fresher'}
-
-Generate a complete, well-formatted resume with:
-- Professional Summary (3 lines)
-- Skills Section (organized by category)
-- Education Section
-- Experience/Projects Section (with bullet points using action verbs)
-- Key Achievements
-- A note at the bottom about ATS optimization tips
-
-Make it professional, impactful and ready to submit. Use clear formatting with sections.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user', content:prompt}]
-      })
-    });
-    const data = await response.json();
-    const text = data.content[0].text;
-    result.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
-        <span style="font-size:0.82rem;font-weight:700;color:var(--accent2)">✅ Resume Generated!</span>
-        <button onclick="copyResume()" style="background:var(--primary);color:white;border:none;padding:0.3rem 0.8rem;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:inherit">📋 Copy</button>
-      </div>
-      <div id="builtResumeText" style="font-size:0.82rem;line-height:1.8;white-space:pre-wrap;font-family:monospace">${text}</div>`;
-  } catch(e) {
-    result.innerHTML = '<div style="color:#f87171">Error building resume. Please try again.</div>';
-  }
-  btn.textContent = '🚀 Build My Resume';
-  document.querySelector('#resumeBuilderCard .ats-btn').disabled = false;
-}
-
-function copyResume(){
-  const text = document.getElementById('builtResumeText')?.innerText;
-  if(text){ navigator.clipboard.writeText(text); showToast('✅ Resume copied to clipboard!'); }
-}
-
 // ─── SCROLL REVEAL ───
 const revObs = new IntersectionObserver(entries=>{
   entries.forEach((e,i)=>{ if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),i*70); revObs.unobserve(e.target); } });
@@ -1128,31 +481,6 @@ function showToast(msg, type='success'){
 function openModal(id){ document.getElementById(id).classList.add('active'); }
 function closeModal(id){ document.getElementById(id).classList.remove('active'); }
 document.querySelectorAll('.modal-overlay').forEach(m=>{ m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('active'); }); });
-
-// ─── USER TYPE SELECTION ───
-function selectUserType(type){
-  document.getElementById('btnStudent').classList.toggle('active', type==='student');
-  document.getElementById('btnAdmin').classList.toggle('active', type==='admin');
-  document.getElementById('studentSection').style.display = type==='student'?'block':'none';
-  document.getElementById('adminSection').style.display = type==='admin'?'block':'none';
-  // Update modal title
-  document.querySelector('#authModal h2').textContent = type==='student' ? 'Welcome to Zelvoqua' : 'Admin Access';
-}
-
-// ─── ADMIN LOGIN FROM MAIN SITE ───
-async function handleAdminLogin(){
-  const email = document.getElementById('adminLoginEmail').value.trim();
-  const pass = document.getElementById('adminLoginPassword').value;
-  const err = document.getElementById('adminLoginError');
-  err.style.display='none';
-  if(!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
-  const {data,error} = await sb.auth.signInWithPassword({email, password:pass});
-  if(error){ err.textContent='Invalid admin credentials'; err.style.display='block'; return; }
-  // Redirect to admin panel
-  closeModal('authModal');
-  showToast('Redirecting to Admin Panel... 🔐');
-  setTimeout(()=>{ window.location.href='admin.html'; }, 1200);
-}
 
 // ─── AUTH TABS ───
 function switchTab(tab){
@@ -1173,9 +501,7 @@ async function handleSignup(){
   if(pass.length<6){ err.textContent='Password must be at least 6 characters'; err.style.display='block'; return; }
   const {data,error} = await sb.auth.signUp({ email, password:pass, options:{ data:{ full_name:name } } });
   if(error){ err.textContent=error.message; err.style.display='block'; return; }
-  // Send welcome email
-  sendEmail(email, name, 'welcome');
-  succ.textContent='✅ Account created! Check your email for a welcome message!';
+  succ.textContent='Account created successfully. You can log in now.';
   succ.style.display='block';
 }
 
@@ -1183,7 +509,6 @@ async function handleSignup(){
 async function handleLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPassword').value;
-  const accessCode=document.getElementById('loginAccessCode').value.trim().toUpperCase();
   const err=document.getElementById('loginError');
   err.style.display='none';
   if(!email||!pass){ err.textContent='Please fill all fields'; err.style.display='block'; return; }
@@ -1192,36 +517,6 @@ async function handleLogin(){
   closeModal('authModal');
   setUser(data.user);
   showToast('Welcome back! 🎉');
-
-  // ─── If access code entered at login time, verify it ───
-  if(accessCode){
-    await verifyAndEnroll(data.user, accessCode);
-    return;
-  }
-
-  // ─── Check enrollment → redirect ───
-  await redirectBasedOnEnrollment(data.user);
-}
-
-async function redirectBasedOnEnrollment(user){
-  const {data:enrollment} = await sb.from('enrollments').select('*').eq('user_id', user.id).limit(1).maybeSingle();
-  if(enrollment){
-    window.location.href='student-dashboard.html';
-  } else {
-    window.location.href='free-dashboard.html';
-  }
-}
-
-async function verifyAndEnroll(user, code){
-  const {data:codeData} = await sb.from('access_codes').select('*').eq('code', code).eq('used', false).maybeSingle();
-  if(!codeData){ showToast('❌ Invalid access code', 'error'); window.location.href='free-dashboard.html'; return; }
-  if(codeData.assigned_email && codeData.assigned_email.toLowerCase()!==user.email.toLowerCase()){
-    showToast('❌ Code not assigned to your email', 'error'); window.location.href='free-dashboard.html'; return;
-  }
-  await sb.from('enrollments').insert({ user_id:user.id, course_id:codeData.course_id, payment_status:'paid', payment_id:'ACCESS_CODE_'+code });
-  await sb.from('access_codes').update({ used:true, used_by:user.id, used_at:new Date().toISOString() }).eq('code', code);
-  showToast('🎉 Access granted! Loading your dashboard...');
-  setTimeout(()=>{ window.location.href='student-dashboard.html'; }, 1500);
 }
 
 // ─── LOGOUT ───
@@ -1250,6 +545,17 @@ async function checkSession(){
   const {data:{session}} = await sb.auth.getSession();
   if(session){ setUser(session.user); }
 }
+
+sb.auth.onAuthStateChange((_event, session) => {
+  if(session?.user){
+    setUser(session.user);
+  } else {
+    currentUser = null;
+    document.getElementById('loginBtn').style.display='inline-block';
+    document.getElementById('signupBtn').style.display='inline-block';
+    document.getElementById('userMenuBtn').style.display='none';
+  }
+});
 
 // ─── LOAD COURSES ───
 async function loadCourses(){
@@ -1319,171 +625,12 @@ function renderCourses(courses){
   document.querySelectorAll('.course-card.reveal').forEach(el=>revObs.observe(el));
 }
 
-// ─── REGION DROPDOWN ───
-function toggleRegion(id, btn){
-  const dropdown = document.getElementById('region-' + id);
-  const isOpen = dropdown.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
-  if(!isOpen){
-    dropdown.classList.add('open');
-    btn.classList.add('active');
-  }
-}
-// Close on outside click or scroll
-document.addEventListener('click', e => {
-  if(!e.target.closest('.region-tag-wrap')){
-    document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
-    document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
-  }
-});
-window.addEventListener('scroll', () => {
-  document.querySelectorAll('.region-dropdown').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.clickable-tag').forEach(t => t.classList.remove('active'));
-}, {passive:true});
-
-// ─── MAIN TAB + SUB TAB SYSTEM ───
-const subCategories = {
-  'Marketing': [
-    {label:'All Marketing', value:'Marketing'},
-    {label:'📣 Marketing Basics', value:'Marketing Internship'},
-    {label:'🌐 Digital Marketing', value:'Digital Marketing'},
-    {label:'📱 Social Media', value:'Social Media'},
-    {label:'✍️ Content Marketing', value:'Content Marketing'},
-    {label:'🔍 Market Research', value:'Market Research'},
-    {label:'📊 Marketing Management', value:'Marketing Management'},
-  ],
-  'Finance': [
-    {label:'All Finance', value:'Finance'},
-    {label:'💰 Finance Basics', value:'Finance Internship'},
-    {label:'📈 Financial Analysis', value:'Financial Analyst'},
-    {label:'📊 Equity & Stock Market', value:'Equity Research'},
-    {label:'🧮 Financial Modelling', value:'Financial Modelling'},
-    {label:'🏦 Investment Banking', value:'Investment Banking'},
-  ],
-  'Management': [
-    {label:'All Management', value:'Management'},
-    {label:'🏢 Business Management', value:'Business Management'},
-    {label:'📊 Marketing Management', value:'Marketing Management'},
-  ],
-  'HR': [
-    {label:'All HR', value:'HR'},
-    {label:'👥 HR Management', value:'Human Resource'},
-    {label:'🎯 Talent Acquisition', value:'Talent Acquisition'},
-    {label:'📉 HR Analytics', value:'HR Analytics'},
-    {label:'🤝 Employee Engagement', value:'Employee Engagement'},
-    {label:'🏗️ Strategic HR', value:'Strategic HR'},
-  ],
-  'Supply Chain': [
-    {label:'All Supply Chain', value:'Supply Chain'},
-    {label:'🚚 Supply Chain Mgmt', value:'Supply Chain Management'},
-    {label:'🚛 Logistics', value:'Logistics'},
-    {label:'🏭 Inventory & Warehouse', value:'Inventory'},
-    {label:'🤝 Procurement', value:'Procurement'},
-    {label:'📦 SC Analytics', value:'Operations & Supply Chain'},
-  ],
-  'Tech': [
-    {label:'All Tech', value:'Tech'},
-    {label:'💻 Full Stack Web Dev', value:'Web Development'},
-    {label:'🤖 ML & AI', value:'Machine Learning'},
-    {label:'📊 Data Science', value:'Data Science'},
-    {label:'🎨 UI/UX Design', value:'Design'},
-    {label:'☁️ Cloud & DevOps', value:'Cloud'},
-  ],
-};
-
-function selectMainTab(category, btn){
-  document.querySelectorAll('#mainTabs .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  const subTabsEl = document.getElementById('subTabs');
-  if(category === 'all'){
-    subTabsEl.style.display='none';
-    filterCourses('all');
-    return;
-  }
-  const subs = subCategories[category]||[];
-  subTabsEl.innerHTML = subs.map((s,i)=>
-    `<button class="sub-tab ${i===0?'active':''}" onclick="selectSubTab('${s.value}', this)">${s.label}</button>`
-  ).join('');
-  subTabsEl.style.display='flex';
-  filterByMain(category);
-}
-
-function selectSubTab(value, btn){
-  document.querySelectorAll('#subTabs .sub-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  if(['Marketing','Finance','Management','HR','Supply Chain','Tech'].includes(value)){ filterByMain(value); return; }
-  const filtered = allCourses.filter(c=>
-    c.title.toLowerCase().includes(value.toLowerCase()) ||
-    c.category.toLowerCase().includes(value.toLowerCase())
-  );
-  renderCourses(filtered.length ? filtered : allCourses);
-}
-
-function filterByMain(category){
-  let filtered;
-  if(category==='Tech'){
-    filtered=allCourses.filter(c=>['Web Development','Data Science','Design'].includes(c.category)||c.title.includes('Machine')||c.title.includes('Cloud'));
-  } else {
-    filtered=allCourses.filter(c=>c.category===category);
-  }
-  renderCourses(filtered);
-}
-
 // ─── FILTER COURSES ───
 function filterCourses(cat){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(event && event.target) event.target.classList.add('active');
+  event.target.classList.add('active');
   const filtered = cat==='all' ? allCourses : allCourses.filter(c=>c.category===cat);
   renderCourses(filtered);
-}
-
-function filterByMain(category){
-  let filtered;
-  if(category==='Tech'){
-    filtered=allCourses.filter(c=>['Web Development','Data Science','Design'].includes(c.category)||c.title.includes('Machine')||c.title.includes('Cloud'));
-  } else {
-    filtered=allCourses.filter(c=>c.category===category);
-  }
-  if(!filtered.length){
-    showComingSoon(category);
-  } else {
-    renderCourses(filtered);
-  }
-}
-
-function selectSubTab(value, btn){
-  document.querySelectorAll('#subTabs .sub-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  if(['Marketing','Finance','Management','HR','Supply Chain','Tech'].includes(value)){
-    filterByMain(value); return;
-  }
-  const filtered = allCourses.filter(c=>
-    c.title.toLowerCase().includes(value.toLowerCase()) ||
-    c.category.toLowerCase().includes(value.toLowerCase())
-  );
-  if(!filtered.length){
-    showComingSoon(value);
-  } else {
-    renderCourses(filtered);
-  }
-}
-
-function showComingSoon(category){
-  const container = document.getElementById('coursesContainer');
-  container.innerHTML = `
-    <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;">
-      <div style="font-size:3rem;margin-bottom:1rem">🚀</div>
-      <div style="font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:0.5rem">Coming Soon!</div>
-      <div style="font-size:0.9rem;color:var(--muted);max-width:400px;margin:0 auto">
-        We're preparing amazing <strong style="color:var(--primary-light)">${category}</strong> internships for you. 
-        Stay tuned — launching very soon! 🎯
-      </div>
-      <div style="margin-top:1.5rem;display:inline-flex;align-items:center;gap:0.5rem;background:rgba(108,43,217,0.15);border:1px solid rgba(108,43,217,0.3);color:var(--primary-light);padding:0.5rem 1.2rem;border-radius:20px;font-size:0.82rem;font-weight:700;">
-        ⏳ Soon to be Added
-      </div>
-    </div>`;
 }
 
 // ─── ENROLL MODAL ───
@@ -1499,19 +646,29 @@ function openEnrollModal(courseId){
 // ─── PAYMENT ───
 async function handlePayment(){
   if(!currentUser){ closeModal('enrollModal'); openModal('authModal'); showToast('Please login first!','error'); return; }
+  if(!selectedCourse){ showToast('Please choose a course first.','error'); return; }
   // Check if already enrolled
-  const {data:existing} = await sb.from('enrollments').select('id').eq('user_id',currentUser.id).eq('course_id',selectedCourse.id).single();
+  const {data:existing} = await sb.from('enrollments').select('id').eq('user_id',currentUser.id).eq('course_id',selectedCourse.id).maybeSingle();
   if(existing){ showToast('You are already enrolled in this course! ✅'); closeModal('enrollModal'); return; }
+
+  const coursePrice = Number(selectedCourse.price || 0);
+  const paymentConfigured = typeof Razorpay !== 'undefined' && RAZORPAY_KEY !== 'rzp_test_YourKeyHere';
+
+  if(coursePrice > 0 && !paymentConfigured){
+    showToast('Payments are not configured yet. Add your Razorpay key before accepting paid enrollments.','error');
+    return;
+  }
 
   // Razorpay integration
   const options = {
-    key: 'rzp_test_YourKeyHere', // Replace with your Razorpay test key
-    amount: (selectedCourse.price||499)*100,
+    key: RAZORPAY_KEY,
+    amount: coursePrice*100,
     currency: 'INR',
     name: 'Zelvoqua',
     description: selectedCourse.title,
     image: '',
     handler: async function(response){
+      // Save enrollment to Supabase
       const {error} = await sb.from('enrollments').insert({
         user_id: currentUser.id,
         course_id: selectedCourse.id,
@@ -1519,25 +676,18 @@ async function handlePayment(){
         payment_id: response.razorpay_payment_id
       });
       if(!error){
-        // Send enrollment confirmation email
-        const userName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-        sendEmail(currentUser.email, userName, 'enrollment', {
-          courseName: selectedCourse.title,
-          price: selectedCourse.price,
-          duration: selectedCourse.duration
-        });
         closeModal('enrollModal');
-        showToast('🎉 Enrolled! Check your email for confirmation.');
+        showToast('🎉 Enrolled successfully! Check your dashboard.');
         loadEnrolledCourses();
       }
     },
     prefill:{ email: currentUser.email },
     theme:{ color:'#6c2bd9' }
   };
-  if(typeof Razorpay !== 'undefined'){
+  if(paymentConfigured){
     new Razorpay(options).open();
   } else {
-    // Fallback: direct enroll without payment (for testing)
+    // Allow direct enrollment only for genuinely free programs.
     const {error} = await sb.from('enrollments').insert({
       user_id: currentUser.id,
       course_id: selectedCourse.id,
@@ -1568,20 +718,15 @@ async function loadEnrolledCourses(){
       <div class="enrolled-emoji">${c.thumbnail_emoji||'📚'}</div>
       <div class="enrolled-title">${c.title}</div>
       <div class="enrolled-meta">${c.category} · ${c.duration} · ${e.payment_status==='paid'?'✅ Paid':'✅ Enrolled'}</div>
-      <button class="btn-continue">Continue Learning →</button>
+      <a class="btn-continue" href="student-dashboard.html?course=${encodeURIComponent(c.id)}" style="display:inline-block;text-decoration:none">Continue Learning →</a>
     </div>`;
   }).join('');
 }
 
-// Show dashboard on username click
-document.getElementById('userMenuBtn').addEventListener('click', function(e){
-  // Show dashboard on single click, logout on double - simplified: show dashboard
-  loadEnrolledCourses();
-  e.stopPropagation();
+// Open full dashboard page
+document.getElementById('userMenuBtn').addEventListener('click', function(){
+  window.location.href = 'student-dashboard.html';
 });
-
-// Override logout to be separate
-document.getElementById('userMenuBtn').addEventListener('dblclick', handleLogout);
 
 // ─── INIT ───
 checkSession();

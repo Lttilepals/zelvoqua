@@ -129,7 +129,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:v
     <div class="topbar-title" id="pageTitle">Overview</div>
     <div style="display:flex;align-items:center;gap:1rem">
       <a href="index.html" style="font-size:0.82rem;color:var(--muted);text-decoration:none">← View Site</a>
-      <div class="admin-badge">ADMIN</div>
+      <div class="admin-badge" id="adminBadge">ADMIN</div>
     </div>
   </div>
   <div class="content">
@@ -215,11 +215,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ADMIN EMAIL - Change this to your email
-const ADMIN_EMAIL = 'admin@zelvoqua.com';
-
 let allStudents=[], allCourses=[], allEnrollments=[];
 let editingCourseId=null;
+let currentAdmin=null;
 
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3500);}
 function openModal(id){document.getElementById(id).classList.add('active');}
@@ -232,19 +230,41 @@ async function adminLogin(){
   err.style.display='none';
   const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
   if(error){err.textContent=error.message;err.style.display='block';return;}
+  const allowed = await verifyAdminAccess(data.user);
+  if(!allowed){
+    err.textContent='This account is not marked as admin in Supabase profiles.';
+    err.style.display='block';
+    await sb.auth.signOut();
+    return;
+  }
   showDashboard();
 }
 
 async function checkAdminSession(){
   const {data:{session}}=await sb.auth.getSession();
-  if(session) showDashboard();
+  if(!session) return;
+  const allowed = await verifyAdminAccess(session.user);
+  if(allowed) showDashboard();
 }
 
 function showDashboard(){
   document.getElementById('adminLogin').style.display='none';
   document.getElementById('sidebar').classList.add('visible');
   document.getElementById('mainPanel').classList.add('visible');
+  document.getElementById('adminBadge').textContent = currentAdmin?.full_name ? currentAdmin.full_name + ' · ADMIN' : 'ADMIN';
   loadAll();
+}
+
+async function verifyAdminAccess(user){
+  if(!user) return false;
+  const {data,error} = await sb
+    .from('profiles')
+    .select('id, full_name, email, role')
+    .eq('id', user.id)
+    .maybeSingle();
+  if(error || !data || data.role !== 'admin') return false;
+  currentAdmin = data;
+  return true;
 }
 
 async function adminLogout(){
@@ -269,19 +289,26 @@ async function loadAll(){
   if(courses&&courses.length) allCourses=courses;
   else allCourses=getDefaultCourses();
 
-  // Load users from auth (via enrollments)
+  const {data:students}=await sb
+    .from('profiles')
+    .select('id, full_name, email, role, created_at')
+    .neq('role','admin')
+    .order('created_at',{ascending:false});
+  allStudents = students || [];
+
   const {data:enrollments}=await sb.from('enrollments').select('*').order('enrolled_at',{ascending:false});
   allEnrollments=enrollments||[];
 
   // Update stats
   document.getElementById('st-courses').textContent=allCourses.length;
   document.getElementById('st-enrollments').textContent=allEnrollments.length;
-
-  // Get unique users
-  const uniqueUsers=new Set(allEnrollments.map(e=>e.user_id));
-  document.getElementById('st-students').textContent=uniqueUsers.size;
-  const paidCount=allEnrollments.filter(e=>e.payment_status==='paid').length;
-  document.getElementById('st-revenue').textContent='₹'+(paidCount*499).toLocaleString('en-IN');
+  document.getElementById('st-students').textContent=allStudents.length;
+  const paidRevenue=allEnrollments.reduce((sum,e)=>{
+    if(e.payment_status!=='paid') return sum;
+    const course = allCourses.find(c=>String(c.id)===String(e.course_id));
+    return sum + Number(course?.price || 0);
+  },0);
+  document.getElementById('st-revenue').textContent='₹'+paidRevenue.toLocaleString('en-IN');
 
   // Recent enrollments
   renderRecentEnrollments();
@@ -293,9 +320,10 @@ function renderRecentEnrollments(){
   if(!allEnrollments.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted)">No enrollments yet</td></tr>';return;}
   tbody.innerHTML=allEnrollments.slice(0,10).map(e=>{
     const course=allCourses.find(c=>c.id===e.course_id);
+    const student=allStudents.find(s=>s.id===e.user_id);
     const date=e.enrolled_at?new Date(e.enrolled_at).toLocaleDateString('en-IN'):'—';
     return `<tr>
-      <td style="font-size:0.8rem;color:var(--muted)">${e.user_id?.substring(0,12)}...</td>
+      <td>${student?.full_name || 'Student'}<div style="font-size:0.78rem;color:var(--muted)">${student?.email || e.user_id?.substring(0,12)+'...'}</div></td>
       <td>${course?course.thumbnail_emoji+' '+course.title.substring(0,30)+'...':'Course #'+e.course_id}</td>
       <td><span class="badge badge-${e.payment_status==='paid'?'paid':'free'}">${e.payment_status||'enrolled'}</span></td>
       <td style="color:var(--muted)">${date}</td>
@@ -324,9 +352,10 @@ function renderEnrollments(){
   if(!allEnrollments.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted)">No enrollments yet</td></tr>';return;}
   tbody.innerHTML=allEnrollments.map(e=>{
     const course=allCourses.find(c=>c.id===e.course_id);
+    const student=allStudents.find(s=>s.id===e.user_id);
     const date=e.enrolled_at?new Date(e.enrolled_at).toLocaleDateString('en-IN'):'—';
     return `<tr>
-      <td style="font-size:0.8rem">${e.user_id?.substring(0,16)}...</td>
+      <td>${student?.full_name || 'Student'}<div style="font-size:0.78rem;color:var(--muted)">${student?.email || e.user_id?.substring(0,16)+'...'}</div></td>
       <td>${course?course.thumbnail_emoji+' '+course.title.substring(0,25)+'...':'Course #'+e.course_id}</td>
       <td><span class="badge badge-${e.payment_status==='paid'?'paid':e.payment_status==='free_enrolled'?'free':'pending'}">${e.payment_status||'—'}</span></td>
       <td style="color:var(--muted)">${date}</td>
@@ -338,20 +367,33 @@ function renderEnrollments(){
 let studentsCache=[];
 async function renderStudents(){
   const tbody=document.getElementById('studentsBody');
-  tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">Loading...</td></tr>';
-  // Get users via admin API (limited without service key, show from enrollments)
-  const uniqueIds=[...new Set(allEnrollments.map(e=>e.user_id))];
-  if(!uniqueIds.length){tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">No students yet</td></tr>';return;}
-  tbody.innerHTML=uniqueIds.map(id=>`
+  if(!allStudents.length){tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">No students yet</td></tr>';return;}
+  studentsCache = [...allStudents];
+  tbody.innerHTML=studentsCache.map(student=>`
     <tr>
-      <td style="font-size:0.8rem;color:var(--muted)">${id}</td>
-      <td>Student</td>
-      <td style="color:var(--muted)">—</td>
+      <td style="font-size:0.84rem;color:var(--text)">${student.email || '—'}</td>
+      <td>${student.full_name || 'Student'}</td>
+      <td style="color:var(--muted)">${student.created_at ? new Date(student.created_at).toLocaleDateString('en-IN') : '—'}</td>
     </tr>`).join('');
 }
 
 function searchStudents(){
-  // Filter implementation
+  const query = document.getElementById('studentSearch').value.trim().toLowerCase();
+  const tbody = document.getElementById('studentsBody');
+  const filtered = allStudents.filter(student => {
+    const hay = [student.email, student.full_name].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(query);
+  });
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">No matching students</td></tr>';
+    return;
+  }
+  tbody.innerHTML=filtered.map(student=>`
+    <tr>
+      <td style="font-size:0.84rem;color:var(--text)">${student.email || '—'}</td>
+      <td>${student.full_name || 'Student'}</td>
+      <td style="color:var(--muted)">${student.created_at ? new Date(student.created_at).toLocaleDateString('en-IN') : '—'}</td>
+    </tr>`).join('');
 }
 
 // COURSE MODAL

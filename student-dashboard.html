@@ -3,487 +3,377 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvoqua — Student Dashboard</title>
+<title>Zelvoqua Student Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --primary:#6c2bd9;--primary-light:#8b5cf6;--accent:#f59e0b;--accent2:#10b981;
-  --dark:#0f0a1e;--darker:#07050f;--card:#1a1030;--card2:#150d28;
-  --border:rgba(108,43,217,0.2);--text:#e2d9f3;--muted:#9ca3af;--white:#fff;
+:root {
+  --primary:#6c2bd9; --primary-light:#8b5cf6; --primary-dark:#4c1d95;
+  --accent:#f59e0b; --success:#10b981; --danger:#f87171;
+  --bg:#07050f; --surface:#120b24; --surface-2:#1a1030; --line:rgba(108,43,217,0.2);
+  --text:#ede9fe; --muted:#a1a1aa; --white:#fff;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:var(--text);min-height:100vh;}
-#motionCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;opacity:0.25;}
-
-/* NAV */
-nav{position:sticky;top:0;z-index:999;background:rgba(7,5,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:64px;}
-.nav-logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
-.nav-logo span{color:var(--primary-light);}
-.nav-right{display:flex;align-items:center;gap:0.75rem;}
-.user-pill{background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.4rem 1rem;border-radius:20px;font-size:0.82rem;font-weight:600;}
-.paid-badge{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--accent2);padding:0.3rem 0.8rem;border-radius:20px;font-size:0.72rem;font-weight:700;}
-.btn-logout{background:transparent;border:1px solid rgba(239,68,68,0.3);color:#f87171;padding:0.4rem 1rem;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;}
-.btn-logout:hover{background:rgba(239,68,68,0.1);}
-
-/* MAIN */
-main{position:relative;z-index:1;padding:2.5rem 5%;max-width:1200px;margin:0 auto;}
-
-/* WELCOME */
-.welcome-banner{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(108,43,217,0.1));border:1px solid rgba(16,185,129,0.25);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.welcome-text h1{font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;}
-.welcome-text p{color:var(--muted);font-size:0.9rem;}
-.welcome-actions{display:flex;gap:0.75rem;flex-wrap:wrap;}
-.btn-idcard{background:var(--primary);color:white;border:none;padding:0.55rem 1.2rem;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
-.btn-verify{background:transparent;border:1px solid var(--border);color:var(--text);padding:0.55rem 1.2rem;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;}
-
-/* PROGRESS CARD */
-.progress-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:2rem;}
-.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:1rem;}
-.progress-header h2{font-size:1rem;font-weight:800;color:var(--white);}
-.day-badge{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;padding:0.4rem 1rem;border-radius:20px;font-size:0.85rem;font-weight:700;}
-.progress-bar-wrap{background:var(--card2);border-radius:99px;height:10px;margin-bottom:0.8rem;overflow:hidden;}
-.progress-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--accent2));transition:width 1s ease;}
-.progress-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
-.prog-stat{text-align:center;}
-.prog-stat .val{font-size:1.3rem;font-weight:800;color:var(--white);}
-.prog-stat .lbl{font-size:0.72rem;color:var(--muted);margin-top:0.2rem;}
-
-/* TIMELINE */
-.timeline-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:2rem;}
-.timeline-section h2{font-size:1rem;font-weight:800;color:var(--white);margin-bottom:1.2rem;}
-.timeline{display:flex;flex-direction:column;gap:0.6rem;}
-.tl-item{display:flex;align-items:center;gap:1rem;padding:0.75rem 1rem;border-radius:10px;border:1px solid transparent;transition:all 0.2s;}
-.tl-item.done{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);}
-.tl-item.current{background:rgba(108,43,217,0.15);border-color:rgba(108,43,217,0.4);}
-.tl-item.upcoming{opacity:0.5;}
-.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
-.tl-item.done .tl-dot{background:rgba(16,185,129,0.2);color:var(--accent2);}
-.tl-item.current .tl-dot{background:rgba(108,43,217,0.3);color:var(--primary-light);}
-.tl-item.upcoming .tl-dot{background:var(--card2);color:var(--muted);}
-.tl-content{flex:1;}
-.tl-title{font-size:0.88rem;font-weight:700;color:var(--white);}
-.tl-days{font-size:0.75rem;color:var(--muted);}
-.tl-status{font-size:0.72rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:4px;}
-.status-done{background:rgba(16,185,129,0.15);color:var(--accent2);}
-.status-current{background:rgba(108,43,217,0.15);color:var(--primary-light);}
-.status-upcoming{background:var(--card2);color:var(--muted);}
-
-/* COURSES GRID */
-.section-title{font-size:1.05rem;font-weight:800;color:var(--white);margin-bottom:1.2rem;margin-top:2rem;}
-.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-bottom:2rem;}
-
-/* COURSE CARD */
-.course-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative;transition:all 0.2s;}
-.course-card.unlocked{border-color:rgba(16,185,129,0.3);}
-.course-card.unlocked:hover{transform:translateY(-3px);border-color:rgba(16,185,129,0.5);cursor:pointer;}
-.course-card.locked{opacity:0.55;}
-.card-body{padding:1.4rem;}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.8rem;}
-.card-emoji{font-size:2rem;}
-.unlock-tag{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--accent2);padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:800;}
-.lock-tag{background:rgba(156,163,175,0.1);border:1px solid rgba(156,163,175,0.2);color:var(--muted);padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:800;}
-.card-title{font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;line-height:1.3;}
-.card-cat{font-size:0.75rem;color:var(--muted);margin-bottom:0.8rem;}
-.card-footer{display:flex;align-items:center;justify-content:space-between;}
-.card-price{font-size:0.9rem;font-weight:800;color:var(--accent);}
-.card-duration{font-size:0.72rem;color:var(--muted);background:var(--card2);padding:0.2rem 0.6rem;border-radius:4px;}
-.locked-overlay{position:absolute;inset:0;background:rgba(7,5,15,0.6);backdrop-filter:blur(1px);display:flex;align-items:center;justify-content:center;border-radius:14px;}
-.locked-overlay span{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1rem;border-radius:8px;font-size:0.8rem;font-weight:700;}
-
-/* COURSE DETAIL PANEL */
-.course-detail{display:none;background:var(--card);border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:2rem;margin-bottom:2rem;animation:slideIn 0.3s ease;}
-@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-.detail-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
-.detail-emoji{font-size:3rem;}
-.detail-info h2{font-size:1.2rem;font-weight:800;color:var(--white);}
-.detail-info p{font-size:0.85rem;color:var(--muted);}
-.detail-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.5rem;width:fit-content;}
-.dtab{padding:0.5rem 1.2rem;font-size:0.82rem;font-weight:700;cursor:pointer;background:transparent;border:none;color:var(--muted);font-family:inherit;transition:all 0.2s;}
-.dtab.active{background:var(--primary);color:white;}
-.detail-content{display:none;}
-.detail-content.active{display:block;}
-
-/* CURRICULUM */
-.curriculum-week{background:var(--card2);border-radius:10px;padding:1rem 1.2rem;margin-bottom:0.75rem;}
-.week-title{font-size:0.88rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
-.week-topics{list-style:none;display:flex;flex-direction:column;gap:0.3rem;}
-.week-topics li{font-size:0.8rem;color:var(--muted);display:flex;align-items:center;gap:0.5rem;}
-.week-topics li::before{content:'→';color:var(--primary-light);}
-
-/* PROJECTS */
-.project-card{background:var(--card2);border-radius:10px;padding:1rem 1.2rem;margin-bottom:0.75rem;border-left:3px solid var(--primary-light);}
-.project-title{font-size:0.88rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;}
-.project-desc{font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem;}
-.project-badge{display:inline-block;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:4px;background:rgba(108,43,217,0.15);color:var(--primary-light);}
-
-/* SUBMIT FORM */
-.submit-form{background:var(--card2);border-radius:12px;padding:1.5rem;}
-.submit-form h3{font-size:0.95rem;font-weight:800;color:var(--white);margin-bottom:1rem;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;}
-.form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.05em;}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.9rem;color:var(--white);font-size:0.88rem;font-family:inherit;outline:none;transition:border-color 0.2s;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary-light);}
-.form-group textarea{resize:vertical;min-height:80px;}
-.btn-submit-proj{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none;padding:0.75rem 2rem;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:0.5rem;}
-
-/* TOAST */
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;font-size:0.88rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:rgba(16,185,129,0.4);color:var(--accent2);}
-.toast.error{border-color:rgba(239,68,68,0.4);color:#f87171;}
-
-/* LOADING */
-.loading{text-align:center;padding:3rem;color:var(--muted);}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary-light);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1rem;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-@media(max-width:600px){
-  .progress-stats{grid-template-columns:repeat(2,1fr);}
-  .form-row{grid-template-columns:1fr;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:radial-gradient(circle at top,#1b1033 0%,#090611 45%,#05030b 100%);color:var(--text);min-height:100vh}
+a{color:inherit}
+.shell{max-width:1400px;margin:0 auto;padding:24px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;padding:18px 22px;background:rgba(18,11,36,0.88);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(10px)}
+.brand{font-size:1.4rem;font-weight:800;text-decoration:none}
+.brand span{color:var(--primary-light)}
+.top-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{border:none;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--text)}
+.hero{display:grid;grid-template-columns:1.4fr 0.9fr;gap:20px;margin-bottom:24px}
+.hero-card,.panel,.course-card,.detail-card,.empty{background:rgba(18,11,36,0.88);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(10px)}
+.hero-card{padding:28px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(108,43,217,0.15);border:1px solid rgba(139,92,246,0.25);font-size:.78rem;font-weight:700;color:var(--primary-light);margin-bottom:14px}
+.hero h1{font-size:clamp(2rem,4vw,3rem);line-height:1.08;letter-spacing:-0.04em;margin-bottom:12px}
+.hero p{color:var(--muted);line-height:1.7;max-width:700px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.stat{padding:16px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.stat .num{font-size:1.6rem;font-weight:800;color:var(--white)}
+.stat .lbl{font-size:.8rem;color:var(--muted);margin-top:4px}
+.focus-card{padding:24px;display:flex;flex-direction:column;justify-content:space-between}
+.focus-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--primary-light);font-weight:700;margin-bottom:8px}
+.focus-title{font-size:1.15rem;font-weight:800;margin-bottom:8px}
+.focus-meta{color:var(--muted);font-size:.88rem;line-height:1.6}
+.progress-wrap{margin-top:18px}
+.progress-row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.progress{height:8px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden}
+.progress > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--success),#34d399)}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:20px}
+.panel{padding:18px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.panel-title{font-size:1rem;font-weight:800}
+.panel-sub{font-size:.82rem;color:var(--muted)}
+.course-list{display:flex;flex-direction:column;gap:12px}
+.course-card{padding:16px;cursor:pointer;transition:.2s transform,.2s border-color,.2s background}
+.course-card:hover{transform:translateY(-1px);border-color:rgba(139,92,246,0.4)}
+.course-card.active{border-color:rgba(16,185,129,0.45);background:rgba(16,185,129,0.06)}
+.course-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.icon{width:44px;height:44px;border-radius:14px;background:rgba(108,43,217,0.14);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.course-title{font-size:.95rem;font-weight:700;color:var(--white);line-height:1.35}
+.course-meta{font-size:.8rem;color:var(--muted);margin-top:5px}
+.pill{padding:5px 9px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.pill-open{background:rgba(16,185,129,0.12);color:#86efac}
+.pill-lock{background:rgba(248,113,113,0.12);color:#fca5a5}
+.mini-progress{margin-top:12px}
+.mini-progress .progress{height:6px}
+.detail{display:grid;gap:18px}
+.detail-card{padding:22px}
+.detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.detail-title{display:flex;align-items:center;gap:14px}
+.detail-title .emoji{font-size:2.2rem}
+.detail-title h2{font-size:1.5rem;line-height:1.2}
+.detail-title p{font-size:.92rem;color:var(--muted);margin-top:6px}
+.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric{padding:14px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.metric .k{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.metric .v{font-size:1rem;font-weight:800;margin-top:6px}
+.section-title{font-size:.95rem;font-weight:800;margin-bottom:12px}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:8px 12px;border-radius:999px;background:rgba(108,43,217,0.14);color:#ddd6fe;font-size:.8rem;font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.list{display:grid;gap:10px}
+.list-item{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.list-item strong{display:block;font-size:.9rem;margin-bottom:6px}
+.list-item span{color:var(--muted);font-size:.85rem;line-height:1.6}
+.locked-banner{padding:14px 16px;border-radius:16px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.18);color:#fecaca;margin-bottom:18px}
+.empty{padding:40px 24px;text-align:center;color:var(--muted)}
+@media(max-width:1100px){
+  .hero,.layout,.two-col{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  .shell{padding:16px}
+  .hero-stats,.detail-grid{grid-template-columns:1fr}
+  .topbar{align-items:flex-start;flex-direction:column}
 }
 </style>
 </head>
 <body>
-<canvas id="motionCanvas"></canvas>
-
-<nav>
-  <a href="index.html" class="nav-logo">Zelvo<span>qua</span></a>
-  <div class="nav-right">
-    <span class="paid-badge">✅ PAID</span>
-    <div class="user-pill">🎓 <span id="userEmail">...</span></div>
-    <button class="btn-logout" onclick="handleLogout()">Logout</button>
-  </div>
-</nav>
-
-<main>
-  <!-- WELCOME -->
-  <div class="welcome-banner">
-    <div class="welcome-text">
-      <h1>Welcome back, <span id="userName">Student</span>! 🚀</h1>
-      <p id="enrolledCourseName">Loading your internship details...</p>
-    </div>
-    <div class="welcome-actions">
-      <a href="id-card.html" class="btn-idcard">🪪 View ID Card</a>
-      <a href="verify.html" class="btn-verify">🔍 Verify Certificate</a>
+<div class="shell">
+  <div class="topbar">
+    <a class="brand" href="index.html">Zelvo<span>qua</span></a>
+    <div class="top-actions">
+      <div id="userLabel" style="color:var(--muted);font-size:.9rem">Checking session...</div>
+      <a class="btn btn-outline" href="index.html">Browse Courses</a>
+      <button class="btn btn-primary" id="logoutBtn">Logout</button>
     </div>
   </div>
 
-  <!-- PROGRESS -->
-  <div class="progress-card" id="progressCard" style="display:none">
-    <div class="progress-header">
-      <h2>📈 Internship Progress</h2>
-      <span class="day-badge" id="dayBadge">Day 1 / 30</span>
-    </div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
-    <div class="progress-stats">
-      <div class="prog-stat"><div class="val" id="daysCompleted">0</div><div class="lbl">Days Done</div></div>
-      <div class="prog-stat"><div class="val" id="daysLeft">30</div><div class="lbl">Days Left</div></div>
-      <div class="prog-stat"><div class="val" id="progressPct">0%</div><div class="lbl">Progress</div></div>
-      <div class="prog-stat"><div class="val" id="enrollDate">—</div><div class="lbl">Joined On</div></div>
-    </div>
-  </div>
-
-  <!-- TIMELINE -->
-  <div class="timeline-section" id="timelineSection" style="display:none">
-    <h2>🗓️ Internship Timeline</h2>
-    <div class="timeline" id="timelineItems"></div>
-  </div>
-
-  <!-- ENROLLED COURSE DETAIL -->
-  <div class="course-detail" id="courseDetail">
-    <div class="detail-header">
-      <span class="detail-emoji" id="detailEmoji">💻</span>
-      <div class="detail-info">
-        <h2 id="detailTitle">Course Title</h2>
-        <p id="detailDesc">Course description</p>
+  <div class="hero">
+    <div class="hero-card">
+      <div class="eyebrow">Student Workspace</div>
+      <h1>Track enrolled internships, locked programs, and course progress in one place.</h1>
+      <p>Your dashboard is driven from Supabase enrollments. Paid or free enrolled programs open here; everything else stays locked until the student buys that specific course.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="num" id="statUnlocked">0</div><div class="lbl">Unlocked Programs</div></div>
+        <div class="stat"><div class="num" id="statLocked">0</div><div class="lbl">Locked Programs</div></div>
+        <div class="stat"><div class="num" id="statProgress">0%</div><div class="lbl">Average Progress</div></div>
       </div>
     </div>
-    <div class="detail-tabs">
-      <button class="dtab active" onclick="switchDetailTab('curriculum')">📚 Curriculum</button>
-      <button class="dtab" onclick="switchDetailTab('projects')">🛠️ Projects</button>
-      <button class="dtab" onclick="switchDetailTab('submit')">📤 Submit Work</button>
-    </div>
-
-    <!-- CURRICULUM TAB -->
-    <div class="detail-content active" id="tab-curriculum">
-      <div id="curriculumContent"></div>
-    </div>
-
-    <!-- PROJECTS TAB -->
-    <div class="detail-content" id="tab-projects">
-      <div id="projectsContent"></div>
-    </div>
-
-    <!-- SUBMIT TAB -->
-    <div class="detail-content" id="tab-submit">
-      <div class="submit-form">
-        <h3>📤 Submit Your Project</h3>
-        <div class="form-row">
-          <div class="form-group"><label>Your Name</label><input type="text" id="subName" placeholder="Rahul Sharma"></div>
-          <div class="form-group"><label>Email</label><input type="email" id="subEmail" placeholder="you@gmail.com"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Access Code</label><input type="text" id="subCode" placeholder="ZEL-2025-XXXX"></div>
-          <div class="form-group"><label>Project Type</label>
-            <select id="subType">
-              <option>Week 1 Project</option>
-              <option>Week 2 Project</option>
-              <option>Mid-Term Project</option>
-              <option>Final Project</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group"><label>GitHub / Drive Link</label><input type="url" id="subLink" placeholder="https://github.com/yourusername/project"></div>
-        <div class="form-group"><label>Description</label><textarea id="subDesc" placeholder="Brief description of what you built..."></textarea></div>
-        <button class="btn-submit-proj" onclick="submitProject()">🚀 Submit Project</button>
+    <div class="focus-card hero-card">
+      <div>
+        <div class="focus-label">Current Focus</div>
+        <div class="focus-title" id="focusTitle">Choose a program</div>
+        <div class="focus-meta" id="focusMeta">Select an unlocked course to view modules, projects, teaching plan, and outcomes.</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-row"><span>Overall completion</span><span id="focusProgressText">0%</span></div>
+        <div class="progress"><span id="focusProgressBar" style="width:0%"></span></div>
       </div>
     </div>
   </div>
 
-  <!-- ALL COURSES -->
-  <div class="section-title">All Internship Tracks</div>
-  <div class="courses-grid" id="coursesGrid">
-    <div class="loading"><div class="spinner"></div>Loading...</div>
-  </div>
-</main>
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Programs</div>
+          <div class="panel-sub">Unlocked programs stay usable. Everything else stays locked.</div>
+        </div>
+      </div>
+      <div class="course-list" id="courseList">
+        <div class="empty">Loading programs...</div>
+      </div>
+    </div>
 
-<div class="toast" id="toast"></div>
+    <div class="detail" id="detailMount">
+      <div class="empty">Select a program to see its complete learning panel.</div>
+    </div>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL='https://jjbvbojzrydidgiehubg.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let currentUser=null, enrolledCourse=null, enrollment=null;
+let currentUser = null;
+let allCourses = [];
+let enrolledMap = new Map();
+let selectedCourseId = null;
 
-function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3500);}
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+});
 
-// ─── CURRICULUM DATA ───
-const curriculumData={
-  'Web Development':[
-    {week:'Week 1–2',title:'HTML & CSS Fundamentals',topics:['HTML5 semantic tags','CSS Flexbox & Grid','Responsive design','Forms & validation']},
-    {week:'Week 3–4',title:'JavaScript Essentials',topics:['ES6+ syntax','DOM manipulation','Fetch API','Async/Await']},
-    {week:'Week 5–6',title:'React Framework',topics:['Components & props','State & hooks','React Router','Context API']},
-    {week:'Week 7–8',title:'Backend with Node.js',topics:['Express.js','REST APIs','MongoDB','Authentication']},
-    {week:'Week 9–10',title:'Full Stack Projects',topics:['MERN stack app','Deployment on Vercel','GitHub workflows','Portfolio project']},
-    {week:'Week 11–12',title:'Final Project & Placement',topics:['Final project build','Code review','Resume prep','Mock interviews']},
-  ],
-  'Data Science':[
-    {week:'Week 1–2',title:'Python & Data Basics',topics:['Python syntax','NumPy & Pandas','Data cleaning','EDA techniques']},
-    {week:'Week 3–4',title:'Data Visualization',topics:['Matplotlib','Seaborn','Tableau basics','Dashboard creation']},
-    {week:'Week 5–6',title:'Machine Learning',topics:['Supervised learning','Classification & regression','Model evaluation','Scikit-learn']},
-    {week:'Week 7–8',title:'Deep Learning',topics:['Neural networks','TensorFlow basics','CNN & RNN','Transfer learning']},
-    {week:'Week 9–10',title:'Industry Projects',topics:['Real dataset projects','Kaggle competitions','Model deployment','API integration']},
-  ],
-  'Design':[
-    {week:'Week 1–2',title:'Design Fundamentals',topics:['Design principles','Color theory','Typography','Composition']},
-    {week:'Week 3–4',title:'Figma Mastery',topics:['Components & variants','Auto layout','Prototyping','Design systems']},
-    {week:'Week 5–6',title:'UX Research',topics:['User interviews','Wireframing','Usability testing','Personas']},
-    {week:'Week 7–8',title:'Real Client Projects',topics:['App redesign','Portfolio project','Handoff to developers','Presentation skills']},
-  ],
-  'Marketing':[
-    {week:'Week 1–2',title:'Digital Marketing Basics',topics:['SEO fundamentals','Google Analytics','Content strategy','Social media']},
-    {week:'Week 3–4',title:'Paid Advertising',topics:['Google Ads','Meta Ads','Budget management','A/B testing']},
-    {week:'Week 5–6',title:'Email & Growth',topics:['Email marketing','Lead generation','Funnels','CRO']},
-  ],
-};
-
-const projectsData={
-  'Web Development':[
-    {title:'Portfolio Website',desc:'Build your personal portfolio with HTML, CSS & JS',week:'Week 2'},
-    {title:'To-Do App with React',desc:'CRUD app with React hooks and local storage',week:'Week 6'},
-    {title:'REST API with Node.js',desc:'Build a full REST API with Express & MongoDB',week:'Week 8'},
-    {title:'Full Stack MERN App',desc:'Complete web application — your capstone project',week:'Week 12'},
-  ],
-  'Data Science':[
-    {title:'EDA on Real Dataset',desc:'Exploratory analysis on Kaggle dataset with Pandas',week:'Week 2'},
-    {title:'ML Model',desc:'Train and evaluate a classification model',week:'Week 6'},
-    {title:'Deep Learning Project',desc:'Image classification with CNN',week:'Week 8'},
-    {title:'Deployment Project',desc:'Deploy ML model as a web API',week:'Week 10'},
-  ],
-  'Design':[
-    {title:'Brand Identity',desc:'Design a complete brand identity for a startup',week:'Week 2'},
-    {title:'Mobile App Design',desc:'Full UX/UI for a mobile app in Figma',week:'Week 6'},
-    {title:'Client Project',desc:'Real redesign project for an actual client',week:'Week 8'},
-  ],
-  'Marketing':[
-    {title:'SEO Audit',desc:'Complete SEO audit for a real website',week:'Week 2'},
-    {title:'Ad Campaign',desc:'Create and run a Google/Meta ad campaign',week:'Week 4'},
-    {title:'Growth Strategy',desc:'Full digital marketing plan for a business',week:'Week 6'},
-  ],
-};
-
-// ─── INIT ───
-async function init(){
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='index.html';return;}
-  currentUser=session.user;
-
-  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0];
-  document.getElementById('userName').textContent=name;
-  document.getElementById('userEmail').textContent=currentUser.email;
-
-  // Get enrollment
-  const {data:enr}=await sb.from('enrollments').select('*').eq('user_id',currentUser.id).order('enrolled_at',{ascending:false}).limit(1).maybeSingle();
-  if(!enr){window.location.href='free-dashboard.html';return;}
-  enrollment=enr;
-
-  // Get enrolled course
-  const {data:course}=await sb.from('courses').select('*').eq('id',enr.course_id).single();
-  enrolledCourse=course;
-
-  // Pre-fill submit form
-  document.getElementById('subName').value=name;
-  document.getElementById('subEmail').value=currentUser.email;
-
-  document.getElementById('enrolledCourseName').textContent=`Enrolled: ${course?.title||'Course'}`;
-  showProgress(enr, course);
-  showTimeline(enr, course);
-  showCourseDetail(course);
-  loadAllCourses(enr.course_id);
+function hashProgress(id){
+  let total = 0;
+  const seed = String(id);
+  for(let i=0;i<seed.length;i++) total += seed.charCodeAt(i) * (i + 3);
+  return 18 + (total % 63);
 }
 
-// ─── PROGRESS ───
-function showProgress(enr, course){
-  const prog=document.getElementById('progressCard');
-  prog.style.display='block';
-  const enrolledAt=new Date(enr.enrolled_at||enr.created_at||Date.now());
-  const today=new Date();
-  const totalDays=parseInt(course?.duration)||30;
-  const daysDone=Math.min(Math.floor((today-enrolledAt)/(1000*60*60*24)),totalDays);
-  const daysLeft=Math.max(totalDays-daysDone,0);
-  const pct=Math.round((daysDone/totalDays)*100);
-  document.getElementById('dayBadge').textContent=`Day ${daysDone} / ${totalDays}`;
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('daysCompleted').textContent=daysDone;
-  document.getElementById('daysLeft').textContent=daysLeft;
-  document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('enrollDate').textContent=enrolledAt.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-}
+function buildCourseBlueprint(course){
+  const title = (course.title || '').toLowerCase();
+  const category = (course.category || '').toLowerCase();
 
-// ─── TIMELINE ───
-function showTimeline(enr, course){
-  document.getElementById('timelineSection').style.display='block';
-  const enrolledAt=new Date(enr.enrolled_at||enr.created_at||Date.now());
-  const today=new Date();
-  const totalDays=parseInt(course?.duration)||30;
-  const daysDone=Math.floor((today-enrolledAt)/(1000*60*60*24));
-
-  const phases=[
-    {title:'Onboarding & Basics',days:'Day 1–7',threshold:7},
-    {title:'Core Learning Phase',days:'Day 8–14',threshold:14},
-    {title:'Mid-Term Project',days:'Day 15',threshold:15},
-    {title:'Advanced Topics',days:'Day 16–25',threshold:25},
-    {title:'Final Project',days:'Day 26–30',threshold:30},
-    {title:'Certificate Issued',days:'After Day 30',threshold:31},
+  const byKeyword = [
+    { test: ['hr', 'human resource', 'recruitment'], skills:['Recruitment funnel', 'HR operations', 'Payroll basics', 'Policy drafting'], modules:['HR foundations and org structures','Recruitment, onboarding and ATS workflows','Performance reviews and employee engagement','Compliance, payroll and final capstone'], projects:['Build a hiring tracker for 3 job roles','Create onboarding SOP and policy handbook','Draft employee engagement calendar for 30 days'], outcomes:['HR intern portfolio', 'Interview-ready HR case answers', 'Hiring workflow understanding'] },
+    { test: ['finance', 'financial', 'investment', 'equity'], skills:['Financial statements', 'Excel modelling', 'Ratio analysis', 'Valuation basics'], modules:['Finance foundations and market structure','Statements, ratios and forecasting','Valuation, sensitivity and scenario analysis','Investment memo and reporting capstone'], projects:['Analyse a listed company using annual report data','Build a 3-statement Excel model','Write a one-page investment note'], outcomes:['Finance case-study portfolio', 'Analyst-style reporting samples', 'Excel and valuation confidence'] },
+    { test: ['marketing', 'social media', 'content', 'market research'], skills:['Campaign planning', 'Content strategy', 'Audience research', 'Performance analytics'], modules:['Marketing fundamentals and positioning','Content, channels and social distribution','Paid campaigns, funnels and attribution','Research report and GTM capstone'], projects:['Create a 30-day content calendar','Build competitor research deck','Plan a lead-gen campaign with KPIs'], outcomes:['Portfolio-ready campaigns', 'Marketing strategy artifacts', 'Execution framework for internships'] },
+    { test: ['supply chain', 'logistics', 'warehouse', 'procurement', 'operations'], skills:['Process mapping', 'Inventory logic', 'Vendor workflows', 'Operational KPIs'], modules:['Operations and supply chain foundations','Procurement, vendor and inventory control','Logistics, fulfillment and reporting','Optimization project and presentation'], projects:['Map a warehouse workflow and bottlenecks','Create vendor scorecard template','Build KPI dashboard for fulfillment team'], outcomes:['Ops workflow portfolio', 'Process improvement thinking', 'Business reporting samples'] },
+    { test: ['web', 'full stack', 'cloud', 'devops', 'ml', 'machine learning', 'data science', 'ui/ux', 'design'], skills:['Core concepts', 'Hands-on assignments', 'Project delivery', 'Interview prep'], modules:['Foundations and tools setup','Core implementation sprint','Advanced concepts and review','Capstone project and mock interview'], projects:['Ship a portfolio project for this program','Document your approach in a case study','Prepare demo and recruiter summary'], outcomes:['Proof-of-work portfolio', 'Structured project delivery', 'Interview readiness'] }
   ];
 
-  document.getElementById('timelineItems').innerHTML=phases.map(p=>{
-    let cls='upcoming', icon='⏳', statusTxt='Upcoming', statusCls='status-upcoming';
-    if(daysDone>=p.threshold){cls='done';icon='✅';statusTxt='Completed';statusCls='status-done';}
-    else if(daysDone>=p.threshold-7){cls='current';icon='🔵';statusTxt='In Progress';statusCls='status-current';}
-    return `<div class="tl-item ${cls}">
-      <div class="tl-dot">${icon}</div>
-      <div class="tl-content">
-        <div class="tl-title">${p.title}</div>
-        <div class="tl-days">${p.days}</div>
+  const match = byKeyword.find(group => group.test.some(word => title.includes(word) || category.includes(word)));
+  if(match) return match;
+
+  return {
+    skills:['Foundation knowledge','Hands-on exercises','Project execution','Career preparation'],
+    modules:['Program introduction and core concepts','Implementation sprint and assignments','Review, feedback and polishing','Final capstone and career handoff'],
+    projects:['Complete one guided project','Submit one independent assignment','Present outcomes in a portfolio-ready format'],
+    outcomes:['Applied project experience','Clear learning path','Internship readiness']
+  };
+}
+
+function getCourseState(course){
+  const enrollment = enrolledMap.get(String(course.id));
+  const unlocked = Boolean(enrollment);
+  const progress = unlocked ? hashProgress(course.id) : 0;
+  return { enrollment, unlocked, progress };
+}
+
+function renderList(){
+  const list = document.getElementById('courseList');
+  if(!allCourses.length){
+    list.innerHTML = '<div class="empty">No courses found.</div>';
+    return;
+  }
+
+  list.innerHTML = allCourses.map(course => {
+    const state = getCourseState(course);
+    return `
+      <div class="course-card ${String(course.id) === String(selectedCourseId) ? 'active' : ''}" onclick="selectCourse('${course.id}')">
+        <div class="course-top">
+          <div style="display:flex;gap:12px">
+            <div class="icon">${course.thumbnail_emoji || '📚'}</div>
+            <div>
+              <div class="course-title">${course.title}</div>
+              <div class="course-meta">${course.category || 'Program'} · ${course.duration || 'Self-paced'}</div>
+            </div>
+          </div>
+          <div class="pill ${state.unlocked ? 'pill-open' : 'pill-lock'}">${state.unlocked ? 'Unlocked' : 'Locked'}</div>
+        </div>
+        <div class="mini-progress">
+          <div class="progress"><span style="width:${state.progress}%"></span></div>
+        </div>
       </div>
-      <span class="tl-status ${statusCls}">${statusTxt}</span>
-    </div>`;
+    `;
   }).join('');
 }
 
-// ─── COURSE DETAIL ───
-function showCourseDetail(course){
-  if(!course) return;
-  document.getElementById('courseDetail').style.display='block';
-  document.getElementById('detailEmoji').textContent=course.thumbnail_emoji||'📚';
-  document.getElementById('detailTitle').textContent=course.title;
-  document.getElementById('detailDesc').textContent=course.description||'';
+function renderDetail(){
+  const mount = document.getElementById('detailMount');
+  const course = allCourses.find(item => String(item.id) === String(selectedCourseId));
+  if(!course){
+    mount.innerHTML = '<div class="empty">Select a program to see its complete learning panel.</div>';
+    return;
+  }
 
-  // Curriculum
-  const cat=course.category||'Web Development';
-  const curData=curriculumData[cat]||curriculumData['Web Development'];
-  document.getElementById('curriculumContent').innerHTML=curData.map(w=>`
-    <div class="curriculum-week">
-      <div class="week-title">${w.week}: ${w.title}</div>
-      <ul class="week-topics">${w.topics.map(t=>`<li>${t}</li>`).join('')}</ul>
-    </div>`).join('');
+  const state = getCourseState(course);
+  const blueprint = buildCourseBlueprint(course);
+  const nextMilestone = state.unlocked ? (state.progress < 35 ? 'Finish module 1' : state.progress < 70 ? 'Submit guided project' : 'Prepare capstone review') : 'Purchase required to unlock';
+  const paymentLabel = state.enrollment?.payment_status === 'paid' ? 'Paid access' : state.enrollment ? 'Enrolled access' : 'Locked';
 
-  // Projects
-  const projData=projectsData[cat]||projectsData['Web Development'];
-  document.getElementById('projectsContent').innerHTML=projData.map(p=>`
-    <div class="project-card">
-      <div class="project-title">${p.title}</div>
-      <div class="project-desc">${p.desc}</div>
-      <span class="project-badge">${p.week}</span>
-    </div>`).join('');
-}
+  document.getElementById('focusTitle').textContent = course.title;
+  document.getElementById('focusMeta').textContent = state.unlocked
+    ? `${course.category || 'Program'} · ${course.duration || 'Self-paced'} · ${paymentLabel}`
+    : `${course.category || 'Program'} is locked. Enroll from the homepage to unlock teaching content and projects.`;
+  document.getElementById('focusProgressText').textContent = `${state.progress}%`;
+  document.getElementById('focusProgressBar').style.width = `${state.progress}%`;
 
-// ─── ALL COURSES ───
-async function loadAllCourses(enrolledCourseId){
-  const {data:courses}=await sb.from('courses').select('*').order('id');
-  const grid=document.getElementById('coursesGrid');
-  if(!courses?.length){grid.innerHTML='<p style="color:var(--muted)">No courses found.</p>';return;}
-  grid.innerHTML=courses.map(c=>{
-    const isUnlocked=c.id===enrolledCourseId;
-    return `<div class="course-card ${isUnlocked?'unlocked':'locked'}" ${isUnlocked?`onclick="scrollToCourseDetail()"`:''}>
-      <div class="card-body">
-        <div class="card-top">
-          <span class="card-emoji">${c.thumbnail_emoji||'📚'}</span>
-          <span class="${isUnlocked?'unlock-tag':'lock-tag'}">${isUnlocked?'✅ ENROLLED':'🔒 LOCKED'}</span>
+  mount.innerHTML = `
+    <div class="detail-card">
+      ${state.unlocked ? '' : '<div class="locked-banner">This program is locked for this student. The structure is visible, but detailed access should stay blocked until enrollment exists.</div>'}
+      <div class="detail-head">
+        <div class="detail-title">
+          <div class="emoji">${course.thumbnail_emoji || '📚'}</div>
+          <div>
+            <h2>${course.title}</h2>
+            <p>${course.description || 'Program details will appear here once the course description is filled in.'}</p>
+          </div>
         </div>
-        <div class="card-title">${c.title}</div>
-        <div class="card-cat">${c.category||''} · ${c.duration||'8 Weeks'}</div>
-        <div class="card-footer">
-          <span class="card-price">₹${c.price||499}</span>
-          <span class="card-duration">${c.duration||'8 Weeks'}</span>
+        <a class="btn ${state.unlocked ? 'btn-primary' : 'btn-outline'}" href="index.html">${state.unlocked ? 'Back to catalog' : 'Unlock from home'}</a>
+      </div>
+
+      <div class="detail-grid">
+        <div class="metric"><div class="k">Status</div><div class="v">${paymentLabel}</div></div>
+        <div class="metric"><div class="k">Duration</div><div class="v">${course.duration || 'TBD'}</div></div>
+        <div class="metric"><div class="k">Progress</div><div class="v">${state.progress}%</div></div>
+        <div class="metric"><div class="k">Next milestone</div><div class="v">${nextMilestone}</div></div>
+      </div>
+    </div>
+    ${state.unlocked ? `
+      <div class="detail-card">
+        <div class="section-title">Skills covered</div>
+        <div class="tag-row">${blueprint.skills.map(skill => `<div class="tag">${skill}</div>`).join('')}</div>
+      </div>
+
+      <div class="two-col">
+        <div class="detail-card">
+          <div class="section-title">Teaching plan</div>
+          <div class="list">${blueprint.modules.map((module, index) => `
+            <div class="list-item">
+              <strong>Module ${index + 1}</strong>
+              <span>${module}</span>
+            </div>
+          `).join('')}</div>
+        </div>
+
+        <div class="detail-card">
+          <div class="section-title">Project work</div>
+          <div class="list">${blueprint.projects.map(project => `
+            <div class="list-item">
+              <strong>Project task</strong>
+              <span>${project}</span>
+            </div>
+          `).join('')}</div>
         </div>
       </div>
-      ${!isUnlocked?`<div class="locked-overlay"><span>🔒 Enroll to Unlock</span></div>`:''}
-    </div>`;
-  }).join('');
+
+      <div class="detail-card">
+        <div class="section-title">Expected outcomes</div>
+        <div class="list">${blueprint.outcomes.map(outcome => `
+          <div class="list-item">
+            <strong>Outcome</strong>
+            <span>${outcome}</span>
+          </div>
+        `).join('')}</div>
+      </div>
+    ` : `
+      <div class="detail-card">
+        <div class="section-title">Locked preview</div>
+        <div class="list">
+          <div class="list-item">
+            <strong>What unlocks after enrollment</strong>
+            <span>Teaching modules, project briefs, progress tracking, and internship-ready outcomes become visible only after this program is enrolled for this student.</span>
+          </div>
+          <div class="list-item">
+            <strong>How to unlock</strong>
+            <span>Go back to the home page, complete enrollment for this course, and the program will automatically become active in this dashboard.</span>
+          </div>
+        </div>
+      </div>
+    `}
+  `;
 }
 
-function scrollToCourseDetail(){
-  document.getElementById('courseDetail').scrollIntoView({behavior:'smooth',block:'start'});
+function updateSummary(){
+  const unlocked = allCourses.filter(course => getCourseState(course).unlocked);
+  const locked = allCourses.length - unlocked.length;
+  const average = unlocked.length ? Math.round(unlocked.reduce((sum, course) => sum + getCourseState(course).progress, 0) / unlocked.length) : 0;
+  document.getElementById('statUnlocked').textContent = unlocked.length;
+  document.getElementById('statLocked').textContent = locked;
+  document.getElementById('statProgress').textContent = `${average}%`;
 }
 
-// ─── DETAIL TABS ───
-function switchDetailTab(tab){
-  document.querySelectorAll('.dtab').forEach((t,i)=>t.classList.toggle('active',['curriculum','projects','submit'][i]===tab));
-  document.querySelectorAll('.detail-content').forEach(c=>c.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
+function selectCourse(courseId){
+  selectedCourseId = String(courseId);
+  const url = new URL(window.location.href);
+  url.searchParams.set('course', selectedCourseId);
+  history.replaceState({}, '', url.toString());
+  renderList();
+  renderDetail();
 }
 
-// ─── SUBMIT PROJECT ───
-async function submitProject(){
-  const name=document.getElementById('subName').value.trim();
-  const email=document.getElementById('subEmail').value.trim();
-  const code=document.getElementById('subCode').value.trim();
-  const type=document.getElementById('subType').value;
-  const link=document.getElementById('subLink').value.trim();
-  const desc=document.getElementById('subDesc').value.trim();
-  if(!name||!email||!link){showToast('Please fill Name, Email and Project Link','error');return;}
-  showToast('✅ Project submitted successfully! We will review it soon.');
-  document.getElementById('subLink').value='';
-  document.getElementById('subDesc').value='';
+async function boot(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session?.user){
+    window.location.href = 'index.html';
+    return;
+  }
+
+  currentUser = session.user;
+  document.getElementById('userLabel').textContent = currentUser.user_metadata?.full_name
+    ? `${currentUser.user_metadata.full_name} · Student`
+    : `${currentUser.email} · Student`;
+
+  const [{ data: courses }, { data: enrollments }] = await Promise.all([
+    sb.from('courses').select('*').order('id'),
+    sb.from('enrollments').select('course_id, payment_status, enrolled_at').eq('user_id', currentUser.id)
+  ]);
+
+  allCourses = courses || [];
+  enrolledMap = new Map((enrollments || []).map(item => [String(item.course_id), item]));
+
+  const requestedCourse = new URL(window.location.href).searchParams.get('course');
+  const firstUnlocked = allCourses.find(course => enrolledMap.has(String(course.id)));
+  selectedCourseId = requestedCourse && allCourses.some(course => String(course.id) === String(requestedCourse))
+    ? requestedCourse
+    : (firstUnlocked ? String(firstUnlocked.id) : (allCourses[0] ? String(allCourses[0].id) : null));
+
+  updateSummary();
+  renderList();
+  renderDetail();
 }
 
-// ─── LOGOUT ───
-async function handleLogout(){await sb.auth.signOut();window.location.href='index.html';}
-
-// ─── CANVAS ───
-const canvas=document.getElementById('motionCanvas');
-const ctx=canvas.getContext('2d');
-const blobs=[{x:0.2,y:0.3,r:300,dx:0.0002,dy:0.0003,color:'rgba(108,43,217,0.4)'},{x:0.7,y:0.6,r:250,dx:-0.0003,dy:0.0002,color:'rgba(16,185,129,0.3)'},{x:0.5,y:0.1,r:200,dx:0.0001,dy:-0.0002,color:'rgba(245,158,11,0.15)'}];
-function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-function drawBlobs(t){ctx.clearRect(0,0,canvas.width,canvas.height);blobs.forEach(b=>{const x=(b.x+Math.sin(t*b.dx*1000)*0.15)*canvas.width;const y=(b.y+Math.cos(t*b.dy*1000)*0.15)*canvas.height;const g=ctx.createRadialGradient(x,y,0,x,y,b.r);g.addColorStop(0,b.color);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,b.r,0,Math.PI*2);ctx.fill();});}
-let start=null;function animate(ts){if(!start)start=ts;drawBlobs(ts-start);requestAnimationFrame(animate);}
-resizeCanvas();window.addEventListener('resize',resizeCanvas);animate(0);
-
-init();
+boot();
 </script>
 </body>
 </html>
