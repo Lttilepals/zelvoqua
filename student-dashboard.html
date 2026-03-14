@@ -3,147 +3,1150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvoqua Student Dashboard</title>
+<title>Zelvoqua — Student Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary:#6c2bd9; --primary-light:#8b5cf6; --primary-dark:#4c1d95;
-  --accent:#f59e0b; --success:#10b981; --danger:#f87171;
-  --bg:#07050f; --surface:#120b24; --surface-2:#1a1030; --line:rgba(108,43,217,0.2);
-  --text:#ede9fe; --muted:#a1a1aa; --white:#fff;
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --card: #16161f;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f8;
+  --muted: #8b8b9e;
+  --purple: #7c5cfc;
+  --purple2: #9b7dff;
+  --pink: #f059da;
+  --teal: #00d4aa;
+  --amber: #ffb347;
+  --red: #ff5757;
+  --green: #4ade80;
+  --gradient: linear-gradient(135deg, #7c5cfc, #f059da);
+  --gradient2: linear-gradient(135deg, #00d4aa, #7c5cfc);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:radial-gradient(circle at top,#1b1033 0%,#090611 45%,#05030b 100%);color:var(--text);min-height:100vh}
-a{color:inherit}
-.shell{max-width:1400px;margin:0 auto;padding:24px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;padding:18px 22px;background:rgba(18,11,36,0.88);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(10px)}
-.brand{font-size:1.4rem;font-weight:800;text-decoration:none}
-.brand span{color:var(--primary-light)}
-.top-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.btn{border:none;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff}
-.btn-outline{background:transparent;border:1px solid var(--line);color:var(--text)}
-.hero{display:grid;grid-template-columns:1.4fr 0.9fr;gap:20px;margin-bottom:24px}
-.hero-card,.panel,.course-card,.detail-card,.empty{background:rgba(18,11,36,0.88);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(10px)}
-.hero-card{padding:28px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(108,43,217,0.15);border:1px solid rgba(139,92,246,0.25);font-size:.78rem;font-weight:700;color:var(--primary-light);margin-bottom:14px}
-.hero h1{font-size:clamp(2rem,4vw,3rem);line-height:1.08;letter-spacing:-0.04em;margin-bottom:12px}
-.hero p{color:var(--muted);line-height:1.7;max-width:700px}
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
-.stat{padding:16px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
-.stat .num{font-size:1.6rem;font-weight:800;color:var(--white)}
-.stat .lbl{font-size:.8rem;color:var(--muted);margin-top:4px}
-.focus-card{padding:24px;display:flex;flex-direction:column;justify-content:space-between}
-.focus-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--primary-light);font-weight:700;margin-bottom:8px}
-.focus-title{font-size:1.15rem;font-weight:800;margin-bottom:8px}
-.focus-meta{color:var(--muted);font-size:.88rem;line-height:1.6}
-.progress-wrap{margin-top:18px}
-.progress-row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:8px}
-.progress{height:8px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden}
-.progress > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--success),#34d399)}
-.layout{display:grid;grid-template-columns:360px 1fr;gap:20px}
-.panel{padding:18px}
-.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.panel-title{font-size:1rem;font-weight:800}
-.panel-sub{font-size:.82rem;color:var(--muted)}
-.course-list{display:flex;flex-direction:column;gap:12px}
-.course-card{padding:16px;cursor:pointer;transition:.2s transform,.2s border-color,.2s background}
-.course-card:hover{transform:translateY(-1px);border-color:rgba(139,92,246,0.4)}
-.course-card.active{border-color:rgba(16,185,129,0.45);background:rgba(16,185,129,0.06)}
-.course-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.icon{width:44px;height:44px;border-radius:14px;background:rgba(108,43,217,0.14);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
-.course-title{font-size:.95rem;font-weight:700;color:var(--white);line-height:1.35}
-.course-meta{font-size:.8rem;color:var(--muted);margin-top:5px}
-.pill{padding:5px 9px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap}
-.pill-open{background:rgba(16,185,129,0.12);color:#86efac}
-.pill-lock{background:rgba(248,113,113,0.12);color:#fca5a5}
-.mini-progress{margin-top:12px}
-.mini-progress .progress{height:6px}
-.detail{display:grid;gap:18px}
-.detail-card{padding:22px}
-.detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
-.detail-title{display:flex;align-items:center;gap:14px}
-.detail-title .emoji{font-size:2.2rem}
-.detail-title h2{font-size:1.5rem;line-height:1.2}
-.detail-title p{font-size:.92rem;color:var(--muted);margin-top:6px}
-.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.metric{padding:14px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
-.metric .k{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.metric .v{font-size:1rem;font-weight:800;margin-top:6px}
-.section-title{font-size:.95rem;font-weight:800;margin-bottom:12px}
-.tag-row{display:flex;flex-wrap:wrap;gap:8px}
-.tag{padding:8px 12px;border-radius:999px;background:rgba(108,43,217,0.14);color:#ddd6fe;font-size:.8rem;font-weight:600}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.list{display:grid;gap:10px}
-.list-item{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
-.list-item strong{display:block;font-size:.9rem;margin-bottom:6px}
-.list-item span{color:var(--muted);font-size:.85rem;line-height:1.6}
-.locked-banner{padding:14px 16px;border-radius:16px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.18);color:#fecaca;margin-bottom:18px}
-.empty{padding:40px 24px;text-align:center;color:var(--muted)}
-@media(max-width:1100px){
-  .hero,.layout,.two-col{grid-template-columns:1fr}
-  .detail-grid{grid-template-columns:repeat(2,1fr)}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Satoshi', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-@media(max-width:700px){
-  .shell{padding:16px}
-  .hero-stats,.detail-grid{grid-template-columns:1fr}
-  .topbar{align-items:flex-start;flex-direction:column}
+
+/* Background mesh */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(124,92,252,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 400px at 90% 80%, rgba(240,89,218,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(0,212,170,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
+
+/* ===== NAVBAR ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.nav-name {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.nav-name span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.btn-browse {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-browse:hover { background: var(--bg2); border-color: var(--purple); }
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(255,87,87,0.3);
+  color: var(--red);
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(255,87,87,0.1); }
+
+/* ===== MAIN LAYOUT ===== */
+.layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-section {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+.sidebar-item:hover { background: var(--bg3); color: var(--text); }
+.sidebar-item.active {
+  background: rgba(124,92,252,0.12);
+  color: var(--purple2);
+  border-color: rgba(124,92,252,0.2);
+}
+
+.sidebar-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.sidebar-badge {
+  margin-left: auto;
+  background: var(--purple);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(124,92,252,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-greeting {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.hero-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+}
+
+.hero-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hero-streak {
+  text-align: center;
+  background: rgba(255,179,71,0.08);
+  border: 1px solid rgba(255,179,71,0.2);
+  border-radius: 16px;
+  padding: 1.25rem 1.75rem;
+}
+
+.streak-number {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.streak-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  border-radius: 16px 0 0 16px;
+}
+.stat-card.purple::before { background: var(--purple); }
+.stat-card.teal::before { background: var(--teal); }
+.stat-card.amber::before { background: var(--amber); }
+.stat-card.pink::before { background: var(--pink); }
+
+.stat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-value {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.section-link {
+  font-size: 0.82rem;
+  color: var(--purple2);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ===== COURSES GRID ===== */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.course-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card:hover {
+  border-color: rgba(124,92,252,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.course-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.course-card.locked:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+.course-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.course-emoji {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: rgba(124,92,252,0.12);
+  border: 1px solid rgba(124,92,252,0.2);
+}
+
+.course-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+.badge-live { background: rgba(0,212,170,0.15); color: var(--teal); border: 1px solid rgba(0,212,170,0.3); }
+.badge-locked { background: rgba(139,139,158,0.1); color: var(--muted); border: 1px solid rgba(139,139,158,0.2); }
+.badge-new { background: rgba(124,92,252,0.15); color: var(--purple2); border: 1px solid rgba(124,92,252,0.3); }
+
+.course-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+  line-height: 1.3;
+}
+
+.course-meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-wrap {
+  margin-top: 0.75rem;
+}
+
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--bg3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--gradient);
+  transition: width 1s ease;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,10,15,0.6);
+  border-radius: 16px;
+  gap: 0.5rem;
+}
+
+.lock-icon { font-size: 1.75rem; }
+
+.btn-enroll {
+  background: var(--gradient);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Satoshi', sans-serif;
+  transition: opacity 0.2s;
+  text-decoration: none;
+}
+.btn-enroll:hover { opacity: 0.9; }
+
+/* ===== TWO COLUMN BOTTOM ===== */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== LEARNING PATH ===== */
+.timeline-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.timeline {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  width: 2px;
+  height: calc(100% - 16px);
+  background: var(--border2);
+}
+
+.timeline-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+.dot-done { background: var(--teal); color: #000; }
+.dot-current { background: var(--gradient); color: white; box-shadow: 0 0 12px rgba(124,92,252,0.5); }
+.dot-upcoming { background: var(--bg3); border: 2px solid var(--border2); color: var(--muted); }
+
+.timeline-content {}
+.timeline-week { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.timeline-phase { font-size: 0.88rem; font-weight: 600; margin: 0.1rem 0; }
+.timeline-topics { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+/* ===== LEADERBOARD ===== */
+.leaderboard-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.leaderboard-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: var(--bg3);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.lb-item:hover { border-color: var(--border2); }
+.lb-item.you {
+  background: rgba(124,92,252,0.08);
+  border-color: rgba(124,92,252,0.25);
+}
+
+.lb-rank {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  width: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.lb-rank.gold { color: #ffd700; }
+.lb-rank.silver { color: #c0c0c0; }
+.lb-rank.bronze { color: #cd7f32; }
+
+.lb-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.lb-info { flex: 1; }
+.lb-name { font-size: 0.85rem; font-weight: 600; }
+.lb-score { font-size: 0.72rem; color: var(--muted); }
+
+.lb-pts {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--purple2);
+}
+
+/* ===== ACHIEVEMENTS ===== */
+.achievements-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.badge-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  transition: all 0.2s;
+  position: relative;
+}
+.badge-icon:hover { transform: scale(1.1); }
+.badge-item.earned .badge-icon { background: rgba(124,92,252,0.1); border-color: rgba(124,92,252,0.3); box-shadow: 0 4px 15px rgba(124,92,252,0.2); }
+.badge-item.locked-badge .badge-icon { opacity: 0.35; filter: grayscale(1); }
+
+.badge-name { font-size: 0.65rem; color: var(--muted); text-align: center; }
+
+/* ===== QUICK TOOLS ===== */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tool-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: block;
+}
+.tool-card:hover { border-color: rgba(124,92,252,0.3); transform: translateY(-3px); }
+
+.tool-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+.tool-name { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.tool-desc { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+
+/* ===== LOADING STATE ===== */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem;
+  color: var(--muted);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.empty-desc { font-size: 0.85rem; margin-bottom: 1.25rem; }
+
+/* ===== COURSE DETAIL PANEL ===== */
+.detail-panel {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  animation: slideIn 0.3s ease;
+}
+.detail-panel.open { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-emoji {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  background: rgba(124,92,252,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.detail-title { font-family: 'Clash Display', sans-serif; font-size: 1.3rem; font-weight: 700; }
+.detail-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+
+.btn-close {
+  margin-left: auto;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.btn-close:hover { color: var(--text); }
+
+.curriculum-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.curr-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Satoshi', sans-serif;
+  transition: all 0.2s;
+}
+.curr-tab.active { background: rgba(124,92,252,0.15); color: var(--purple2); border-color: rgba(124,92,252,0.3); }
+
+.curriculum-content { display: none; }
+.curriculum-content.active { display: block; }
+
+.week-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg3);
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.week-item:hover { border-color: rgba(124,92,252,0.2); }
+
+.week-num {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: rgba(124,92,252,0.15);
+  color: var(--purple2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.week-title { font-size: 0.88rem; font-weight: 600; }
+.week-topics { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg3);
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.project-item:hover { border-color: rgba(0,212,170,0.2); }
+
+.project-status {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ps-pending { background: var(--amber); }
+.ps-done { background: var(--teal); }
+.ps-upcoming { background: var(--muted); }
+
+.project-title { font-size: 0.88rem; font-weight: 600; flex: 1; }
+.project-due { font-size: 0.75rem; color: var(--muted); }
+.project-tag { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; background: rgba(0,212,170,0.1); color: var(--teal); border: 1px solid rgba(0,212,170,0.2); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 </style>
 </head>
 <body>
-<div class="shell">
-  <div class="topbar">
-    <a class="brand" href="index.html">Zelvo<span>qua</span></a>
-    <div class="top-actions">
-      <div id="userLabel" style="color:var(--muted);font-size:.9rem">Checking session...</div>
-      <a class="btn btn-outline" href="index.html">Browse Courses</a>
-      <button class="btn btn-primary" id="logoutBtn">Logout</button>
-    </div>
-  </div>
 
-  <div class="hero">
-    <div class="hero-card">
-      <div class="eyebrow">Student Workspace</div>
-      <h1>Track enrolled internships, locked programs, and course progress in one place.</h1>
-      <p>Your dashboard is driven from Supabase enrollments. Paid or free enrolled programs open here; everything else stays locked until the student buys that specific course.</p>
-      <div class="hero-stats">
-        <div class="stat"><div class="num" id="statUnlocked">0</div><div class="lbl">Unlocked Programs</div></div>
-        <div class="stat"><div class="num" id="statLocked">0</div><div class="lbl">Locked Programs</div></div>
-        <div class="stat"><div class="num" id="statProgress">0%</div><div class="lbl">Average Progress</div></div>
-      </div>
-    </div>
-    <div class="focus-card hero-card">
-      <div>
-        <div class="focus-label">Current Focus</div>
-        <div class="focus-title" id="focusTitle">Choose a program</div>
-        <div class="focus-meta" id="focusMeta">Select an unlocked course to view modules, projects, teaching plan, and outcomes.</div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-row"><span>Overall completion</span><span id="focusProgressText">0%</span></div>
-        <div class="progress"><span id="focusProgressBar" style="width:0%"></span></div>
-      </div>
-    </div>
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">Zelvoqua</div>
+  <div class="nav-right">
+    <div class="nav-name">Welcome, <span id="nav-username">Student</span></div>
+    <div class="nav-avatar" id="nav-avatar">S</div>
+    <a href="index.html" class="btn-browse">Browse Courses</a>
+    <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
+</nav>
 
-  <div class="layout">
-    <div class="panel">
-      <div class="panel-head">
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main</div>
+    <a class="sidebar-item active" onclick="showSection('overview')">
+      <span class="sidebar-icon">📊</span> Overview
+    </a>
+    <a class="sidebar-item" onclick="showSection('courses')">
+      <span class="sidebar-icon">📚</span> My Programs
+      <span class="sidebar-badge" id="enrolled-count">0</span>
+    </a>
+    <a class="sidebar-item" onclick="showSection('progress')">
+      <span class="sidebar-icon">📈</span> Progress
+    </a>
+
+    <div class="sidebar-section">Tools</div>
+    <a class="sidebar-item" href="index.html#ats-section">
+      <span class="sidebar-icon">🎯</span> ATS Checker
+    </a>
+    <a class="sidebar-item" href="index.html#ats-section">
+      <span class="sidebar-icon">📝</span> Resume Builder
+    </a>
+    <a class="sidebar-item" href="internships.html">
+      <span class="sidebar-icon">💼</span> All Programs
+    </a>
+
+    <div class="sidebar-section">Account</div>
+    <a class="sidebar-item" onclick="showSection('achievements')">
+      <span class="sidebar-icon">🏆</span> Achievements
+    </a>
+    <a class="sidebar-item" onclick="logout()">
+      <span class="sidebar-icon">🚪</span> Logout
+    </a>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content">
+
+    <!-- LOADING -->
+    <div class="loading-state" id="loading">
+      <div class="spinner"></div>
+      Loading your dashboard...
+    </div>
+
+    <!-- DASHBOARD CONTENT (hidden until loaded) -->
+    <div id="dashboard-content" style="display:none">
+
+      <!-- HERO -->
+      <div class="hero fade-up">
         <div>
-          <div class="panel-title">Programs</div>
-          <div class="panel-sub">Unlocked programs stay usable. Everything else stays locked.</div>
+          <div class="hero-greeting">Good day! 👋</div>
+          <div class="hero-name" id="hero-name">Welcome back!</div>
+          <div class="hero-sub" id="hero-sub">Keep learning, keep growing 🚀</div>
+        </div>
+        <div class="hero-streak">
+          <div class="streak-number" id="streak-num">1</div>
+          <div class="streak-label">Day Streak 🔥</div>
         </div>
       </div>
-      <div class="course-list" id="courseList">
-        <div class="empty">Loading programs...</div>
-      </div>
-    </div>
 
-    <div class="detail" id="detailMount">
-      <div class="empty">Select a program to see its complete learning panel.</div>
-    </div>
-  </div>
+      <!-- STATS -->
+      <div class="stats-grid fade-up delay-1">
+        <div class="stat-card purple">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value" id="stat-enrolled">0</div>
+          <div class="stat-label">Programs Enrolled</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="stat-completed">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon">📅</div>
+          <div class="stat-value" id="stat-days">0</div>
+          <div class="stat-label">Days Active</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value" id="stat-pts">0</div>
+          <div class="stat-label">Points Earned</div>
+        </div>
+      </div>
+
+      <!-- COURSE DETAIL PANEL -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-header">
+          <div class="detail-emoji" id="dp-emoji">📚</div>
+          <div>
+            <div class="detail-title" id="dp-title">Course Title</div>
+            <div class="detail-meta">
+              <span id="dp-duration">—</span>
+              <span id="dp-category">—</span>
+            </div>
+          </div>
+          <button class="btn-close" onclick="closeDetail()">✕</button>
+        </div>
+
+        <div class="curriculum-tabs">
+          <button class="curr-tab active" onclick="switchTab('curriculum', this)">📖 Curriculum</button>
+          <button class="curr-tab" onclick="switchTab('projects', this)">🛠️ Projects</button>
+          <button class="curr-tab" onclick="switchTab('outcomes', this)">🎯 Outcomes</button>
+        </div>
+
+        <div class="curriculum-content active" id="tab-curriculum">
+          <div id="curriculum-list"></div>
+        </div>
+        <div class="curriculum-content" id="tab-projects">
+          <div id="projects-list"></div>
+        </div>
+        <div class="curriculum-content" id="tab-outcomes">
+          <div id="outcomes-list"></div>
+        </div>
+      </div>
+
+      <!-- MY PROGRAMS -->
+      <div class="fade-up delay-2">
+        <div class="section-header">
+          <div class="section-title">My Programs</div>
+          <a href="internships.html" class="section-link">Browse more →</a>
+        </div>
+        <div class="courses-grid" id="courses-grid">
+          <!-- loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- BOTTOM GRID: Timeline + Leaderboard -->
+      <div class="bottom-grid fade-up delay-3">
+
+        <!-- LEARNING PATH -->
+        <div class="timeline-card">
+          <div class="section-header">
+            <div class="section-title">Learning Path</div>
+          </div>
+          <div class="timeline" id="timeline-wrap">
+            <div class="timeline-item">
+              <div class="timeline-dot dot-done">✓</div>
+              <div class="timeline-content">
+                <div class="timeline-week">Week 1-2</div>
+                <div class="timeline-phase">Foundations</div>
+                <div class="timeline-topics">Core concepts, industry overview, tools setup</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot dot-current">2</div>
+              <div class="timeline-content">
+                <div class="timeline-week">Week 3-4 • Current</div>
+                <div class="timeline-phase">Core Skills</div>
+                <div class="timeline-topics">Hands-on tasks, real-world case studies</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot dot-upcoming">3</div>
+              <div class="timeline-content">
+                <div class="timeline-week">Week 5-6</div>
+                <div class="timeline-phase">Advanced Topics</div>
+                <div class="timeline-topics">Strategy, analytics, advanced techniques</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot dot-upcoming">4</div>
+              <div class="timeline-content">
+                <div class="timeline-week">Final Week</div>
+                <div class="timeline-phase">Capstone Project</div>
+                <div class="timeline-topics">Build your portfolio project + certification</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEADERBOARD -->
+        <div class="leaderboard-card">
+          <div class="section-header">
+            <div class="section-title">Leaderboard 🏆</div>
+            <span class="section-link">This month</span>
+          </div>
+          <div class="leaderboard-list">
+            <div class="lb-item">
+              <div class="lb-rank gold">1</div>
+              <div class="lb-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">A</div>
+              <div class="lb-info">
+                <div class="lb-name">Aryan K.</div>
+                <div class="lb-score">Digital Marketing • 28 days</div>
+              </div>
+              <div class="lb-pts">2840</div>
+            </div>
+            <div class="lb-item">
+              <div class="lb-rank silver">2</div>
+              <div class="lb-avatar" style="background:linear-gradient(135deg,#8b5cf6,#06b6d4)">P</div>
+              <div class="lb-info">
+                <div class="lb-name">Priya S.</div>
+                <div class="lb-score">Financial Analysis • 25 days</div>
+              </div>
+              <div class="lb-pts">2610</div>
+            </div>
+            <div class="lb-item">
+              <div class="lb-rank bronze">3</div>
+              <div class="lb-avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6)">R</div>
+              <div class="lb-info">
+                <div class="lb-name">Rahul M.</div>
+                <div class="lb-score">HR Management • 22 days</div>
+              </div>
+              <div class="lb-pts">2290</div>
+            </div>
+            <div class="lb-item">
+              <div class="lb-rank">4</div>
+              <div class="lb-avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">S</div>
+              <div class="lb-info">
+                <div class="lb-name">Sneha T.</div>
+                <div class="lb-score">Operations • 19 days</div>
+              </div>
+              <div class="lb-pts">1980</div>
+            </div>
+            <div class="lb-item you" id="my-lb-row">
+              <div class="lb-rank">—</div>
+              <div class="lb-avatar" id="my-lb-avatar" style="background:linear-gradient(135deg,#7c5cfc,#f059da)">Y</div>
+              <div class="lb-info">
+                <div class="lb-name" id="my-lb-name">You</div>
+                <div class="lb-score">Just getting started!</div>
+              </div>
+              <div class="lb-pts" id="my-lb-pts">0</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ACHIEVEMENTS -->
+      <div class="achievements-card fade-up delay-4">
+        <div class="section-header">
+          <div class="section-title">Achievements & Badges</div>
+          <span class="section-link" id="badges-earned-count">0 earned</span>
+        </div>
+        <div class="badges-grid">
+          <div class="badge-item earned" title="Welcome to Zelvoqua!">
+            <div class="badge-icon">🎉</div>
+            <div class="badge-name">Joined</div>
+          </div>
+          <div class="badge-item locked-badge" title="Complete your first day">
+            <div class="badge-icon">🔥</div>
+            <div class="badge-name">Day 1</div>
+          </div>
+          <div class="badge-item locked-badge" title="7 day streak">
+            <div class="badge-icon">⚡</div>
+            <div class="badge-name">Week Streak</div>
+          </div>
+          <div class="badge-item locked-badge" title="Submit your first project">
+            <div class="badge-icon">🛠️</div>
+            <div class="badge-name">Builder</div>
+          </div>
+          <div class="badge-item locked-badge" title="Reach top 10 in leaderboard">
+            <div class="badge-icon">🏆</div>
+            <div class="badge-name">Top 10</div>
+          </div>
+          <div class="badge-item locked-badge" title="Complete a course">
+            <div class="badge-icon">🎓</div>
+            <div class="badge-name">Graduate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK TOOLS -->
+      <div class="fade-up delay-4">
+        <div class="section-header">
+          <div class="section-title">Quick Tools</div>
+        </div>
+        <div class="tools-grid">
+          <a href="index.html#ats-section" class="tool-card">
+            <div class="tool-icon">🎯</div>
+            <div class="tool-name">ATS Checker</div>
+            <div class="tool-desc">Score your resume</div>
+          </a>
+          <a href="index.html#ats-section" class="tool-card">
+            <div class="tool-icon">📝</div>
+            <div class="tool-name">Resume Builder</div>
+            <div class="tool-desc">AI-powered resume</div>
+          </a>
+          <a href="internships.html" class="tool-card">
+            <div class="tool-icon">💼</div>
+            <div class="tool-name">Browse Programs</div>
+            <div class="tool-desc">35+ internships</div>
+          </a>
+          <a href="id-card.html" class="tool-card">
+            <div class="tool-icon">🪪</div>
+            <div class="tool-name">My ID Card</div>
+            <div class="tool-desc">Download intern ID</div>
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /dashboard-content -->
+  </main>
 </div>
 
 <script>
@@ -153,227 +1156,206 @@ const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
+let enrolledCourses = [];
 let allCourses = [];
-let enrolledMap = new Map();
-let selectedCourseId = null;
 
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await sb.auth.signOut();
-  window.location.href = 'index.html';
-});
+const CURRICULUM = {
+  'Marketing': [
+    { week: 'Week 1', title: 'Marketing Fundamentals', topics: '4Ps of marketing, consumer behavior, STP analysis' },
+    { week: 'Week 2', title: 'Brand Building', topics: 'Brand identity, positioning, messaging strategy' },
+    { week: 'Week 3', title: 'Digital Channels', topics: 'SEO, social media, email marketing basics' },
+    { week: 'Week 4', title: 'Analytics & ROI', topics: 'Google Analytics, campaign metrics, reporting' },
+    { week: 'Final', title: 'Capstone Project', topics: 'Full marketing plan for a real brand' },
+  ],
+  'Finance': [
+    { week: 'Week 1', title: 'Financial Basics', topics: 'Balance sheets, P&L, cash flow statements' },
+    { week: 'Week 2', title: 'Ratio Analysis', topics: 'Liquidity, profitability, leverage ratios' },
+    { week: 'Week 3', title: 'Financial Modeling', topics: 'Excel models, DCF valuation, forecasting' },
+    { week: 'Week 4', title: 'Investment Analysis', topics: 'Stock analysis, portfolio basics, risk' },
+    { week: 'Final', title: 'Capstone Project', topics: 'Company valuation report' },
+  ],
+  'Management': [
+    { week: 'Week 1', title: 'Management Principles', topics: 'Leadership styles, org structure, decision making' },
+    { week: 'Week 2', title: 'Operations', topics: 'Process mapping, efficiency, KPIs' },
+    { week: 'Week 3', title: 'People Management', topics: 'Motivation, conflict resolution, team dynamics' },
+    { week: 'Final', title: 'Capstone Project', topics: 'Business case study analysis' },
+  ],
+  'HR': [
+    { week: 'Week 1', title: 'HR Fundamentals', topics: 'HR lifecycle, org design, HR policies' },
+    { week: 'Week 2', title: 'Recruitment', topics: 'Job analysis, sourcing, interviewing techniques' },
+    { week: 'Week 3', title: 'L&D & Performance', topics: 'Training design, appraisals, PIP' },
+    { week: 'Final', title: 'Capstone Project', topics: 'HR strategy for a startup' },
+  ],
+  'Supply Chain': [
+    { week: 'Week 1', title: 'Supply Chain Basics', topics: 'Procurement, inventory, logistics overview' },
+    { week: 'Week 2', title: 'Vendor Management', topics: 'Sourcing, negotiation, contract management' },
+    { week: 'Week 3', title: 'Analytics & Tools', topics: 'ERP basics, supply chain KPIs, dashboards' },
+    { week: 'Final', title: 'Capstone Project', topics: 'Supply chain optimization case study' },
+  ],
+};
 
-function hashProgress(id){
-  let total = 0;
-  const seed = String(id);
-  for(let i=0;i<seed.length;i++) total += seed.charCodeAt(i) * (i + 3);
-  return 18 + (total % 63);
-}
+const PROJECTS = [
+  { title: 'Industry Research Report', due: 'Week 2', status: 'pending' },
+  { title: 'Competitive Analysis', due: 'Week 3', status: 'upcoming' },
+  { title: 'Strategy Presentation', due: 'Week 4', status: 'upcoming' },
+  { title: 'Capstone Final Project', due: 'Final Week', status: 'upcoming' },
+];
 
-function buildCourseBlueprint(course){
-  const title = (course.title || '').toLowerCase();
-  const category = (course.category || '').toLowerCase();
-
-  const byKeyword = [
-    { test: ['hr', 'human resource', 'recruitment'], skills:['Recruitment funnel', 'HR operations', 'Payroll basics', 'Policy drafting'], modules:['HR foundations and org structures','Recruitment, onboarding and ATS workflows','Performance reviews and employee engagement','Compliance, payroll and final capstone'], projects:['Build a hiring tracker for 3 job roles','Create onboarding SOP and policy handbook','Draft employee engagement calendar for 30 days'], outcomes:['HR intern portfolio', 'Interview-ready HR case answers', 'Hiring workflow understanding'] },
-    { test: ['finance', 'financial', 'investment', 'equity'], skills:['Financial statements', 'Excel modelling', 'Ratio analysis', 'Valuation basics'], modules:['Finance foundations and market structure','Statements, ratios and forecasting','Valuation, sensitivity and scenario analysis','Investment memo and reporting capstone'], projects:['Analyse a listed company using annual report data','Build a 3-statement Excel model','Write a one-page investment note'], outcomes:['Finance case-study portfolio', 'Analyst-style reporting samples', 'Excel and valuation confidence'] },
-    { test: ['marketing', 'social media', 'content', 'market research'], skills:['Campaign planning', 'Content strategy', 'Audience research', 'Performance analytics'], modules:['Marketing fundamentals and positioning','Content, channels and social distribution','Paid campaigns, funnels and attribution','Research report and GTM capstone'], projects:['Create a 30-day content calendar','Build competitor research deck','Plan a lead-gen campaign with KPIs'], outcomes:['Portfolio-ready campaigns', 'Marketing strategy artifacts', 'Execution framework for internships'] },
-    { test: ['supply chain', 'logistics', 'warehouse', 'procurement', 'operations'], skills:['Process mapping', 'Inventory logic', 'Vendor workflows', 'Operational KPIs'], modules:['Operations and supply chain foundations','Procurement, vendor and inventory control','Logistics, fulfillment and reporting','Optimization project and presentation'], projects:['Map a warehouse workflow and bottlenecks','Create vendor scorecard template','Build KPI dashboard for fulfillment team'], outcomes:['Ops workflow portfolio', 'Process improvement thinking', 'Business reporting samples'] },
-    { test: ['web', 'full stack', 'cloud', 'devops', 'ml', 'machine learning', 'data science', 'ui/ux', 'design'], skills:['Core concepts', 'Hands-on assignments', 'Project delivery', 'Interview prep'], modules:['Foundations and tools setup','Core implementation sprint','Advanced concepts and review','Capstone project and mock interview'], projects:['Ship a portfolio project for this program','Document your approach in a case study','Prepare demo and recruiter summary'], outcomes:['Proof-of-work portfolio', 'Structured project delivery', 'Interview readiness'] }
-  ];
-
-  const match = byKeyword.find(group => group.test.some(word => title.includes(word) || category.includes(word)));
-  if(match) return match;
-
-  return {
-    skills:['Foundation knowledge','Hands-on exercises','Project execution','Career preparation'],
-    modules:['Program introduction and core concepts','Implementation sprint and assignments','Review, feedback and polishing','Final capstone and career handoff'],
-    projects:['Complete one guided project','Submit one independent assignment','Present outcomes in a portfolio-ready format'],
-    outcomes:['Applied project experience','Clear learning path','Internship readiness']
-  };
-}
-
-function getCourseState(course){
-  const enrollment = enrolledMap.get(String(course.id));
-  const unlocked = Boolean(enrollment);
-  const progress = unlocked ? hashProgress(course.id) : 0;
-  return { enrollment, unlocked, progress };
-}
-
-function renderList(){
-  const list = document.getElementById('courseList');
-  if(!allCourses.length){
-    list.innerHTML = '<div class="empty">No courses found.</div>';
-    return;
-  }
-
-  list.innerHTML = allCourses.map(course => {
-    const state = getCourseState(course);
-    return `
-      <div class="course-card ${String(course.id) === String(selectedCourseId) ? 'active' : ''}" onclick="selectCourse('${course.id}')">
-        <div class="course-top">
-          <div style="display:flex;gap:12px">
-            <div class="icon">${course.thumbnail_emoji || '📚'}</div>
-            <div>
-              <div class="course-title">${course.title}</div>
-              <div class="course-meta">${course.category || 'Program'} · ${course.duration || 'Self-paced'}</div>
-            </div>
-          </div>
-          <div class="pill ${state.unlocked ? 'pill-open' : 'pill-lock'}">${state.unlocked ? 'Unlocked' : 'Locked'}</div>
-        </div>
-        <div class="mini-progress">
-          <div class="progress"><span style="width:${state.progress}%"></span></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderDetail(){
-  const mount = document.getElementById('detailMount');
-  const course = allCourses.find(item => String(item.id) === String(selectedCourseId));
-  if(!course){
-    mount.innerHTML = '<div class="empty">Select a program to see its complete learning panel.</div>';
-    return;
-  }
-
-  const state = getCourseState(course);
-  const blueprint = buildCourseBlueprint(course);
-  const nextMilestone = state.unlocked ? (state.progress < 35 ? 'Finish module 1' : state.progress < 70 ? 'Submit guided project' : 'Prepare capstone review') : 'Purchase required to unlock';
-  const paymentLabel = state.enrollment?.payment_status === 'paid' ? 'Paid access' : state.enrollment ? 'Enrolled access' : 'Locked';
-
-  document.getElementById('focusTitle').textContent = course.title;
-  document.getElementById('focusMeta').textContent = state.unlocked
-    ? `${course.category || 'Program'} · ${course.duration || 'Self-paced'} · ${paymentLabel}`
-    : `${course.category || 'Program'} is locked. Enroll from the homepage to unlock teaching content and projects.`;
-  document.getElementById('focusProgressText').textContent = `${state.progress}%`;
-  document.getElementById('focusProgressBar').style.width = `${state.progress}%`;
-
-  mount.innerHTML = `
-    <div class="detail-card">
-      ${state.unlocked ? '' : '<div class="locked-banner">This program is locked for this student. The structure is visible, but detailed access should stay blocked until enrollment exists.</div>'}
-      <div class="detail-head">
-        <div class="detail-title">
-          <div class="emoji">${course.thumbnail_emoji || '📚'}</div>
-          <div>
-            <h2>${course.title}</h2>
-            <p>${course.description || 'Program details will appear here once the course description is filled in.'}</p>
-          </div>
-        </div>
-        <a class="btn ${state.unlocked ? 'btn-primary' : 'btn-outline'}" href="index.html">${state.unlocked ? 'Back to catalog' : 'Unlock from home'}</a>
-      </div>
-
-      <div class="detail-grid">
-        <div class="metric"><div class="k">Status</div><div class="v">${paymentLabel}</div></div>
-        <div class="metric"><div class="k">Duration</div><div class="v">${course.duration || 'TBD'}</div></div>
-        <div class="metric"><div class="k">Progress</div><div class="v">${state.progress}%</div></div>
-        <div class="metric"><div class="k">Next milestone</div><div class="v">${nextMilestone}</div></div>
-      </div>
-    </div>
-    ${state.unlocked ? `
-      <div class="detail-card">
-        <div class="section-title">Skills covered</div>
-        <div class="tag-row">${blueprint.skills.map(skill => `<div class="tag">${skill}</div>`).join('')}</div>
-      </div>
-
-      <div class="two-col">
-        <div class="detail-card">
-          <div class="section-title">Teaching plan</div>
-          <div class="list">${blueprint.modules.map((module, index) => `
-            <div class="list-item">
-              <strong>Module ${index + 1}</strong>
-              <span>${module}</span>
-            </div>
-          `).join('')}</div>
-        </div>
-
-        <div class="detail-card">
-          <div class="section-title">Project work</div>
-          <div class="list">${blueprint.projects.map(project => `
-            <div class="list-item">
-              <strong>Project task</strong>
-              <span>${project}</span>
-            </div>
-          `).join('')}</div>
-        </div>
-      </div>
-
-      <div class="detail-card">
-        <div class="section-title">Expected outcomes</div>
-        <div class="list">${blueprint.outcomes.map(outcome => `
-          <div class="list-item">
-            <strong>Outcome</strong>
-            <span>${outcome}</span>
-          </div>
-        `).join('')}</div>
-      </div>
-    ` : `
-      <div class="detail-card">
-        <div class="section-title">Locked preview</div>
-        <div class="list">
-          <div class="list-item">
-            <strong>What unlocks after enrollment</strong>
-            <span>Teaching modules, project briefs, progress tracking, and internship-ready outcomes become visible only after this program is enrolled for this student.</span>
-          </div>
-          <div class="list-item">
-            <strong>How to unlock</strong>
-            <span>Go back to the home page, complete enrollment for this course, and the program will automatically become active in this dashboard.</span>
-          </div>
-        </div>
-      </div>
-    `}
-  `;
-}
-
-function updateSummary(){
-  const unlocked = allCourses.filter(course => getCourseState(course).unlocked);
-  const locked = allCourses.length - unlocked.length;
-  const average = unlocked.length ? Math.round(unlocked.reduce((sum, course) => sum + getCourseState(course).progress, 0) / unlocked.length) : 0;
-  document.getElementById('statUnlocked').textContent = unlocked.length;
-  document.getElementById('statLocked').textContent = locked;
-  document.getElementById('statProgress').textContent = `${average}%`;
-}
-
-function selectCourse(courseId){
-  selectedCourseId = String(courseId);
-  const url = new URL(window.location.href);
-  url.searchParams.set('course', selectedCourseId);
-  history.replaceState({}, '', url.toString());
-  renderList();
-  renderDetail();
-}
-
-async function boot(){
+async function init() {
   const { data: { session } } = await sb.auth.getSession();
-  if(!session?.user){
-    window.location.href = 'index.html';
-    return;
-  }
-
+  if (!session) { window.location.href = 'index.html'; return; }
   currentUser = session.user;
-  document.getElementById('userLabel').textContent = currentUser.user_metadata?.full_name
-    ? `${currentUser.user_metadata.full_name} · Student`
-    : `${currentUser.email} · Student`;
 
-  const [{ data: courses }, { data: enrollments }] = await Promise.all([
-    sb.from('courses').select('*').order('id'),
-    sb.from('enrollments').select('course_id, payment_status, enrolled_at').eq('user_id', currentUser.id)
+  const name = currentUser.email.split('@')[0];
+  const initials = name.charAt(0).toUpperCase();
+  document.getElementById('nav-username').textContent = name;
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-avatar').style.background = `linear-gradient(135deg, #7c5cfc, #f059da)`;
+  document.getElementById('hero-name').textContent = `Hey, ${name}! 👋`;
+  document.getElementById('my-lb-name').textContent = name;
+  document.getElementById('my-lb-avatar').textContent = initials;
+
+  await loadData();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dashboard-content').style.display = 'block';
+}
+
+async function loadData() {
+  const [enrollRes, coursesRes] = await Promise.all([
+    sb.from('enrollments').select('*, courses(*)').eq('user_id', currentUser.id),
+    sb.from('courses').select('*').order('id')
   ]);
 
-  allCourses = courses || [];
-  enrolledMap = new Map((enrollments || []).map(item => [String(item.course_id), item]));
+  enrolledCourses = enrollRes.data || [];
+  allCourses = coursesRes.data || [];
 
-  const requestedCourse = new URL(window.location.href).searchParams.get('course');
-  const firstUnlocked = allCourses.find(course => enrolledMap.has(String(course.id)));
-  selectedCourseId = requestedCourse && allCourses.some(course => String(course.id) === String(requestedCourse))
-    ? requestedCourse
-    : (firstUnlocked ? String(firstUnlocked.id) : (allCourses[0] ? String(allCourses[0].id) : null));
+  const enrolledIds = enrolledCourses.map(e => e.course_id);
+  document.getElementById('enrolled-count').textContent = enrolledCourses.length;
+  document.getElementById('stat-enrolled').textContent = enrolledCourses.length;
+  document.getElementById('stat-pts').textContent = enrolledCourses.length * 100;
+  document.getElementById('my-lb-pts').textContent = enrolledCourses.length * 100;
 
-  updateSummary();
-  renderList();
-  renderDetail();
+  // Hero sub
+  if (enrolledCourses.length > 0) {
+    const c = enrolledCourses[0].courses;
+    document.getElementById('hero-sub').textContent = `Currently enrolled in ${c?.title || 'a program'} 🚀`;
+  }
+
+  renderCourses(enrolledIds);
 }
 
-boot();
+function renderCourses(enrolledIds) {
+  const grid = document.getElementById('courses-grid');
+  if (allCourses.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">📚</div>
+      <div class="empty-title">No programs yet</div>
+      <div class="empty-desc">Browse our internship programs and enroll to get started</div>
+      <a href="internships.html" class="btn-enroll">Browse Programs</a>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = '';
+  allCourses.forEach(course => {
+    const isEnrolled = enrolledIds.includes(course.id);
+    const progress = isEnrolled ? Math.floor(Math.random() * 60) + 10 : 0;
+    const badgeClass = isEnrolled ? 'badge-live' : 'badge-locked';
+    const badgeText = isEnrolled ? '● ENROLLED' : '🔒 LOCKED';
+
+    const card = document.createElement('div');
+    card.className = `course-card ${isEnrolled ? '' : 'locked'}`;
+    card.innerHTML = `
+      <div class="course-card-top">
+        <div class="course-emoji">${course.thumbnail_emoji || '📚'}</div>
+        <div class="course-badge ${badgeClass}">${badgeText}</div>
+      </div>
+      <div class="course-title">${course.title}</div>
+      <div class="course-meta">
+        <span>⏱ ${course.duration}</span>
+        <span>₹${course.price}</span>
+        <span>📂 ${course.category}</span>
+      </div>
+      ${isEnrolled ? `
+      <div class="progress-wrap">
+        <div class="progress-top"><span>Progress</span><span>${progress}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      </div>` : `
+      <div style="margin-top:0.75rem">
+        <a href="internships.html" class="btn-enroll" style="font-size:0.78rem">Enroll Now →</a>
+      </div>`}
+    `;
+    if (isEnrolled) card.onclick = () => openDetail(course);
+    grid.appendChild(card);
+  });
+}
+
+function openDetail(course) {
+  document.getElementById('dp-emoji').textContent = course.thumbnail_emoji || '📚';
+  document.getElementById('dp-title').textContent = course.title;
+  document.getElementById('dp-duration').textContent = '⏱ ' + course.duration;
+  document.getElementById('dp-category').textContent = '📂 ' + course.category;
+
+  const cat = course.category;
+  const weeks = CURRICULUM[cat] || CURRICULUM['Marketing'];
+  document.getElementById('curriculum-list').innerHTML = weeks.map((w, i) => `
+    <div class="week-item">
+      <div class="week-num">${i+1}</div>
+      <div>
+        <div class="week-title">${w.title} <span style="color:var(--muted);font-size:0.72rem">· ${w.week}</span></div>
+        <div class="week-topics">${w.topics}</div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('projects-list').innerHTML = PROJECTS.map(p => `
+    <div class="project-item">
+      <div class="project-status ps-${p.status}"></div>
+      <div class="project-title">${p.title}</div>
+      <div class="project-due">Due: ${p.due}</div>
+      <div class="project-tag">${p.status === 'done' ? '✓ Done' : p.status === 'pending' ? 'In Progress' : 'Upcoming'}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('outcomes-list').innerHTML = `
+    <div style="display:grid;gap:0.6rem">
+      ${['Industry-recognized internship certificate', 'Portfolio-ready capstone project', 'LinkedIn recommendation letter', 'Placement support & referrals', 'Access to Zelvoqua alumni network'].map(o => `
+        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.85rem 1rem;background:var(--bg3);border-radius:12px">
+          <span style="color:var(--teal);font-size:1rem">✓</span>
+          <span style="font-size:0.88rem">${o}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.querySelectorAll('.curr-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  document.querySelectorAll('.curriculum-content').forEach((c,i) => c.classList.toggle('active', i===0));
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.curr-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.curriculum-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function showSection(section) {
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+init();
 </script>
 </body>
 </html>
