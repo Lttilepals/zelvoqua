@@ -3,141 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvoqua — Resume Builder</title>
+<title>Zelvoqua — AI Resume Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a0f; --bg2: #111118; --bg3: #1a1a24; --card: #16161f;
-  --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.12);
-  --text: #f0f0f8; --muted: #8b8b9e;
-  --purple: #7c5cfc; --purple2: #9b7dff; --pink: #f059da;
-  --teal: #00d4aa; --amber: #ffb347; --green: #4ade80;
-  --gradient: linear-gradient(135deg, #7c5cfc, #f059da);
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Satoshi',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-body::before {
-  content:''; position:fixed; top:0; left:0; width:100%; height:100%;
-  background: radial-gradient(ellipse 600px 400px at 10% 20%, rgba(124,92,252,0.08) 0%, transparent 70%),
-              radial-gradient(ellipse 500px 400px at 90% 80%, rgba(240,89,218,0.06) 0%, transparent 70%);
-  pointer-events:none; z-index:0;
-}
-
-nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; }
-.logo { font-family:'Clash Display',sans-serif; font-size:1.4rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.nav-right { display:flex; align-items:center; gap:0.75rem; }
-.btn-back { background:var(--bg3); border:1px solid var(--border2); color:var(--text); padding:0.45rem 1rem; border-radius:8px; font-size:0.85rem; cursor:pointer; text-decoration:none; transition:all 0.2s; }
-.btn-back:hover { border-color:var(--purple); }
-.nav-pill { background:rgba(0,212,170,0.12); border:1px solid rgba(0,212,170,0.25); color:var(--teal); padding:0.35rem 0.9rem; border-radius:20px; font-size:0.78rem; font-weight:700; }
-
-.page { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:2.5rem 2rem; }
-
-.page-header { text-align:center; margin-bottom:3rem; }
-.page-badge { display:inline-flex; align-items:center; gap:0.5rem; background:rgba(0,212,170,0.1); border:1px solid rgba(0,212,170,0.25); color:var(--teal); padding:0.4rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:700; margin-bottom:1rem; }
-.page-title { font-family:'Clash Display',sans-serif; font-size:2.8rem; font-weight:700; line-height:1.1; margin-bottom:0.75rem; }
-.page-title span { background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.page-sub { color:var(--muted); font-size:1rem; max-width:500px; margin:0 auto; }
-
-/* STEPS */
-.steps-bar { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:2.5rem; }
-.step-item { display:flex; align-items:center; gap:0.5rem; }
-.step-num { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; border:2px solid var(--border2); color:var(--muted); transition:all 0.3s; }
-.step-num.active { background:var(--gradient); border:none; color:white; box-shadow:0 4px 15px rgba(124,92,252,0.4); }
-.step-num.done { background:var(--teal); border:none; color:#000; }
-.step-label { font-size:0.8rem; font-weight:600; color:var(--muted); }
-.step-label.active { color:var(--text); }
-.step-line { width:60px; height:2px; background:var(--border2); margin:0 0.5rem; }
-.step-line.done { background:var(--teal); }
-
-/* FORM LAYOUT */
-.builder-layout { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:start; }
-
-.form-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:1.75rem; }
-.form-step { display:none; }
-.form-step.active { display:block; animation:fadeUp 0.35s ease; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-
-.form-section-title { font-family:'Clash Display',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem; }
-
-.field-row { display:grid; gap:0.75rem; margin-bottom:0.75rem; }
-.field-row.two { grid-template-columns:1fr 1fr; }
-
-label { font-size:0.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; display:block; margin-bottom:0.35rem; }
-
-input, textarea, select {
-  width:100%; background:var(--bg3);
-  border:1px solid var(--border2); border-radius:10px;
-  color:var(--text); font-family:'Satoshi',sans-serif;
-  font-size:0.88rem; padding:0.7rem 0.9rem;
-  outline:none; transition:border-color 0.2s;
-}
-input:focus, textarea:focus, select:focus { border-color:var(--purple); }
-input::placeholder, textarea::placeholder { color:var(--muted); }
-select option { background:var(--bg3); }
-textarea { resize:vertical; line-height:1.6; }
-
-.add-btn { display:flex; align-items:center; gap:0.5rem; background:rgba(124,92,252,0.1); border:1px dashed rgba(124,92,252,0.3); color:var(--purple2); padding:0.6rem 1rem; border-radius:10px; font-size:0.83rem; font-weight:600; cursor:pointer; width:100%; justify-content:center; margin-top:0.5rem; transition:all 0.2s; font-family:'Satoshi',sans-serif; }
-.add-btn:hover { background:rgba(124,92,252,0.15); }
-
-.entry-block { background:var(--bg3); border:1px solid var(--border2); border-radius:12px; padding:1rem; margin-bottom:0.75rem; position:relative; }
-.entry-remove { position:absolute; top:0.75rem; right:0.75rem; background:rgba(255,87,87,0.1); border:none; color:#ff5757; width:24px; height:24px; border-radius:6px; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center; }
-
-.nav-btns { display:flex; gap:0.75rem; margin-top:1.25rem; }
-.btn-prev { flex:1; background:var(--bg3); border:1px solid var(--border2); color:var(--text); padding:0.75rem; border-radius:10px; font-family:'Satoshi',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
-.btn-prev:hover { border-color:var(--border2); }
-.btn-next { flex:2; background:var(--gradient); border:none; color:white; padding:0.75rem; border-radius:10px; font-family:'Clash Display',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:opacity 0.2s; letter-spacing:0.5px; }
-.btn-next:hover { opacity:0.9; }
-.btn-next:disabled { opacity:0.5; cursor:not-allowed; }
-
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--card:#16161f;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f0f8;--muted:#8b8b9e;--purple:#7c5cfc;--purple2:#9b7dff;--pink:#f059da;--teal:#00d4aa;--amber:#ffb347;--red:#ff5757;--green:#4ade80;--grad:linear-gradient(135deg,#7c5cfc,#f059da);--grad2:linear-gradient(135deg,#00d4aa,#7c5cfc);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Satoshi',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse 700px 500px at 5% 10%,rgba(124,92,252,0.09) 0%,transparent 70%),radial-gradient(ellipse 500px 400px at 95% 90%,rgba(240,89,218,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Clash Display',sans-serif;font-size:1.4rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-right{display:flex;align-items:center;gap:0.75rem;}
+.nav-pill{background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:var(--teal);padding:0.35rem 0.9rem;border-radius:20px;font-size:0.78rem;font-weight:700;}
+.btn-back{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:0.45rem 1rem;border-radius:8px;font-size:0.85rem;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--purple);}
+.page{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:2rem 1.5rem;}
+.page-header{text-align:center;margin-bottom:2rem;}
+.page-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);color:var(--teal);padding:0.4rem 1rem;border-radius:20px;font-size:0.78rem;font-weight:700;margin-bottom:1rem;}
+.page-title{font-family:'Clash Display',sans-serif;font-size:2.6rem;font-weight:700;line-height:1.1;margin-bottom:0.6rem;}
+.page-title span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-sub{color:var(--muted);font-size:0.95rem;max-width:480px;margin:0 auto;}
+.steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:2rem;flex-wrap:wrap;}
+.step{display:flex;align-items:center;gap:0.4rem;}
+.snum{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;border:2px solid var(--border2);color:var(--muted);transition:all 0.3s;}
+.snum.active{background:var(--grad);border:none;color:white;box-shadow:0 4px 15px rgba(124,92,252,0.4);}
+.snum.done{background:var(--teal);border:none;color:#000;}
+.slabel{font-size:0.78rem;font-weight:600;color:var(--muted);transition:color 0.3s;}
+.slabel.active{color:var(--text);}
+.sline{width:50px;height:2px;background:var(--border2);margin:0 0.4rem;transition:background 0.3s;}
+.sline.done{background:var(--teal);}
+.builder{display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start;}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;}
+.fstep{display:none;}
+.fstep.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ftitle{font-family:'Clash Display',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.6rem;}
+.frow{display:grid;gap:0.75rem;margin-bottom:0.75rem;}
+.frow.two{grid-template-columns:1fr 1fr;}
+label{font-size:0.73rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:0.3rem;}
+label .req{color:var(--red);margin-left:2px;}
+input,textarea,select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Satoshi',sans-serif;font-size:0.875rem;padding:0.65rem 0.85rem;outline:none;transition:border-color 0.2s;}
+input:focus,textarea:focus,select:focus{border-color:var(--purple);}
+input::placeholder,textarea::placeholder{color:var(--muted);font-size:0.82rem;}
+textarea{resize:vertical;line-height:1.6;}
+select option{background:var(--bg3);}
+.hint{font-size:0.72rem;color:var(--muted);margin-top:0.3rem;line-height:1.4;}
+.entry-block{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:1.25rem;margin-bottom:0.75rem;animation:fadeUp 0.25s ease;}
+.entry-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.entry-lbl{font-size:0.8rem;font-weight:700;color:var(--purple2);}
+.entry-rm{background:rgba(255,87,87,0.1);border:1px solid rgba(255,87,87,0.2);color:var(--red);padding:0.25rem 0.6rem;border-radius:6px;cursor:pointer;font-size:0.75rem;font-family:'Satoshi',sans-serif;transition:all 0.2s;}
+.entry-rm:hover{background:rgba(255,87,87,0.2);}
+.add-btn{display:flex;align-items:center;gap:0.5rem;background:rgba(124,92,252,0.08);border:1px dashed rgba(124,92,252,0.3);color:var(--purple2);padding:0.65rem 1rem;border-radius:10px;font-size:0.83rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;margin-top:0.5rem;transition:all 0.2s;font-family:'Satoshi',sans-serif;}
+.add-btn:hover{background:rgba(124,92,252,0.14);}
+.fbtns{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);}
+.btn-prev{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:0.75rem;border-radius:10px;font-family:'Satoshi',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-next{flex:2;background:var(--grad);border:none;color:white;padding:0.75rem;border-radius:10px;font-family:'Clash Display',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.5px;}
+.btn-next:hover{opacity:0.88;}
+.btn-next:disabled{opacity:0.45;cursor:not-allowed;}
+.skill-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem;min-height:32px;}
+.stag{display:flex;align-items:center;gap:0.3rem;background:rgba(124,92,252,0.12);border:1px solid rgba(124,92,252,0.25);color:var(--purple2);padding:0.25rem 0.65rem;border-radius:20px;font-size:0.76rem;font-weight:600;}
+.stag button{background:none;border:none;color:var(--purple2);cursor:pointer;font-size:0.85rem;padding:0;line-height:1;opacity:0.7;}
+.stag button:hover{opacity:1;}
+.sinp-row{display:flex;gap:0.5rem;margin-top:0.5rem;}
+.sinp-row input{flex:1;}
+.btn-add-sk{background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);color:var(--purple2);padding:0.65rem 1rem;border-radius:10px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Satoshi',sans-serif;transition:all 0.2s;}
+.btn-add-sk:hover{background:rgba(124,92,252,0.22);}
+.template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:1rem;}
+.tmpl-opt{border:2px solid var(--border2);border-radius:12px;padding:0.75rem;cursor:pointer;transition:all 0.2s;text-align:center;}
+.tmpl-opt:hover{border-color:rgba(124,92,252,0.4);}
+.tmpl-opt.selected{border-color:var(--purple);background:rgba(124,92,252,0.08);}
+.tmpl-prev{height:60px;border-radius:6px;margin-bottom:0.5rem;display:flex;flex-direction:column;gap:3px;padding:6px;}
+.tl{height:4px;border-radius:2px;background:rgba(255,255,255,0.15);}
+.tmpl-name{font-size:0.72rem;font-weight:700;color:var(--text);}
+.tmpl-desc{font-size:0.65rem;color:var(--muted);margin-top:0.15rem;}
 /* PREVIEW */
-.preview-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:1.75rem; position:sticky; top:80px; }
-.preview-title { font-size:0.8rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; }
-
-/* RESUME PREVIEW */
-#resume-preview {
-  background: white; color: #111;
-  border-radius:12px; padding:2rem;
-  font-family: Georgia, serif;
-  font-size: 0.78rem; line-height: 1.6;
-  min-height: 400px;
-}
-#resume-preview h1 { font-size:1.3rem; font-weight:700; color:#1a1a2e; margin-bottom:0.15rem; }
-#resume-preview .contact-line { color:#555; font-size:0.72rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:2px solid #7c5cfc; }
-#resume-preview h2 { font-size:0.8rem; font-weight:700; color:#7c5cfc; text-transform:uppercase; letter-spacing:1.5px; margin:0.85rem 0 0.4rem; }
-#resume-preview p { color:#333; margin-bottom:0.3rem; font-size:0.74rem; }
-#resume-preview .exp-title { font-weight:700; color:#111; font-size:0.78rem; }
-#resume-preview .exp-meta { color:#666; font-size:0.72rem; display:flex; justify-content:space-between; }
-#resume-preview ul { padding-left:1.2rem; }
-#resume-preview ul li { color:#333; font-size:0.73rem; margin-bottom:0.2rem; }
-#resume-preview .skills-wrap { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.3rem; }
-#resume-preview .skill-tag { background:#f0eeff; color:#5a3fc8; padding:0.15rem 0.6rem; border-radius:20px; font-size:0.68rem; font-weight:600; }
-.preview-empty { color:var(--muted); text-align:center; padding:3rem 1rem; font-size:0.88rem; }
-
-.btn-generate { width:100%; background:var(--gradient); border:none; color:white; padding:0.85rem; border-radius:12px; font-family:'Clash Display',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; margin-top:1rem; letter-spacing:0.5px; transition:opacity 0.2s; }
-.btn-generate:hover { opacity:0.9; }
-.btn-generate:disabled { opacity:0.5; cursor:not-allowed; }
-
-.btn-copy { width:100%; background:var(--bg3); border:1px solid var(--border2); color:var(--text); padding:0.7rem; border-radius:10px; font-family:'Satoshi',sans-serif; font-size:0.88rem; font-weight:700; cursor:pointer; margin-top:0.6rem; transition:all 0.2s; }
-.btn-copy:hover { border-color:var(--teal); color:var(--teal); }
-.btn-print { width:100%; background:rgba(0,212,170,0.1); border:1px solid rgba(0,212,170,0.25); color:var(--teal); padding:0.7rem; border-radius:10px; font-family:'Satoshi',sans-serif; font-size:0.88rem; font-weight:700; cursor:pointer; margin-top:0.5rem; transition:all 0.2s; }
-.btn-print:hover { background:rgba(0,212,170,0.15); }
-
-/* LOADING */
-.gen-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,15,0.92); backdrop-filter:blur(10px); z-index:999; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
-.gen-overlay.show { display:flex; }
-.gen-spinner { width:56px; height:56px; border:4px solid rgba(255,255,255,0.1); border-top-color:var(--teal); border-radius:50%; animation:spin 0.8s linear infinite; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.gen-text { font-family:'Clash Display',sans-serif; font-size:1.2rem; font-weight:700; }
-.gen-sub { color:var(--muted); font-size:0.85rem; }
+.preview-panel{position:sticky;top:80px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem;max-height:calc(100vh - 100px);overflow:hidden;display:flex;flex-direction:column;}
+.preview-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-shrink:0;}
+.preview-lbl{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.ps-badge{font-size:0.72rem;padding:0.25rem 0.65rem;border-radius:20px;font-weight:600;}
+.ps-empty{color:var(--muted);}
+.ps-live{background:rgba(0,212,170,0.1);color:var(--teal);border:1px solid rgba(0,212,170,0.2);}
+.ps-done{background:rgba(124,92,252,0.1);color:var(--purple2);border:1px solid rgba(124,92,252,0.2);}
+.resume-sheet{flex:1;overflow-y:auto;border-radius:10px;}
+#resume-output{background:white;color:#1a1a1a;padding:1.75rem 1.5rem;font-family:Georgia,serif;font-size:10px;line-height:1.55;min-height:400px;}
+#resume-output.empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;min-height:420px;}
+.r-empty{color:#bbb;font-family:'Satoshi',sans-serif;text-align:center;}
+.r-empty .ei{font-size:2rem;margin-bottom:0.4rem;}
+/* Resume content */
+#resume-output .rn{font-size:20px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px;margin-bottom:3px;}
+#resume-output .rr{font-size:11px;color:#7c5cfc;font-weight:600;letter-spacing:0.5px;margin-bottom:5px;font-family:'Satoshi',sans-serif;}
+#resume-output .rc{font-size:9px;color:#555;display:flex;flex-wrap:wrap;gap:8px;padding-bottom:8px;border-bottom:2px solid #7c5cfc;margin-bottom:10px;font-family:'Satoshi',sans-serif;}
+#resume-output .rs{margin-bottom:10px;}
+#resume-output .rst{font-size:9px;font-weight:700;color:#7c5cfc;text-transform:uppercase;letter-spacing:2px;margin-bottom:5px;font-family:'Satoshi',sans-serif;padding-bottom:3px;border-bottom:1px solid #ede9ff;}
+#resume-output .rsum{font-size:9.5px;color:#333;line-height:1.6;}
+#resume-output .re{margin-bottom:8px;}
+#resume-output .ret{font-size:10.5px;font-weight:700;color:#1a1a1a;}
+#resume-output .rec{font-size:9.5px;color:#7c5cfc;font-weight:600;font-family:'Satoshi',sans-serif;}
+#resume-output .red{font-size:9px;color:#888;font-family:'Satoshi',sans-serif;}
+#resume-output .reul{padding-left:10px;margin-top:3px;}
+#resume-output .reul li{font-size:9px;color:#333;margin-bottom:2px;line-height:1.5;}
+#resume-output .redu{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+#resume-output .redeg{font-size:10px;font-weight:700;color:#1a1a1a;}
+#resume-output .recol{font-size:9px;color:#555;}
+#resume-output .redr{text-align:right;font-size:9px;color:#888;font-family:'Satoshi',sans-serif;}
+#resume-output .rsw{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+#resume-output .rsk{background:#f0eeff;color:#5a3fc8;padding:2px 8px;border-radius:20px;font-size:8.5px;font-weight:600;font-family:'Satoshi',sans-serif;}
+#resume-output .rct{font-size:9px;color:#333;margin-bottom:2px;}
+#resume-output .rpn{font-size:10px;font-weight:700;color:#1a1a1a;}
+#resume-output .rpd{font-size:9px;color:#555;margin-top:1px;}
+/* ATS badge */
+.ats-badge{display:none;align-items:center;gap:0.6rem;padding:0.7rem 1rem;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:10px;margin-top:0.75rem;flex-shrink:0;}
+.ats-badge.show{display:flex;}
+.ats-ring{width:36px;height:36px;position:relative;flex-shrink:0;}
+.ats-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.ats-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--teal);}
+.ats-info-title{font-size:0.78rem;font-weight:700;color:var(--text);}
+.ats-info-sub{font-size:0.7rem;color:var(--muted);}
+.pv-actions{display:flex;gap:0.6rem;margin-top:1rem;flex-shrink:0;}
+.btn-act{flex:1;padding:0.6rem;border-radius:10px;font-family:'Satoshi',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;border:1px solid var(--border2);background:var(--bg3);color:var(--text);}
+.btn-act.pri{background:var(--grad);border:none;color:white;}
+.btn-act.pri:hover{opacity:0.88;}
+.btn-act:disabled{opacity:0.4;cursor:not-allowed;}
+/* OVERLAY */
+.gen-ov{display:none;position:fixed;inset:0;background:rgba(10,10,15,0.95);backdrop-filter:blur(15px);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;}
+.gen-ov.show{display:flex;}
+.gen-ring{width:64px;height:64px;border:4px solid rgba(255,255,255,0.08);border-top-color:var(--teal);border-radius:50%;animation:spin 0.9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-title{font-family:'Clash Display',sans-serif;font-size:1.3rem;font-weight:700;}
+.gen-sub{color:var(--muted);font-size:0.85rem;}
+.gen-prog{width:280px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.gen-bar{height:100%;background:var(--grad2);border-radius:2px;width:0%;transition:width 0.4s ease;}
+.gen-steps{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem;}
+.gstep{font-size:0.8rem;display:flex;align-items:center;gap:0.5rem;color:var(--muted);}
+.gstep.done{color:var(--teal);}
+.gstep.active{color:var(--text);}
+.gstep.done::before{content:'✓';color:var(--teal);}
+.gstep.active::before{content:'';width:10px;height:10px;border:2px solid var(--purple);border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;flex-shrink:0;}
+.gstep:not(.done):not(.active)::before{content:'○';}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<div class="gen-overlay" id="gen-overlay">
-  <div class="gen-spinner"></div>
-  <div class="gen-text">Building your resume...</div>
-  <div class="gen-sub">AI is crafting an ATS-optimized professional resume</div>
+<div class="gen-ov" id="gen-ov">
+  <div class="gen-ring"></div>
+  <div class="gen-title">Building your resume...</div>
+  <div class="gen-sub">AI is crafting your professional resume</div>
+  <div class="gen-prog"><div class="gen-bar" id="gen-bar"></div></div>
+  <div class="gen-steps">
+    <div class="gstep" id="gs1">Analyzing your details</div>
+    <div class="gstep" id="gs2">Crafting professional summary</div>
+    <div class="gstep" id="gs3">Optimizing for ATS keywords</div>
+    <div class="gstep" id="gs4">Enhancing experience with action verbs</div>
+    <div class="gstep" id="gs5">Finalizing & formatting</div>
+  </div>
 </div>
 
 <nav>
@@ -149,391 +167,507 @@ textarea { resize:vertical; line-height:1.6; }
 </nav>
 
 <div class="page">
-
   <div class="page-header">
-    <div class="page-badge">✨ AI-Powered</div>
-    <div class="page-title">Build Your <span>Perfect Resume</span></div>
-    <div class="page-sub">Fill in your details — our AI will craft an ATS-optimized professional resume in seconds</div>
+    <div class="page-badge">✨ AI-Powered · Free · ATS-Optimized</div>
+    <div class="page-title">Build Your <span>Dream Resume</span></div>
+    <div class="page-sub">Fill your details → AI crafts a professional, ATS-optimized resume in seconds</div>
   </div>
 
-  <!-- STEPS BAR -->
-  <div class="steps-bar">
-    <div class="step-item"><div class="step-num active" id="sn1">1</div><div class="step-label active" id="sl1">Personal</div></div>
-    <div class="step-line" id="sl-1"></div>
-    <div class="step-item"><div class="step-num" id="sn2">2</div><div class="step-label" id="sl2">Experience</div></div>
-    <div class="step-line" id="sl-2"></div>
-    <div class="step-item"><div class="step-num" id="sn3">3</div><div class="step-label" id="sl3">Education</div></div>
-    <div class="step-line" id="sl-3"></div>
-    <div class="step-item"><div class="step-num" id="sn4">4</div><div class="step-label" id="sl4">Skills</div></div>
-    <div class="step-line" id="sl-4"></div>
-    <div class="step-item"><div class="step-num" id="sn5">5</div><div class="step-label" id="sl5">Generate</div></div>
+  <div class="steps">
+    <div class="step"><div class="snum active" id="sn1">1</div><div class="slabel active" id="sl1">Personal</div></div>
+    <div class="sline" id="sline1"></div>
+    <div class="step"><div class="snum" id="sn2">2</div><div class="slabel" id="sl2">Experience</div></div>
+    <div class="sline" id="sline2"></div>
+    <div class="step"><div class="snum" id="sn3">3</div><div class="slabel" id="sl3">Education</div></div>
+    <div class="sline" id="sline3"></div>
+    <div class="step"><div class="snum" id="sn4">4</div><div class="slabel" id="sl4">Skills</div></div>
+    <div class="sline" id="sline4"></div>
+    <div class="step"><div class="snum" id="sn5">5</div><div class="slabel" id="sl5">Template</div></div>
+    <div class="sline" id="sline5"></div>
+    <div class="step"><div class="snum" id="sn6">6</div><div class="slabel" id="sl6">Generate</div></div>
   </div>
 
-  <div class="builder-layout">
-
-    <!-- FORM -->
+  <div class="builder">
     <div class="form-card">
 
-      <!-- STEP 1: PERSONAL -->
-      <div class="form-step active" id="step-1">
-        <div class="form-section-title">👤 Personal Information</div>
-        <div class="field-row">
-          <div><label>Full Name *</label><input id="name" placeholder="Rahul Singh Bisht"/></div>
+      <!-- STEP 1 -->
+      <div class="fstep active" id="fstep1">
+        <div class="ftitle">👤 Personal Information</div>
+        <div class="frow two">
+          <div><label>Full Name <span class="req">*</span></label><input id="f-name" placeholder="Rahul Singh Bisht" oninput="liveUpdate()"/></div>
+          <div><label>Target Role <span class="req">*</span></label><input id="f-role" placeholder="Digital Marketing Intern" oninput="liveUpdate()"/></div>
         </div>
-        <div class="field-row two">
-          <div><label>Email *</label><input id="email" placeholder="rahul@email.com" type="email"/></div>
-          <div><label>Phone</label><input id="phone" placeholder="+91 9876543210"/></div>
+        <div class="frow two">
+          <div><label>Email <span class="req">*</span></label><input id="f-email" type="email" placeholder="rahul@gmail.com" oninput="liveUpdate()"/></div>
+          <div><label>Phone</label><input id="f-phone" placeholder="+91 98765 43210" oninput="liveUpdate()"/></div>
         </div>
-        <div class="field-row two">
-          <div><label>Location</label><input id="location" placeholder="Delhi, India"/></div>
-          <div><label>LinkedIn</label><input id="linkedin" placeholder="linkedin.com/in/rahul"/></div>
+        <div class="frow two">
+          <div><label>City</label><input id="f-city" placeholder="New Delhi, India" oninput="liveUpdate()"/></div>
+          <div><label>LinkedIn</label><input id="f-linkedin" placeholder="linkedin.com/in/rahul" oninput="liveUpdate()"/></div>
         </div>
-        <div class="field-row">
-          <div><label>Target Role *</label><input id="target-role" placeholder="e.g. Digital Marketing Intern, Financial Analyst"/></div>
+        <div class="frow">
+          <div><label>Portfolio / GitHub (Optional)</label><input id="f-portfolio" placeholder="github.com/rahul" oninput="liveUpdate()"/></div>
         </div>
-        <div class="field-row">
-          <div><label>Professional Summary (Optional)</label><textarea id="summary" rows="3" placeholder="Brief 2-3 line summary about yourself and your goals..."></textarea></div>
-        </div>
-        <div class="nav-btns">
-          <button class="btn-next" onclick="nextStep(1)">Next: Experience →</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: EXPERIENCE -->
-      <div class="form-step" id="step-2">
-        <div class="form-section-title">💼 Work Experience</div>
-        <div id="exp-entries">
-          <div class="entry-block" id="exp-0">
-            <button class="entry-remove" onclick="removeEntry('exp',0)">✕</button>
-            <div class="field-row two">
-              <div><label>Job Title</label><input class="exp-title-inp" placeholder="Marketing Intern"/></div>
-              <div><label>Company</label><input class="exp-company-inp" placeholder="Zelvoqua"/></div>
-            </div>
-            <div class="field-row two">
-              <div><label>Start Date</label><input class="exp-start-inp" placeholder="Jan 2024"/></div>
-              <div><label>End Date</label><input class="exp-end-inp" placeholder="Mar 2024 / Present"/></div>
-            </div>
-            <div class="field-row">
-              <div><label>Key Responsibilities & Achievements</label><textarea class="exp-desc-inp" rows="3" placeholder="• Managed social media campaigns reaching 10K+ followers&#10;• Increased engagement by 35% through content strategy&#10;• Collaborated with design team on brand campaigns"></textarea></div>
-            </div>
+        <div class="frow">
+          <div>
+            <label>About Yourself — <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">AI will enhance this</span></label>
+            <textarea id="f-about" rows="3" placeholder="Write a few lines about yourself — background, interests, goals. Even rough notes work — AI will polish it!" oninput="liveUpdate()"></textarea>
+            <div class="hint">💡 Don't stress — just write naturally. AI will turn it into a professional summary</div>
           </div>
         </div>
-        <button class="add-btn" onclick="addEntry('exp')">+ Add Another Experience</button>
-        <div class="nav-btns">
-          <button class="btn-prev" onclick="prevStep(2)">← Back</button>
-          <button class="btn-next" onclick="nextStep(2)">Next: Education →</button>
+        <div class="fbtns">
+          <button class="btn-next" onclick="goStep(2)">Next: Experience →</button>
         </div>
       </div>
 
-      <!-- STEP 3: EDUCATION -->
-      <div class="form-step" id="step-3">
-        <div class="form-section-title">🎓 Education</div>
-        <div id="edu-entries">
-          <div class="entry-block" id="edu-0">
-            <button class="entry-remove" onclick="removeEntry('edu',0)">✕</button>
-            <div class="field-row two">
-              <div><label>Degree / Course</label><input class="edu-degree-inp" placeholder="B.Com / BBA / B.Tech"/></div>
-              <div><label>College / University</label><input class="edu-college-inp" placeholder="Delhi University"/></div>
-            </div>
-            <div class="field-row two">
-              <div><label>Year</label><input class="edu-year-inp" placeholder="2022 - 2025"/></div>
-              <div><label>Percentage / CGPA</label><input class="edu-grade-inp" placeholder="8.5 CGPA / 85%"/></div>
-            </div>
+      <!-- STEP 2 -->
+      <div class="fstep" id="fstep2">
+        <div class="ftitle">💼 Work Experience</div>
+        <div id="exp-list"></div>
+        <button class="add-btn" onclick="addExp()">+ Add Experience / Internship</button>
+        <div class="hint" style="margin-top:0.75rem">💡 No experience yet? Add college projects, part-time work, or leave empty — AI builds a great fresher resume!</div>
+        <div class="fbtns">
+          <button class="btn-prev" onclick="goStep(1)">← Back</button>
+          <button class="btn-next" onclick="goStep(3)">Next: Education →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="fstep" id="fstep3">
+        <div class="ftitle">🎓 Education</div>
+        <div id="edu-list"></div>
+        <button class="add-btn" onclick="addEdu()">+ Add Another Degree</button>
+        <div class="frow" style="margin-top:1rem">
+          <div><label>Certifications (Optional)</label>
+          <textarea id="f-certs" rows="2" placeholder="Google Analytics, HubSpot Content Marketing, Meta Blueprint..." oninput="liveUpdate()"></textarea></div>
+        </div>
+        <div class="fbtns">
+          <button class="btn-prev" onclick="goStep(2)">← Back</button>
+          <button class="btn-next" onclick="goStep(4)">Next: Skills →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="fstep" id="fstep4">
+        <div class="ftitle">⚡ Skills & Projects</div>
+        <div class="frow">
+          <div>
+            <label>Technical Skills</label>
+            <div class="sinp-row"><input id="tech-inp" placeholder="Type skill + press Add (e.g. MS Excel)" onkeydown="if(event.key==='Enter')addSkill('tech')"/><button class="btn-add-sk" onclick="addSkill('tech')">Add</button></div>
+            <div class="skill-tags" id="tech-tags"></div>
+            <div class="hint">E.g. MS Excel, Google Analytics, Canva, Python, Figma, SQL, Tally...</div>
           </div>
         </div>
-        <button class="add-btn" onclick="addEntry('edu')">+ Add Another Education</button>
-        <div class="field-row" style="margin-top:1rem">
-          <div><label>Certifications (Optional)</label><textarea id="certs" rows="2" placeholder="Google Analytics Certified, HubSpot Content Marketing, Meta Blueprint..."></textarea></div>
-        </div>
-        <div class="nav-btns">
-          <button class="btn-prev" onclick="prevStep(3)">← Back</button>
-          <button class="btn-next" onclick="nextStep(3)">Next: Skills →</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: SKILLS -->
-      <div class="form-step" id="step-4">
-        <div class="form-section-title">⚡ Skills & Projects</div>
-        <div class="field-row">
-          <div><label>Technical Skills</label><input id="tech-skills" placeholder="MS Excel, Google Analytics, Canva, Figma, Python..."/></div>
-        </div>
-        <div class="field-row">
-          <div><label>Soft Skills</label><input id="soft-skills" placeholder="Leadership, Communication, Problem Solving, Teamwork..."/></div>
-        </div>
-        <div class="field-row">
-          <div><label>Languages</label><input id="languages" placeholder="English (Fluent), Hindi (Native)..."/></div>
-        </div>
-        <div class="field-row" style="margin-top:0.5rem">
-          <div><label>Projects (Optional)</label><textarea id="projects" rows="3" placeholder="Project Name — Brief description and impact&#10;e.g. E-commerce Marketing Plan — Developed 3-month marketing strategy for a fashion startup"></textarea></div>
-        </div>
-        <div class="field-row">
-          <div><label>Extra Curriculars / Achievements</label><textarea id="extras" rows="2" placeholder="College fest organizer, NSS volunteer, State level chess player..."></textarea></div>
-        </div>
-        <div class="nav-btns">
-          <button class="btn-prev" onclick="prevStep(4)">← Back</button>
-          <button class="btn-next" onclick="nextStep(4)">Generate Resume →</button>
-        </div>
-      </div>
-
-      <!-- STEP 5: GENERATE -->
-      <div class="form-step" id="step-5">
-        <div class="form-section-title">🚀 Generate Your Resume</div>
-        <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem">
-          <div style="font-size:0.88rem;font-weight:700;color:var(--teal);margin-bottom:0.6rem">✅ All set! Here's what AI will optimize:</div>
-          <div style="display:flex;flex-direction:column;gap:0.4rem">
-            ${['ATS-friendly formatting with correct keywords','Action verbs and quantified achievements','Professional summary tailored to your target role','Skills section optimized for job market','Clean layout that passes ATS parsers'].map(i=>`<div style="font-size:0.82rem;color:var(--muted);display:flex;gap:0.5rem"><span style="color:var(--teal)">✓</span>${i}</div>`).join('')}
+        <div class="frow">
+          <div>
+            <label>Soft Skills</label>
+            <div class="sinp-row"><input id="soft-inp" placeholder="Type skill + press Add (e.g. Leadership)" onkeydown="if(event.key==='Enter')addSkill('soft')"/><button class="btn-add-sk" onclick="addSkill('soft')">Add</button></div>
+            <div class="skill-tags" id="soft-tags"></div>
           </div>
         </div>
-        <div class="field-row">
+        <div class="frow">
+          <div>
+            <label>Languages</label>
+            <div class="sinp-row"><input id="lang-inp" placeholder="E.g. English (Fluent)" onkeydown="if(event.key==='Enter')addSkill('lang')"/><button class="btn-add-sk" onclick="addSkill('lang')">Add</button></div>
+            <div class="skill-tags" id="lang-tags"></div>
+          </div>
+        </div>
+        <div class="frow" style="margin-top:0.5rem">
+          <div>
+            <label>Projects (Optional)</label>
+            <textarea id="f-projects" rows="3" placeholder="Project Name: Description and impact&#10;E.g. Social Media Campaign: Grew Instagram from 0 to 5K followers for a local brand in 2 months" oninput="liveUpdate()"></textarea>
+          </div>
+        </div>
+        <div class="frow">
+          <div>
+            <label>Achievements / Extra Curricular</label>
+            <textarea id="f-extras" rows="2" placeholder="E.g. College fest organizer, NSS Volunteer, State chess champion, Marketing club head..." oninput="liveUpdate()"></textarea>
+          </div>
+        </div>
+        <div class="fbtns">
+          <button class="btn-prev" onclick="goStep(3)">← Back</button>
+          <button class="btn-next" onclick="goStep(5)">Next: Template →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="fstep" id="fstep5">
+        <div class="ftitle">🎨 Choose Template</div>
+        <div class="template-grid">
+          <div class="tmpl-opt selected" id="tmpl-classic" onclick="selTmpl('classic')">
+            <div class="tmpl-prev" style="background:#1a1a24">
+              <div class="tl" style="background:#7c5cfc;width:60%"></div>
+              <div class="tl" style="width:80%"></div><div class="tl" style="width:45%"></div>
+              <div class="tl" style="width:90%"></div><div class="tl" style="width:70%"></div>
+            </div>
+            <div class="tmpl-name">Classic Purple</div><div class="tmpl-desc">Clean & professional</div>
+          </div>
+          <div class="tmpl-opt" id="tmpl-modern" onclick="selTmpl('modern')">
+            <div class="tmpl-prev" style="background:#0d1117">
+              <div class="tl" style="background:#00d4aa;width:55%"></div>
+              <div class="tl" style="width:75%"></div><div class="tl" style="background:#00d4aa;width:30%"></div>
+              <div class="tl" style="width:85%"></div><div class="tl" style="width:50%"></div>
+            </div>
+            <div class="tmpl-name">Modern Teal</div><div class="tmpl-desc">Contemporary look</div>
+          </div>
+          <div class="tmpl-opt" id="tmpl-minimal" onclick="selTmpl('minimal')">
+            <div class="tmpl-prev" style="background:#111">
+              <div class="tl" style="width:60%;background:rgba(255,255,255,0.5)"></div>
+              <div class="tl" style="width:100%;height:1px;background:rgba(255,255,255,0.2)"></div>
+              <div class="tl" style="width:80%"></div><div class="tl" style="width:65%"></div>
+              <div class="tl" style="width:90%"></div>
+            </div>
+            <div class="tmpl-name">Minimal Black</div><div class="tmpl-desc">Simple & elegant</div>
+          </div>
+        </div>
+        <div class="frow" style="margin-top:1.25rem">
           <div><label>Industry / Domain</label>
-            <select id="industry">
-              <option>Marketing & Advertising</option>
-              <option>Finance & Banking</option>
-              <option>HR & People Management</option>
-              <option>Operations & Supply Chain</option>
-              <option>Technology & IT</option>
-              <option>Consulting & Strategy</option>
-              <option>Sales & Business Development</option>
-              <option>Data & Analytics</option>
+            <select id="f-industry">
+              <option>Marketing & Digital Media</option><option>Finance & Banking</option>
+              <option>HR & People Management</option><option>Operations & Supply Chain</option>
+              <option>Technology & IT</option><option>Consulting & Strategy</option>
+              <option>Sales & Business Development</option><option>Data & Analytics</option>
             </select>
           </div>
         </div>
-        <div class="field-row">
+        <div class="frow">
           <div><label>Experience Level</label>
-            <select id="exp-level">
-              <option>Fresher (0-1 years)</option>
-              <option>Junior (1-2 years)</option>
-              <option>Mid-level (2-4 years)</option>
+            <select id="f-level">
+              <option>Fresher (0–1 years)</option><option>Junior (1–2 years)</option><option>Mid-level (2–4 years)</option>
             </select>
           </div>
         </div>
-        <div class="nav-btns">
-          <button class="btn-prev" onclick="prevStep(5)">← Back</button>
-          <button class="btn-next" onclick="generateResume()" id="gen-btn">✨ Generate Resume</button>
+        <div class="fbtns">
+          <button class="btn-prev" onclick="goStep(4)">← Back</button>
+          <button class="btn-next" onclick="goStep(6)">Review & Generate →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="fstep" id="fstep6">
+        <div class="ftitle">🚀 Ready to Generate!</div>
+        <div id="review-box" style="background:var(--bg3);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;"></div>
+        <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.18);border-radius:12px;padding:1.1rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--teal);margin-bottom:0.6rem;">✨ AI will automatically:</div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;">
+            <div style="font-size:0.8rem;color:var(--muted);display:flex;gap:0.5rem;"><span style="color:var(--teal)">✓</span>Write a powerful professional summary</div>
+            <div style="font-size:0.8rem;color:var(--muted);display:flex;gap:0.5rem;"><span style="color:var(--teal)">✓</span>Add strong action verbs to your experience</div>
+            <div style="font-size:0.8rem;color:var(--muted);display:flex;gap:0.5rem;"><span style="color:var(--teal)">✓</span>Inject ATS keywords for your industry</div>
+            <div style="font-size:0.8rem;color:var(--muted);display:flex;gap:0.5rem;"><span style="color:var(--teal)">✓</span>Quantify achievements where possible</div>
+            <div style="font-size:0.8rem;color:var(--muted);display:flex;gap:0.5rem;"><span style="color:var(--teal)">✓</span>Format everything clean & professional</div>
+          </div>
+        </div>
+        <div class="fbtns">
+          <button class="btn-prev" onclick="goStep(5)">← Back</button>
+          <button class="btn-next" id="gen-btn" onclick="generateResume()">✨ Generate My Resume</button>
         </div>
       </div>
 
     </div>
 
     <!-- PREVIEW -->
-    <div class="preview-card">
-      <div class="preview-title">
-        <span>📄 Live Preview</span>
-        <span id="preview-status" style="color:var(--muted);font-size:0.72rem">Fill form to preview</span>
+    <div class="preview-panel">
+      <div class="preview-hdr">
+        <div class="preview-lbl">📄 Live Preview</div>
+        <div class="ps-badge ps-empty" id="ps-badge">Fill form to preview</div>
       </div>
-      <div id="resume-preview">
-        <div class="preview-empty">
-          <div style="font-size:2rem;margin-bottom:0.5rem">📄</div>
-          <div>Your resume preview will appear here</div>
-          <div style="font-size:0.78rem;margin-top:0.3rem;color:#999">Fill in your details to see a live preview</div>
+      <div class="resume-sheet">
+        <div id="resume-output" class="empty">
+          <div class="r-empty"><div class="ei">📄</div><p>Your resume will appear here</p><p style="font-size:0.72rem;color:#bbb;margin-top:4px">Start filling the form →</p></div>
         </div>
       </div>
-      <button class="btn-generate" id="download-btn" style="display:none" onclick="copyResume()">📋 Copy Resume Text</button>
-      <button class="btn-print" id="print-btn" style="display:none" onclick="printResume()">🖨️ Print / Save as PDF</button>
+      <div class="ats-badge" id="ats-badge">
+        <div class="ats-ring">
+          <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(0,212,170,0.15)" stroke-width="3"/><circle id="ats-arc" cx="18" cy="18" r="14" fill="none" stroke="#00d4aa" stroke-width="3" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="88"/></svg>
+          <div class="ats-ring-val" id="ats-val">0</div>
+        </div>
+        <div><div class="ats-info-title">ATS Score: <span id="ats-num">—</span>/100</div><div class="ats-info-sub" id="ats-verdict">Estimated by AI</div></div>
+      </div>
+      <div class="pv-actions">
+        <button class="btn-act" id="btn-copy" onclick="copyResume()" disabled>📋 Copy</button>
+        <button class="btn-act" id="btn-print" onclick="printResume()" disabled>🖨️ Print / PDF</button>
+        <button class="btn-act pri" id="btn-regen" onclick="generateResume()" disabled>↺ Regenerate</button>
+      </div>
     </div>
-
   </div>
 </div>
 
 <script>
-let currentStep = 1;
-let expCount = 1;
-let eduCount = 1;
-let generatedResumeText = '';
+let curStep=1,selTemplate='classic',expCnt=0,eduCnt=0;
+let techSk=[],softSk=[],langSk=[];
+let genHTML='',genText='';
 
-function nextStep(from) {
-  if (from === 1) {
-    if (!document.getElementById('name').value || !document.getElementById('email').value || !document.getElementById('target-role').value) {
-      alert('Please fill Name, Email and Target Role'); return;
-    }
+function goStep(n){
+  if(n===2&&!val1())return;
+  document.getElementById('fstep'+curStep).classList.remove('active');
+  curStep=n;
+  document.getElementById('fstep'+curStep).classList.add('active');
+  updateBar();
+  if(n===6)buildReview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateBar(){
+  for(let i=1;i<=6;i++){
+    const num=document.getElementById('sn'+i),lbl=document.getElementById('sl'+i);
+    if(i<curStep){num.className='snum done';num.textContent='✓';}
+    else if(i===curStep){num.className='snum active';num.textContent=i;lbl.className='slabel active';}
+    else{num.className='snum';num.textContent=i;lbl.className='slabel';}
+    if(i<6){const l=document.getElementById('sline'+i);if(l)l.className='sline'+(i<curStep?' done':'');}
   }
-  goToStep(from + 1);
 }
 
-function prevStep(from) { goToStep(from - 1); }
-
-function goToStep(n) {
-  document.getElementById('step-' + currentStep).classList.remove('active');
-  currentStep = n;
-  document.getElementById('step-' + currentStep).classList.add('active');
-  for (let i = 1; i <= 5; i++) {
-    const num = document.getElementById('sn' + i);
-    const lbl = document.getElementById('sl' + i);
-    if (i < n) { num.className = 'step-num done'; num.textContent = '✓'; }
-    else if (i === n) { num.className = 'step-num active'; num.textContent = i; lbl.className = 'step-label active'; }
-    else { num.className = 'step-num'; num.textContent = i; lbl.className = 'step-label'; }
-    if (i < 5) document.getElementById('sl-' + i).className = 'step-line' + (i < n ? ' done' : '');
-  }
-  if (n === 5) updateLivePreview();
+function val1(){
+  const n=document.getElementById('f-name').value.trim();
+  const e=document.getElementById('f-email').value.trim();
+  const r=document.getElementById('f-role').value.trim();
+  if(!n||!e||!r){alert('Please fill Name, Email and Target Role');return false;}
+  return true;
 }
 
-function addEntry(type) {
-  const count = type === 'exp' ? expCount++ : eduCount++;
-  const container = document.getElementById(type + '-entries');
-  const div = document.createElement('div');
-  div.className = 'entry-block'; div.id = type + '-' + count;
-  if (type === 'exp') {
-    div.innerHTML = `<button class="entry-remove" onclick="removeEntry('exp',${count})">✕</button>
-      <div class="field-row two"><div><label>Job Title</label><input class="exp-title-inp" placeholder="Marketing Intern"/></div><div><label>Company</label><input class="exp-company-inp" placeholder="Company Name"/></div></div>
-      <div class="field-row two"><div><label>Start Date</label><input class="exp-start-inp" placeholder="Jan 2024"/></div><div><label>End Date</label><input class="exp-end-inp" placeholder="Mar 2024"/></div></div>
-      <div class="field-row"><div><label>Key Responsibilities</label><textarea class="exp-desc-inp" rows="3" placeholder="• Achievement 1&#10;• Achievement 2"></textarea></div></div>`;
-  } else {
-    div.innerHTML = `<button class="entry-remove" onclick="removeEntry('edu',${count})">✕</button>
-      <div class="field-row two"><div><label>Degree</label><input class="edu-degree-inp" placeholder="BBA"/></div><div><label>College</label><input class="edu-college-inp" placeholder="University Name"/></div></div>
-      <div class="field-row two"><div><label>Year</label><input class="edu-year-inp" placeholder="2022-2025"/></div><div><label>Grade</label><input class="edu-grade-inp" placeholder="8.5 CGPA"/></div></div>`;
-  }
-  container.appendChild(div);
+function addExp(){
+  const id=expCnt++;
+  const el=document.createElement('div');
+  el.className='entry-block';el.id='exp-'+id;
+  el.innerHTML=`<div class="entry-hdr"><div class="entry-lbl">Experience #${id+1}</div><button class="entry-rm" onclick="document.getElementById('exp-${id}').remove();liveUpdate()">Remove</button></div>
+  <div class="frow two"><div><label>Job Title</label><input class="et" placeholder="Marketing Intern" oninput="liveUpdate()"/></div><div><label>Company</label><input class="ec" placeholder="Company Name" oninput="liveUpdate()"/></div></div>
+  <div class="frow two"><div><label>Start</label><input class="es" placeholder="Jan 2024" oninput="liveUpdate()"/></div><div><label>End</label><input class="ee" placeholder="Mar 2024 / Present" oninput="liveUpdate()"/></div></div>
+  <div class="frow"><div><label>What did you do? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">AI will enhance this</span></label><textarea class="ed" rows="3" placeholder="Describe your work & achievements — even rough notes work!&#10;E.g. Handled social media for 3 brands, ran ads, wrote content..." oninput="liveUpdate()"></textarea></div></div>`;
+  document.getElementById('exp-list').appendChild(el);
 }
 
-function removeEntry(type, id) {
-  const el = document.getElementById(type + '-' + id);
-  if (el) el.remove();
+function addEdu(){
+  const id=eduCnt++;
+  const el=document.createElement('div');
+  el.className='entry-block';el.id='edu-'+id;
+  el.innerHTML=`<div class="entry-hdr"><div class="entry-lbl">Education #${id+1}</div><button class="entry-rm" onclick="document.getElementById('edu-${id}').remove();liveUpdate()">Remove</button></div>
+  <div class="frow two"><div><label>Degree</label><input class="dd" placeholder="B.Com / BBA / B.Tech" oninput="liveUpdate()"/></div><div><label>College / University</label><input class="dc" placeholder="Delhi University" oninput="liveUpdate()"/></div></div>
+  <div class="frow two"><div><label>Year</label><input class="dy" placeholder="2022 – 2025" oninput="liveUpdate()"/></div><div><label>Grade / CGPA</label><input class="dg" placeholder="8.5 CGPA / 85%" oninput="liveUpdate()"/></div></div>`;
+  document.getElementById('edu-list').appendChild(el);
 }
 
-function collectData() {
-  const exps = [];
-  document.querySelectorAll('#exp-entries .entry-block').forEach(e => {
-    const t = e.querySelector('.exp-title-inp')?.value;
-    if (t) exps.push({ title: t, company: e.querySelector('.exp-company-inp')?.value, start: e.querySelector('.exp-start-inp')?.value, end: e.querySelector('.exp-end-inp')?.value, desc: e.querySelector('.exp-desc-inp')?.value });
+function addSkill(type){
+  const inp=document.getElementById(type+'-inp');
+  const val=inp.value.trim();if(!val)return;
+  const arr=type==='tech'?techSk:type==='soft'?softSk:langSk;
+  if(arr.includes(val)){inp.value='';return;}
+  arr.push(val);renderTags(type);inp.value='';liveUpdate();
+}
+
+function removeSkill(type,val){
+  const arr=type==='tech'?techSk:type==='soft'?softSk:langSk;
+  const i=arr.indexOf(val);if(i>-1)arr.splice(i,1);
+  renderTags(type);liveUpdate();
+}
+
+function renderTags(type){
+  const arr=type==='tech'?techSk:type==='soft'?softSk:langSk;
+  document.getElementById(type+'-tags').innerHTML=arr.map(s=>`<span class="stag">${s}<button onclick="removeSkill('${type}','${s}')">×</button></span>`).join('');
+}
+
+function selTmpl(t){
+  selTemplate=t;
+  ['classic','modern','minimal'].forEach(x=>document.getElementById('tmpl-'+x).classList.remove('selected'));
+  document.getElementById('tmpl-'+t).classList.add('selected');
+}
+
+function collect(){
+  const exps=[];
+  document.querySelectorAll('#exp-list .entry-block').forEach(e=>{
+    const t=e.querySelector('.et')?.value;
+    if(t)exps.push({title:t,company:e.querySelector('.ec')?.value||'',start:e.querySelector('.es')?.value||'',end:e.querySelector('.ee')?.value||'',desc:e.querySelector('.ed')?.value||''});
   });
-  const edus = [];
-  document.querySelectorAll('#edu-entries .entry-block').forEach(e => {
-    const d = e.querySelector('.edu-degree-inp')?.value;
-    if (d) edus.push({ degree: d, college: e.querySelector('.edu-college-inp')?.value, year: e.querySelector('.edu-year-inp')?.value, grade: e.querySelector('.edu-grade-inp')?.value });
+  const edus=[];
+  document.querySelectorAll('#edu-list .entry-block').forEach(e=>{
+    const d=e.querySelector('.dd')?.value;
+    if(d)edus.push({degree:d,college:e.querySelector('.dc')?.value||'',year:e.querySelector('.dy')?.value||'',grade:e.querySelector('.dg')?.value||''});
   });
-  return {
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    location: document.getElementById('location').value,
-    linkedin: document.getElementById('linkedin').value,
-    targetRole: document.getElementById('target-role').value,
-    summary: document.getElementById('summary').value,
-    experiences: exps,
-    educations: edus,
-    certs: document.getElementById('certs').value,
-    techSkills: document.getElementById('tech-skills').value,
-    softSkills: document.getElementById('soft-skills').value,
-    languages: document.getElementById('languages').value,
-    projects: document.getElementById('projects').value,
-    extras: document.getElementById('extras').value,
-    industry: document.getElementById('industry')?.value || '',
-    expLevel: document.getElementById('exp-level')?.value || ''
+  return{
+    name:document.getElementById('f-name').value,
+    role:document.getElementById('f-role').value,
+    email:document.getElementById('f-email').value,
+    phone:document.getElementById('f-phone').value,
+    city:document.getElementById('f-city').value,
+    linkedin:document.getElementById('f-linkedin').value,
+    portfolio:document.getElementById('f-portfolio').value,
+    about:document.getElementById('f-about').value,
+    exps,edus,
+    certs:document.getElementById('f-certs').value,
+    techSk,softSk,langSk,
+    projects:document.getElementById('f-projects').value,
+    extras:document.getElementById('f-extras').value,
+    industry:document.getElementById('f-industry')?.value||'',
+    level:document.getElementById('f-level')?.value||''
   };
 }
 
-function updateLivePreview() {
-  const d = collectData();
-  if (!d.name) return;
-  const preview = document.getElementById('resume-preview');
-  preview.innerHTML = `
-    <h1>${d.name || 'Your Name'}</h1>
-    <div class="contact-line">${[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(' · ')}</div>
-    ${d.targetRole ? `<h2>Objective</h2><p>Seeking a position as <strong>${d.targetRole}</strong> where I can contribute my skills and grow professionally.</p>` : ''}
-    ${d.experiences.length ? `<h2>Experience</h2>${d.experiences.map(e=>`<div style="margin-bottom:0.6rem"><div class="exp-title">${e.title} — ${e.company}</div><div class="exp-meta"><span>${e.start} – ${e.end}</span></div>${e.desc?`<ul>${e.desc.split('\n').filter(l=>l.trim()).map(l=>`<li>${l.replace(/^[•\-\*]\s*/,'')}</li>`).join('')}</ul>`:''}</div>`).join('')}` : ''}
-    ${d.educations.length ? `<h2>Education</h2>${d.educations.map(e=>`<div style="margin-bottom:0.4rem"><div class="exp-title">${e.degree} — ${e.college}</div><div class="exp-meta"><span>${e.year}</span><span>${e.grade}</span></div></div>`).join('')}` : ''}
-    ${d.techSkills||d.softSkills ? `<h2>Skills</h2><div class="skills-wrap">${[...d.techSkills.split(','), ...d.softSkills.split(',')].filter(s=>s.trim()).map(s=>`<span class="skill-tag">${s.trim()}</span>`).join('')}</div>` : ''}
-    ${d.certs ? `<h2>Certifications</h2><p>${d.certs}</p>` : ''}
-    ${d.projects ? `<h2>Projects</h2><p>${d.projects}</p>` : ''}
-    ${d.extras ? `<h2>Extra Curricular</h2><p>${d.extras}</p>` : ''}
-    ${d.languages ? `<h2>Languages</h2><p>${d.languages}</p>` : ''}
+function liveUpdate(){
+  const d=collect();if(!d.name)return;
+  const out=document.getElementById('resume-output');
+  out.classList.remove('empty');
+  const contact=[d.email,d.phone,d.city,d.linkedin,d.portfolio].filter(Boolean);
+  const allSk=[...d.techSk,...d.softSk];
+  out.innerHTML=`
+    <div class="rn">${d.name}</div>
+    <div class="rr">${d.role}</div>
+    <div class="rc">${contact.map(c=>`<span>${c}</span>`).join(' · ')}</div>
+    ${d.about?`<div class="rs"><div class="rst">Professional Summary</div><div class="rsum">${d.about}</div></div>`:''}
+    ${d.exps.length?`<div class="rs"><div class="rst">Experience</div>${d.exps.map(e=>`<div class="re"><div class="ret">${e.title} <span class="rec">· ${e.company}</span></div><div class="red">${e.start}${e.end?' – '+e.end:''}</div>${e.desc?`<ul class="reul">${e.desc.split('\n').filter(l=>l.trim()).map(l=>`<li>${l.replace(/^[•\-\*]\s*/,'')}</li>`).join('')}</ul>`:''}</div>`).join('')}</div>`:''}
+    ${d.edus.length?`<div class="rs"><div class="rst">Education</div>${d.edus.map(e=>`<div class="redu"><div><div class="redeg">${e.degree}</div><div class="recol">${e.college}</div></div><div class="redr">${e.year}<br>${e.grade}</div></div>`).join('')}</div>`:''}
+    ${allSk.length?`<div class="rs"><div class="rst">Skills</div><div class="rsw">${allSk.map(s=>`<span class="rsk">${s}</span>`).join('')}</div></div>`:''}
+    ${d.projects?`<div class="rs"><div class="rst">Projects</div>${d.projects.split('\n').filter(l=>l.trim()).map(l=>`<div class="rct">${l}</div>`).join('')}</div>`:''}
+    ${d.certs?`<div class="rs"><div class="rst">Certifications</div><div class="rct">${d.certs}</div></div>`:''}
+    ${d.extras?`<div class="rs"><div class="rst">Achievements</div><div class="rct">${d.extras}</div></div>`:''}
+    ${d.langSk.length?`<div class="rs"><div class="rst">Languages</div><div class="rsw">${d.langSk.map(s=>`<span class="rsk">${s}</span>`).join('')}</div></div>`:''}
   `;
-  document.getElementById('preview-status').textContent = 'Live preview ✓';
-  document.getElementById('preview-status').style.color = 'var(--teal)';
+  document.getElementById('ps-badge').textContent='Live preview ✓';
+  document.getElementById('ps-badge').className='ps-badge ps-live';
 }
 
-async function generateResume() {
-  const d = collectData();
-  document.getElementById('gen-overlay').classList.add('show');
-  document.getElementById('gen-btn').disabled = true;
+function buildReview(){
+  const d=collect();
+  document.getElementById('review-box').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Name:</span> <strong>${d.name||'—'}</strong></div>
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Role:</span> <strong>${d.role||'—'}</strong></div>
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Experience:</span> <strong>${d.exps.length} entries</strong></div>
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Education:</span> <strong>${d.edus.length} entries</strong></div>
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Skills:</span> <strong>${[...d.techSk,...d.softSk].length} added</strong></div>
+      <div style="font-size:0.82rem"><span style="color:var(--muted)">Template:</span> <strong style="text-transform:capitalize">${selTemplate}</strong></div>
+    </div>`;
+}
 
-  const prompt = `Create a professional, ATS-optimized resume for the following person. Use strong action verbs, quantify achievements where possible, and format it professionally.
+async function generateResume(){
+  const d=collect();
+  if(!d.name||!d.email||!d.role){goStep(1);alert('Please fill Name, Email and Target Role');return;}
+  const ov=document.getElementById('gen-ov');
+  ov.classList.add('show');
+  document.getElementById('gen-btn').disabled=true;
+  const gsteps=['gs1','gs2','gs3','gs4','gs5'];
+  const bars=[20,40,60,80,95];
+  let si=0;
+  const st=setInterval(()=>{
+    if(si>0)document.getElementById(gsteps[si-1]).className='gstep done';
+    if(si<gsteps.length){document.getElementById(gsteps[si]).className='gstep active';document.getElementById('gen-bar').style.width=bars[si]+'%';}
+    si++;if(si>gsteps.length)clearInterval(st);
+  },1000);
 
-NAME: ${d.name}
-EMAIL: ${d.email}
-PHONE: ${d.phone}
-LOCATION: ${d.location}
-LINKEDIN: ${d.linkedin}
-TARGET ROLE: ${d.targetRole}
-INDUSTRY: ${d.industry}
-EXPERIENCE LEVEL: ${d.expLevel}
-PERSONAL SUMMARY: ${d.summary || 'Not provided'}
+  const prompt=`You are an expert professional resume writer. Create a complete ATS-optimized resume.
 
-WORK EXPERIENCE:
-${d.experiences.map(e=>`${e.title} at ${e.company} (${e.start} - ${e.end})\n${e.desc}`).join('\n\n')}
+CANDIDATE:
+Name: ${d.name} | Role: ${d.role} | Email: ${d.email} | Phone: ${d.phone}
+Location: ${d.city} | LinkedIn: ${d.linkedin} | Portfolio: ${d.portfolio}
+Industry: ${d.industry} | Level: ${d.level}
 
-EDUCATION:
-${d.educations.map(e=>`${e.degree} from ${e.college} (${e.year}) - ${e.grade}`).join('\n')}
+ABOUT (enhance into professional summary):
+${d.about||'Write a compelling fresher summary for '+d.role+' in '+d.industry}
 
-CERTIFICATIONS: ${d.certs}
-TECHNICAL SKILLS: ${d.techSkills}
-SOFT SKILLS: ${d.softSkills}
-LANGUAGES: ${d.languages}
-PROJECTS: ${d.projects}
-EXTRA CURRICULAR: ${d.extras}
+EXPERIENCE (enhance with strong action verbs + quantified results):
+${d.exps.length?d.exps.map(e=>`${e.title} at ${e.company} (${e.start}-${e.end})\n${e.desc}`).join('\n\n'):'None — write fresher positioning statement'}
 
-Generate a complete, professional resume in plain text format with clear sections. Make it ATS-friendly with relevant keywords for ${d.industry}. Enhance the descriptions with strong action verbs and quantified results where logical. Format clearly with section headers in CAPS.`;
+EDUCATION: ${d.edus.map(e=>`${e.degree} from ${e.college} (${e.year}) ${e.grade}`).join('; ')||'Not provided'}
+CERTIFICATIONS: ${d.certs||'None'}
+TECHNICAL SKILLS: ${d.techSk.join(', ')||'Not provided'}
+SOFT SKILLS: ${d.softSk.join(', ')||'Not provided'}
+LANGUAGES: ${d.langSk.join(', ')||'Not provided'}
+PROJECTS: ${d.projects||'None'}
+ACHIEVEMENTS: ${d.extras||'None'}
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
+INSTRUCTIONS:
+1. Write powerful 3-line professional summary for ${d.role} in ${d.industry}
+2. Rewrite each experience bullet with action verbs (Spearheaded, Optimized, Drove, Increased, Built, Managed)
+3. Add quantified results where logical (X%, X accounts, X projects, etc.)
+4. Add 3-5 ATS keywords naturally for ${d.industry}
+5. Keep it concise and impactful
+
+Respond ONLY in JSON (no markdown, no extra text):
+{"summary":"<3 line summary>","experiences":[{"title":"","company":"","dates":"","bullets":["",""]}],"education":[{"degree":"","college":"","year":"","grade":""}],"skills":{"technical":[""],"soft":[""],"languages":[""]},"certifications":"","projects":[{"name":"","desc":""}],"achievements":"","ats_score":<0-100>,"ats_verdict":"<one line>"}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
     });
-    const data = await res.json();
-    generatedResumeText = data.content[0].text;
-
-    document.getElementById('gen-overlay').classList.remove('show');
-    document.getElementById('gen-btn').disabled = false;
-
-    // Display in preview as formatted HTML
-    const preview = document.getElementById('resume-preview');
-    const lines = generatedResumeText.split('\n');
-    let html = '';
-    lines.forEach(line => {
-      if (!line.trim()) { html += '<br>'; return; }
-      if (line.match(/^[A-Z\s&]+$/) && line.length > 3) { html += `<h2>${line}</h2>`; }
-      else if (line.match(/^\s*[•\-\*]/)) { html += `<ul><li>${line.replace(/^[\s•\-\*]+/,'')}</li></ul>`; }
-      else { html += `<p>${line}</p>`; }
-    });
-    preview.innerHTML = html;
-
-    document.getElementById('download-btn').style.display = 'block';
-    document.getElementById('print-btn').style.display = 'block';
-    document.getElementById('preview-status').textContent = 'AI Generated ✓';
-    document.getElementById('preview-status').style.color = 'var(--teal)';
-
-  } catch(e) {
-    document.getElementById('gen-overlay').classList.remove('show');
-    document.getElementById('gen-btn').disabled = false;
+    const data=await res.json();
+    clearInterval(st);
+    gsteps.forEach(s=>document.getElementById(s).className='gstep done');
+    document.getElementById('gen-bar').style.width='100%';
+    setTimeout(()=>{
+      ov.classList.remove('show');
+      document.getElementById('gen-btn').disabled=false;
+      try{
+        const text=data.content[0].text;
+        const clean=text.replace(/```json|```/g,'').trim();
+        renderAI(JSON.parse(clean),d);
+      }catch(pe){renderFallback(data.content[0].text);}
+    },600);
+  }catch(e){
+    clearInterval(st);ov.classList.remove('show');
+    document.getElementById('gen-btn').disabled=false;
     alert('Generation failed. Please try again.');
   }
 }
 
-function copyResume() {
-  navigator.clipboard.writeText(generatedResumeText).then(() => {
-    const btn = document.getElementById('download-btn');
-    btn.textContent = '✅ Copied!';
-    setTimeout(() => { btn.textContent = '📋 Copy Resume Text'; }, 2000);
+function renderAI(r,d){
+  const out=document.getElementById('resume-output');
+  out.classList.remove('empty');
+  const ac=selTemplate==='modern'?'#00b894':selTemplate==='minimal'?'#222':'#7c5cfc';
+  const contact=[d.email,d.phone,d.city,d.linkedin,d.portfolio].filter(Boolean);
+  const allSk=[...(r.skills?.technical||d.techSk),...(r.skills?.soft||d.softSk)];
+  out.innerHTML=`
+    <div class="rn">${d.name}</div>
+    <div class="rr" style="color:${ac}">${d.role}</div>
+    <div class="rc">${contact.map(c=>`<span>${c}</span>`).join(' · ')}</div>
+    ${r.summary?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Professional Summary</div><div class="rsum">${r.summary}</div></div>`:''}
+    ${r.experiences?.length?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Experience</div>${r.experiences.map(e=>`<div class="re"><div style="display:flex;justify-content:space-between"><div><div class="ret">${e.title}</div><div class="rec" style="color:${ac}">${e.company}</div></div><div class="red">${e.dates}</div></div><ul class="reul">${(e.bullets||[]).map(b=>`<li>${b}</li>`).join('')}</ul></div>`).join('')}</div>`:''}
+    ${r.education?.length?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Education</div>${r.education.map(e=>`<div class="redu"><div><div class="redeg">${e.degree}</div><div class="recol">${e.college}</div></div><div class="redr">${e.year}<br><strong>${e.grade}</strong></div></div>`).join('')}</div>`:''}
+    ${allSk.length?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Skills</div><div class="rsw">${allSk.map(s=>`<span class="rsk" style="background:${ac}15;color:${ac}">${s}</span>`).join('')}</div></div>`:''}
+    ${r.projects?.length?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Projects</div>${r.projects.map(p=>`<div class="re"><div class="rpn">${p.name}</div><div class="rpd">${p.desc}</div></div>`).join('')}</div>`:''}
+    ${r.certifications?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Certifications</div><div class="rct">${r.certifications}</div></div>`:''}
+    ${r.achievements?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Achievements</div><div class="rct">${r.achievements}</div></div>`:''}
+    ${r.skills?.languages?.length?`<div class="rs"><div class="rst" style="color:${ac};border-bottom-color:${ac}20">Languages</div><div class="rsw">${r.skills.languages.map(s=>`<span class="rsk" style="background:${ac}15;color:${ac}">${s}</span>`).join('')}</div></div>`:''}
+  `;
+  genHTML=out.innerHTML;genText=out.innerText;
+  if(r.ats_score){
+    document.getElementById('ats-badge').classList.add('show');
+    document.getElementById('ats-num').textContent=r.ats_score;
+    document.getElementById('ats-verdict').textContent=r.ats_verdict||'AI Estimated';
+    const offset=88-(r.ats_score/100)*88;
+    setTimeout(()=>{
+      const arc=document.getElementById('ats-arc');
+      arc.style.transition='stroke-dashoffset 1.2s ease';arc.style.strokeDashoffset=offset;
+      let c=0;const t=setInterval(()=>{c=Math.min(c+2,r.ats_score);document.getElementById('ats-val').textContent=c;if(c>=r.ats_score)clearInterval(t);},20);
+    },200);
+  }
+  ['btn-copy','btn-print','btn-regen'].forEach(id=>document.getElementById(id).disabled=false);
+  document.getElementById('ps-badge').textContent='AI Generated ✨';
+  document.getElementById('ps-badge').className='ps-badge ps-done';
+}
+
+function renderFallback(text){
+  const out=document.getElementById('resume-output');
+  out.classList.remove('empty');
+  out.innerHTML=`<pre style="white-space:pre-wrap;font-family:Georgia,serif;font-size:9px;color:#1a1a1a;line-height:1.6">${text}</pre>`;
+  genText=text;
+  ['btn-copy','btn-print','btn-regen'].forEach(id=>document.getElementById(id).disabled=false);
+}
+
+function copyResume(){
+  navigator.clipboard.writeText(genText).then(()=>{
+    const btn=document.getElementById('btn-copy');btn.textContent='✅ Copied!';
+    setTimeout(()=>{btn.textContent='📋 Copy';},2000);
   });
 }
 
-function printResume() {
-  const content = document.getElementById('resume-preview').innerHTML;
-  const w = window.open('', '', 'width=800,height=900');
-  w.document.write(`<html><head><title>${document.getElementById('name').value} - Resume</title><style>body{font-family:Georgia,serif;font-size:11px;line-height:1.6;color:#111;padding:2rem}h1{font-size:18px;margin-bottom:4px}h2{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7c5cfc;border-bottom:1px solid #eee;padding-bottom:4px;margin:12px 0 6px}p,li{font-size:10px;color:#333}ul{padding-left:16px}@media print{body{padding:1rem}}</style></head><body>${content}</body></html>`);
-  w.document.close();
-  setTimeout(() => w.print(), 500);
+function printResume(){
+  const d=collect();
+  const w=window.open('','','width=820,height=1000');
+  w.document.write(`<!DOCTYPE html><html><head><title>${d.name} – Resume</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;font-size:11px;line-height:1.55;color:#1a1a1a;padding:2.5rem 2rem;max-width:800px;margin:0 auto;}.rn{font-size:22px;font-weight:700;margin-bottom:3px;}.rr{font-size:11px;font-weight:600;color:#7c5cfc;letter-spacing:0.5px;margin-bottom:5px;}.rc{font-size:9.5px;color:#555;display:flex;flex-wrap:wrap;gap:10px;padding-bottom:8px;border-bottom:2px solid #7c5cfc;margin-bottom:10px;}.rs{margin-bottom:11px;}.rst{font-size:9px;font-weight:700;color:#7c5cfc;text-transform:uppercase;letter-spacing:2px;padding-bottom:3px;border-bottom:1px solid #ede9ff;margin-bottom:5px;}.rsum{font-size:10px;color:#333;line-height:1.6;}.ret{font-size:11px;font-weight:700;}.rec{font-size:10px;color:#7c5cfc;font-weight:600;}.red{font-size:9px;color:#888;}.reul{padding-left:12px;margin-top:3px;}.reul li{font-size:9.5px;margin-bottom:2px;}.redu{display:flex;justify-content:space-between;margin-bottom:5px;}.redeg{font-size:11px;font-weight:700;}.recol{font-size:9.5px;color:#555;}.redr{font-size:9px;color:#888;text-align:right;}.rsw{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}.rsk{background:#f0eeff;color:#5a3fc8;padding:2px 8px;border-radius:20px;font-size:8.5px;font-weight:600;}.rct{font-size:9.5px;color:#333;}.rpn{font-size:10.5px;font-weight:700;}.rpd{font-size:9.5px;color:#555;}@media print{body{padding:1.5rem 1.25rem;}}</style></head><body>${genHTML||document.getElementById('resume-output').innerHTML}</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),600);
 }
 
-// Live update on input changes
-document.addEventListener('input', (e) => {
-  if (currentStep < 5 && e.target.tagName !== 'BUTTON') updateLivePreview();
-});
+window.onload=()=>{addEdu();};
 </script>
 </body>
 </html>
