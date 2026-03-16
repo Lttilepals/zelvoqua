@@ -257,14 +257,22 @@ function showDashboard(){
 
 async function verifyAdminAccess(user){
   if(!user) return false;
-  const {data,error} = await sb
-    .from('profiles')
-    .select('id, full_name, email, role')
-    .eq('id', user.id)
-    .maybeSingle();
-  if(error || !data || data.role !== 'admin') return false;
-  currentAdmin = data;
-  return true;
+  try {
+    const {data,error} = await sb
+      .from('profiles')
+      .select('id, full_name, email, role')
+      .eq('id', user.id)
+      .limit(1);
+    if(error) { console.error('Profile fetch error:', error); return false; }
+    const profile = data && data[0];
+    if(!profile) { console.error('No profile found for user:', user.id); return false; }
+    if(profile.role !== 'admin') { console.error('Not admin, role is:', profile.role); return false; }
+    currentAdmin = profile;
+    return true;
+  } catch(e) {
+    console.error('verifyAdminAccess exception:', e);
+    return false;
+  }
 }
 
 async function adminLogout(){
