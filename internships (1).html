@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Programs | Zelvoqua Global Solutions</title>
+  <style>
+    :root{
+      --bg:#070014;
+      --bg-soft:#1a1233;
+      --panel:rgba(255,255,255,0.05);
+      --panel-strong:rgba(255,255,255,0.08);
+      --line:rgba(255,255,255,0.12);
+      --text:#f5f3ff;
+      --muted:#beb6d8;
+      --accent:#8b5cf6;
+      --accent-2:#5b2cff;
+      --shadow:0 26px 70px rgba(5,0,20,.45);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Segoe UI,Arial,sans-serif;
+      color:var(--text);
+      background:radial-gradient(circle at top, #1a1233, #070014);
+      line-height:1.6;
+    }
+    a{text-decoration:none;color:inherit}
+    img{display:block;max-width:100%}
+    .container{width:min(1180px,calc(100% - 40px));margin:0 auto}
+    .nav{
+      position:sticky;top:0;z-index:30;
+      background:rgba(7,0,20,.76);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:18px 0;gap:20px;
+    }
+    .brand{font-size:1.5rem;font-weight:800}
+    .brand span{color:#a78bfa}
+    .nav-links{display:flex;gap:22px;flex-wrap:wrap;color:var(--muted);font-weight:600}
+    .nav-links a:hover{color:var(--text)}
+    .hero{padding:82px 0 42px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 14px;border-radius:999px;
+      background:rgba(139,92,246,.12);
+      border:1px solid rgba(139,92,246,.25);
+      color:#dccfff;font-size:.92rem;
+    }
+    h1{
+      margin:20px 0 16px;
+      font-size:clamp(3rem,7vw,56px);
+      line-height:1.02;letter-spacing:-.04em;
+    }
+    .hero-copy{
+      max-width:760px;
+      color:var(--muted);
+      font-size:1.05rem;
+    }
+    .hero-grid{
+      display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;
+    }
+    .glass{
+      background:var(--panel);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+    }
+    .hero-visual{
+      overflow:hidden;position:relative;min-height:360px;
+    }
+    .hero-visual img{
+      width:100%;height:100%;object-fit:cover;opacity:.88;
+    }
+    .hero-visual::after{
+      content:"";
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(25,12,55,.12),rgba(7,0,20,.5));
+    }
+    .hero-badge{
+      position:absolute;left:22px;bottom:22px;z-index:2;
+      padding:14px 16px;border-radius:16px;
+      background:rgba(12,6,28,.72);
+      border:1px solid rgba(255,255,255,.12);
+      max-width:280px;
+    }
+    .hero-badge strong{display:block;margin-bottom:6px}
+    .hero-badge span{color:var(--muted);font-size:.95rem}
+    .benefits{padding:12px 0 8px}
+    .benefit-shell{padding:24px}
+    .benefit-shell h2,.section-head h2{margin:0 0 10px;font-size:clamp(2rem,4vw,2.7rem);letter-spacing:-.03em}
+    .section-head p{margin:0;color:var(--muted);max-width:760px}
+    /* Hero CTA row */
+    .hero-cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+    /* Stats */
+    .stats-section{padding:0 0 56px}
+    .stats-row{border-radius:24px;padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .stat-item{text-align:center;flex:1;min-width:120px}
+    .stat-num{display:block;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-item span{display:block;color:var(--muted);font-size:.82rem;margin-top:6px}
+    .stat-divider{width:1px;height:48px;background:rgba(255,255,255,.08)}
+    /* Steps */
+    .steps-section{padding:0 0 72px}
+    .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .step-card{border-radius:22px;padding:26px;position:relative;transition:.22s ease}
+    .step-card:hover{transform:translateY(-4px)}
+    .step-num{position:absolute;top:20px;right:20px;font-size:.72rem;font-weight:800;color:rgba(167,139,250,.4);letter-spacing:.1em}
+    .step-icon{font-size:2rem;margin-bottom:16px}
+    .step-card strong{display:block;font-size:1rem;margin-bottom:10px}
+    .step-card p{color:var(--muted);font-size:.88rem;line-height:1.7;margin:0}
+    /* Benefits */
+    .benefit-list{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;
+    }
+    .benefit{
+      padding:16px 18px;border-radius:16px;
+      background:var(--panel-strong);
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+    .benefit-icon{font-size:1.6rem;margin-bottom:12px}
+    .benefit strong{display:block;color:var(--text);margin-bottom:6px}
+    .benefit span{color:var(--muted);font-size:.88rem;line-height:1.7}
+    /* Partners */
+    .partners-section{padding:0 0 72px}
+    .partners-grid-2{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .partner-card{border-radius:22px;padding:24px;transition:.22s ease}
+    .partner-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.4)}
+    .partner-region{font-size:.9rem;font-weight:800;margin-bottom:16px;color:#c4b5fd}
+    .partner-logos{display:flex;flex-direction:column;gap:10px}
+    .partner-logos span{font-size:.88rem;color:var(--muted);padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+    .filters{padding:28px 0 8px}
+    .search-wrap{text-align:center}
+    .search-shell{
+      max-width:700px;margin:0 auto;
+      display:grid;grid-template-columns:1fr auto;gap:12px;
+    }
+    .search-shell input{
+      width:100%;padding:16px 18px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);font-size:1rem;
+      outline:none;
+    }
+    .search-shell input::placeholder{color:#9c93bc}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:12px 24px;border-radius:10px;
+      border:1px solid transparent;font-weight:700;cursor:pointer;
+      transition:transform .2s ease,opacity .2s ease,border-color .2s ease;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{
+      background:linear-gradient(135deg,#7b5cff,#5b2cff);
+      color:#fff;
+      box-shadow:0 14px 34px rgba(91,44,255,.34);
+    }
+    .btn-outline{
+      background:rgba(255,255,255,.03);
+      border-color:var(--line);
+      color:var(--text);
+    }
+    .search-actions{
+      display:flex;justify-content:center;margin-top:16px;
+    }
+    .filter-row{
+      display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+      margin-top:22px;
+    }
+    .filter-btn{
+      padding:11px 16px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);font-weight:700;cursor:pointer;
+      transition:.2s ease;
+    }
+    .filter-btn.active,.filter-btn:hover{
+      color:#fff;border-color:rgba(139,92,246,.4);
+      background:rgba(139,92,246,.16);
+    }
+    .cards{padding:26px 0 78px}
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:30px;
+    }
+    .card{
+      padding:22px;display:flex;flex-direction:column;gap:16px;
+      background:rgba(255,255,255,0.05);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+    }
+    .card-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .tag{
+      display:inline-flex;padding:8px 12px;border-radius:999px;
+      background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.22);
+      color:#dccfff;font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    }
+    .duration{color:#c9c3e2;font-size:.92rem}
+    .card h3{margin:0;font-size:1.3rem;line-height:1.3}
+    .meta{
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+    }
+    .meta div{
+      padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+    }
+    .meta strong{display:block;font-size:.76rem;color:#a9a1ca;text-transform:uppercase;letter-spacing:.05em}
+    .meta span{display:block;margin-top:6px}
+    .skills{display:flex;flex-wrap:wrap;gap:10px}
+    .skill{
+      padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.05);
+      border:1px solid var(--line);color:#d7d1ed;font-size:.9rem;
+    }
+    .card p{margin:0;color:var(--muted)}
+    .card-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:auto}
+    .empty{
+      text-align:center;padding:40px 24px;color:var(--muted);
+      border:1px dashed rgba(255,255,255,.16);border-radius:20px;
+      background:rgba(255,255,255,.03);
+    }
+    @media (max-width: 920px){
+      .hero-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 680px){
+      .nav-inner{flex-direction:column}
+      .search-shell{grid-template-columns:1fr}
+      .benefit-list,.meta{grid-template-columns:1fr}
+      .steps-grid{grid-template-columns:repeat(2,1fr)}
+      .partners-grid-2{grid-template-columns:repeat(2,1fr)}
+      .stats-row{gap:14px}
+      .stat-divider{display:none}
+      .card-foot{flex-direction:column;align-items:stretch}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html">Zelvo<span>qua</span></a>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="internships.html">Internships</a>
+        <a href="verify.html">Verify Certificate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Careers & Internship Programs</div>
+          <h1>Launch Your Career with Real-World Internships</h1>
+          <p class="hero-copy">Join structured internship programs built around real consulting and business projects. Work on live assignments, get mentored by industry experts, and earn a verified certificate — in 45 to 90 days.</p>
+          <div class="hero-cta-row">
+            <a class="btn btn-primary" href="#internship-list">Browse Programs</a>
+            <a class="btn btn-outline" href="index.html#programs">Enroll Now</a>
+          </div>
+        </div>
+        <div class="glass hero-visual">
+          <img src="singapore.jpg" alt="Zelvoqua consulting operations">
+          <div class="hero-badge">
+            <strong>Learn through real consulting projects</strong>
+            <span>Case-based tasks, business research, structured mentorship, and internship certification.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="stats-row glass">
+          <div class="stat-item">
+            <strong class="stat-num">10,000+</strong>
+            <span>Students Enrolled</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">35+</strong>
+            <span>Internship Programs</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">200+</strong>
+            <span>Industry Partners</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">94%</strong>
+            <span>Certificate Completion Rate</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">12+</strong>
+            <span>Countries Represented</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="steps-section">
+      <div class="container">
+        <div class="section-head" style="margin-bottom:40px">
+          <div>
+            <div class="eyebrow">How It Works</div>
+            <h2>From Signup to Certificate in 4 Steps</h2>
+          </div>
+          <p>Simple, structured, and designed for working students.</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card glass">
+            <div class="step-num">01</div>
+            <div class="step-icon">🎯</div>
+            <strong>Choose Your Track</strong>
+            <p>Browse 35+ programs across Finance, Marketing, HR, Supply Chain and more. Pick what aligns with your career goal.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">02</div>
+            <div class="step-icon">💳</div>
+            <strong>Enroll & Pay</strong>
+            <p>Secure your seat with a one-time fee starting at just ₹199. Instant confirmation + access code delivered to your email.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">03</div>
+            <div class="step-icon">🛠️</div>
+            <strong>Work on Real Projects</strong>
+            <p>Complete structured assignments, case studies, and business tasks guided by mentors — from your dashboard.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">04</div>
+            <div class="step-icon">🎓</div>
+            <strong>Get Certified</strong>
+            <p>Receive a verified digital certificate with a unique ID. Share on LinkedIn, resume, or anywhere that matters.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS SECTION -->
+    <section class="benefits">
+      <div class="container">
+        <div class="glass benefit-shell">
+          <div class="section-head" style="margin-bottom:32px">
+            <div>
+              <div class="eyebrow">Why Zelvoqua</div>
+              <h2>Everything You Need to Grow</h2>
+            </div>
+            <p>Built for students who want more than just a certificate.</p>
+          </div>
+          <div class="benefit-list">
+            <div class="benefit">
+              <div class="benefit-icon">📁</div>
+              <strong>Real Project Experience</strong>
+              <span>Work on assignments that resemble actual business problem solving — not just theory.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🧑‍💼</div>
+              <strong>Expert Mentorship</strong>
+              <span>Learn through guided tasks from professionals with real industry backgrounds.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">📜</div>
+              <strong>Verified Certificate</strong>
+              <span>Earn a certificate with a unique verifiable ID — credible and shareable anywhere.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">⚡</div>
+              <strong>Fast Turnaround</strong>
+              <span>Complete in 45, 60 or 90 days — flexible enough to fit around your schedule.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">💰</div>
+              <strong>Affordable Pricing</strong>
+              <span>Starting at just ₹199 — one of the most accessible programs in the market.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🌍</div>
+              <strong>Global Network</strong>
+              <span>Connect with peers and partners across Singapore, India, UAE and UK.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTNERS SECTION -->
+    <section class="partners-section">
+      <div class="container">
+        <div class="section-head" style="margin-bottom:36px">
+          <div>
+            <div class="eyebrow">Our Partners</div>
+            <h2>Backed by Industry Leaders</h2>
+          </div>
+          <p>Zelvoqua works with top organizations across regions to bring you real exposure.</p>
+        </div>
+        <div class="partners-grid-2">
+          <div class="partner-card glass">
+            <div class="partner-region">🇸🇬 Singapore</div>
+            <div class="partner-logos">
+              <span>🏦 DBS Bank</span>
+              <span>💼 Deloitte SEA</span>
+              <span>🌐 SkillsFuture SG</span>
+              <span>🎓 NTU Career Hub</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇮🇳 India</div>
+            <div class="partner-logos">
+              <span>🏢 HDFC Bank</span>
+              <span>💡 Infosys BPM</span>
+              <span>📊 ICICI Securities</span>
+              <span>🌟 Wipro TalentNext</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇦🇪 UAE</div>
+            <div class="partner-logos">
+              <span>🏙️ Dubai Future Foundation</span>
+              <span>✈️ Emirates Group</span>
+              <span>🌐 DIFC Innovation Hub</span>
+              <span>💼 PwC Middle East</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇬🇧 United Kingdom</div>
+            <div class="partner-logos">
+              <span>🏦 Barclays Graduate</span>
+              <span>📈 KPMG UK</span>
+              <span>🎓 Oxford Said Network</span>
+              <span>💻 TechNation UK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="internship-list"></div>
+
+    <section class="filters">
+      <div class="container">
+        <div class="section-head search-wrap">
+          <h2>Find the right internship track</h2>
+          <p>Search by field or use quick filters to narrow down programs instantly.</p>
+        </div>
+        <div class="search-wrap" style="margin-top:22px">
+          <div class="search-shell">
+            <input id="searchInput" type="text" placeholder="Search internships by field, title, or skill">
+            <button class="btn btn-primary" type="button" onclick="renderCards()">Search</button>
+          </div>
+          <div class="search-actions">
+            <a class="btn btn-outline" href="index.html">Go to Enrollment</a>
+          </div>
+          <div class="filter-row" id="filterRow">
+            <button class="filter-btn active" type="button" data-filter="All">All</button>
+            <button class="filter-btn" type="button" data-filter="Finance">Finance</button>
+            <button class="filter-btn" type="button" data-filter="Human Resources">HR</button>
+            <button class="filter-btn" type="button" data-filter="Supply Chain">Supply Chain</button>
+            <button class="filter-btn" type="button" data-filter="Marketing">Marketing</button>
+            <button class="filter-btn" type="button" data-filter="Analytics">Analytics</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="container">
+        <div class="cards-grid" id="cardsGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const fallbackInternships = [
+      {
+        category: 'Finance',
+        title: 'Financial Analytics Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Financial Analysis', 'Excel', 'Business Reporting'],
+        description: 'Learn reporting, budgeting logic, business metrics, and practical financial interpretation.'
+      },
+      {
+        category: 'Human Resources',
+        title: 'HR Solutions Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Recruitment', 'HR Operations', 'People Analytics'],
+        description: 'Work through structured HR workflows, hiring coordination, and organizational support tasks.'
+      },
+      {
+        category: 'Supply Chain',
+        title: 'Supply Chain Optimization Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Inventory Planning', 'Logistics', 'Process Mapping'],
+        description: 'Explore supply chain inefficiencies, operational flow, and vendor-process coordination.'
+      },
+      {
+        category: 'Marketing',
+        title: 'Digital Marketing Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Campaign Planning', 'Content Strategy', 'Performance Tracking'],
+        description: 'Build practical exposure to digital growth, channel planning, and campaign evaluation.'
+      },
+      {
+        category: 'Business Management',
+        title: 'Business Consulting Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Business Strategy', 'Research', 'Problem Solving'],
+        description: 'Approach consulting-style tasks through market analysis, business review, and strategic planning.'
+      },
+      {
+        category: 'Analytics',
+        title: 'Business Analytics Internship',
+        duration: '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: ['Data Analysis', 'Dashboards', 'Decision Support'],
+        description: 'Interpret structured datasets, identify patterns, and turn analysis into business insight.'
+      }
+    ];
+
+    let internships = [];
+    let activeFilter = 'All';
+
+    function deriveSkills(item) {
+      const category = String(item.category || '').toLowerCase();
+      const title = String(item.title || '').toLowerCase();
+
+      if (category.includes('finance') || title.includes('finance')) {
+        return ['Financial Analysis', 'Excel', 'Business Reporting'];
+      }
+      if (category.includes('human') || category.includes('hr') || title.includes('hr')) {
+        return ['Recruitment', 'HR Operations', 'People Analytics'];
+      }
+      if (category.includes('supply') || title.includes('supply')) {
+        return ['Inventory Planning', 'Logistics', 'Process Mapping'];
+      }
+      if (category.includes('market') || title.includes('marketing')) {
+        return ['Campaign Planning', 'Content Strategy', 'Performance Tracking'];
+      }
+      if (category.includes('analytic') || title.includes('analytics')) {
+        return ['Data Analysis', 'Dashboards', 'Decision Support'];
+      }
+      if (category.includes('business') || category.includes('management') || title.includes('consult')) {
+        return ['Business Strategy', 'Research', 'Problem Solving'];
+      }
+      return ['Project Work', 'Structured Learning', 'Career Skills'];
+    }
+
+    function normalizeCourse(course) {
+      return {
+        category: course.category || 'General',
+        title: course.title || 'Internship Program',
+        duration: course.duration || '2 Months',
+        projects: '2',
+        certificate: 'Yes',
+        skills: deriveSkills(course),
+        description: course.description || 'Structured internship program with guided projects and practical business learning.'
+      };
+    }
+
+    async function loadInternships() {
+      try {
+        const { data, error } = await sb.from('courses').select('*').order('id');
+        if (error) throw error;
+        internships = (data && data.length ? data.map(normalizeCourse) : fallbackInternships);
+      } catch (_error) {
+        internships = fallbackInternships;
+      }
+      renderCards();
+    }
+
+    function renderCards() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filtered = internships.filter(item => {
+        const haystack = [item.category, item.title, item.description, ...item.skills].join(' ').toLowerCase();
+        const queryMatch = !query || haystack.includes(query);
+        const filterMatch = activeFilter === 'All' || item.category === activeFilter;
+        return queryMatch && filterMatch;
+      });
+
+      const grid = document.getElementById('cardsGrid');
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty">No internships found for this filter yet.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => `
+        <article class="card">
+          <div class="card-top">
+            <span class="tag">${item.category}</span>
+            <span class="duration">${item.duration}</span>
+          </div>
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="meta">
+            <div><strong>Duration</strong><span>${item.duration}</span></div>
+            <div><strong>Projects</strong><span>${item.projects}</span></div>
+            <div><strong>Certificate</strong><span>${item.certificate}</span></div>
+          </div>
+          <div>
+            <strong style="display:block;margin-bottom:10px">Skills</strong>
+            <div class="skills">${item.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}</div>
+          </div>
+          <div class="card-foot">
+            <span style="color:var(--muted)">Structured internship program</span>
+            <a class="btn btn-primary" href="index.html?program=${encodeURIComponent(item.title)}#top">Enroll Now</a>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    document.getElementById('filterRow').addEventListener('click', event => {
+      const button = event.target.closest('.filter-btn');
+      if (!button) return;
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      renderCards();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', renderCards);
+
+    loadInternships();
+  </script>
+</body>
+</html>
+
