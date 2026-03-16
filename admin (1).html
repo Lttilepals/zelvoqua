@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvoqua Admin Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#6c2bd9;--primary-light:#8b5cf6;--accent:#f59e0b;--accent2:#10b981;--dark:#0f0a1e;--darker:#07050f;--card:#1a1030;--card2:#150d28;--border:rgba(108,43,217,0.2);--text:#e2d9f3;--muted:#9ca3af;--white:#fff;--danger:#ef4444;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:var(--text);display:flex;min-height:100vh;}
+
+/* LOGIN */
+.admin-login{display:flex;align-items:center;justify-content:center;min-height:100vh;width:100%;padding:2rem;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:380px;}
+.login-box h1{font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;}
+.login-box p{font-size:0.85rem;color:var(--muted);margin-bottom:2rem;}
+.form-group{margin-bottom:1.2rem;}
+.form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;}
+.form-group input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--white);font-size:0.95rem;font-family:inherit;outline:none;transition:border-color 0.2s;}
+.form-group input:focus{border-color:var(--primary-light);}
+.btn-submit{width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border:none;padding:0.9rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.error-msg{color:#f87171;font-size:0.8rem;margin-top:0.5rem;display:none;}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--card);border-right:1px solid var(--border);min-height:100vh;display:flex;flex-direction:column;padding:1.5rem 0;flex-shrink:0;display:none;}
+.sidebar.visible{display:flex;}
+.sidebar-logo{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border);font-size:1.2rem;font-weight:800;color:var(--white);}
+.sidebar-logo span{color:var(--primary-light);}
+.sidebar-label{padding:1rem 1.5rem 0.4rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.sidebar-item{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1.5rem;color:var(--muted);font-size:0.88rem;font-weight:500;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;}
+.sidebar-item:hover,.sidebar-item.active{color:var(--white);background:rgba(108,43,217,0.1);border-left-color:var(--primary-light);}
+.sidebar-icon{font-size:1rem;width:20px;text-align:center;}
+.sidebar-bottom{margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.btn-logout{width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;padding:0.6rem;border-radius:6px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;display:none;}
+.main.visible{display:flex;}
+.topbar{background:rgba(7,5,15,0.9);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-title{font-size:1rem;font-weight:700;color:var(--white);}
+.admin-badge{background:rgba(108,43,217,0.2);border:1px solid var(--border);color:var(--primary-light);padding:0.3rem 0.8rem;border-radius:4px;font-size:0.75rem;font-weight:700;}
+.content{flex:1;padding:2rem;overflow-y:auto;}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* STATS */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.admin-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}
+.admin-stat-num{font-size:2rem;font-weight:800;color:var(--white);}
+.admin-stat-num span{color:var(--primary-light);}
+.admin-stat-lbl{font-size:0.78rem;color:var(--muted);margin-top:0.3rem;}
+.admin-stat-icon{font-size:1.5rem;margin-bottom:0.5rem;}
+
+/* TABLE */
+.table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.75rem;}
+.table-title{font-size:1.1rem;font-weight:700;color:var(--white);}
+.btn-add{background:var(--primary);color:white;border:none;padding:0.55rem 1.2rem;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.2s;}
+.btn-add:hover{background:var(--primary-light);}
+.search-input{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:0.5rem 1rem;color:var(--white);font-size:0.85rem;font-family:inherit;outline:none;width:220px;}
+.search-input:focus{border-color:var(--primary-light);}
+.data-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;}
+.data-table th{padding:1rem;text-align:left;font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);background:var(--card2);}
+.data-table td{padding:1rem;font-size:0.88rem;color:var(--text);border-bottom:1px solid rgba(108,43,217,0.08);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(108,43,217,0.04);}
+.badge{padding:0.2rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:700;}
+.badge-paid{background:rgba(16,185,129,0.15);color:var(--accent2);}
+.badge-free{background:rgba(108,43,217,0.15);color:var(--primary-light);}
+.badge-pending{background:rgba(245,158,11,0.15);color:var(--accent);}
+.btn-delete{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.75rem;cursor:pointer;font-family:inherit;}
+.btn-edit{background:rgba(108,43,217,0.15);border:1px solid var(--border);color:var(--primary-light);padding:0.25rem 0.6rem;border-radius:4px;font-size:0.75rem;cursor:pointer;font-family:inherit;margin-right:0.3rem;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:999;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;width:100%;max-width:500px;}
+.modal h3{font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:1.5rem;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.modal-btns{display:flex;gap:0.75rem;margin-top:1.5rem;justify-content:flex-end;}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.6rem 1.2rem;border-radius:6px;font-size:0.88rem;cursor:pointer;font-family:inherit;}
+.btn-save{background:var(--primary);color:white;border:none;padding:0.6rem 1.5rem;border-radius:6px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.full-width{grid-column:1/-1;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;font-size:0.9rem;color:var(--white);z-index:9999;transform:translateX(120%);transition:transform 0.3s;max-width:300px;}
+.toast.show{transform:translateX(0);}
+.toast.success{border-color:var(--accent2);color:var(--accent2);}
+.toast.error{border-color:#f87171;color:#f87171;}
+
+@media(max-width:900px){.admin-stats{grid-template-columns:repeat(2,1fr);}.sidebar{width:200px;}}
+</style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div class="admin-login" id="adminLogin">
+  <div class="login-box">
+    <h1>🔐 Admin Panel</h1>
+    <p>Zelvoqua Dashboard — Authorized Access Only</p>
+    <div class="form-group"><label>Email</label><input type="email" id="adminEmail" placeholder="admin@zelvoqua.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <div class="error-msg" id="loginErr"></div>
+    <button class="btn-submit" onclick="adminLogin()">Login to Dashboard</button>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;text-align:center">🔒 This panel is only for Zelvoqua admins</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">Zelvo<span>qua</span> <span style="font-size:0.65rem;color:var(--muted);font-weight:400">ADMIN</span></div>
+  <div class="sidebar-label">Main</div>
+  <div class="sidebar-item active" onclick="showPage('overview')"><span class="sidebar-icon">📊</span> Overview</div>
+  <div class="sidebar-label">Manage</div>
+  <div class="sidebar-item" onclick="showPage('courses')"><span class="sidebar-icon">📚</span> Courses</div>
+  <div class="sidebar-item" onclick="showPage('students')"><span class="sidebar-icon">👥</span> Students</div>
+  <div class="sidebar-item" onclick="showPage('enrollments')"><span class="sidebar-icon">📋</span> Enrollments</div>
+  <div class="sidebar-bottom">
+    <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainPanel">
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle">Overview</div>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <a href="index.html" style="font-size:0.82rem;color:var(--muted);text-decoration:none">← View Site</a>
+      <div class="admin-badge" id="adminBadge">ADMIN</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="admin-stats" id="adminStats">
+        <div class="admin-stat"><div class="admin-stat-icon">👥</div><div class="admin-stat-num" id="st-students">–</div><div class="admin-stat-lbl">Total Students</div></div>
+        <div class="admin-stat"><div class="admin-stat-icon">📚</div><div class="admin-stat-num" id="st-courses">–</div><div class="admin-stat-lbl">Active Courses</div></div>
+        <div class="admin-stat"><div class="admin-stat-icon">📋</div><div class="admin-stat-num" id="st-enrollments">–</div><div class="admin-stat-lbl">Total Enrollments</div></div>
+        <div class="admin-stat"><div class="admin-stat-icon">💰</div><div class="admin-stat-num" id="st-revenue">–</div><div class="admin-stat-lbl">Est. Revenue</div></div>
+      </div>
+      <div class="table-header"><div class="table-title">Recent Enrollments</div></div>
+      <table class="data-table" id="recentTable">
+        <thead><tr><th>Student</th><th>Course</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="recentBody"><tr><td colspan="4" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- COURSES -->
+    <div class="page" id="page-courses">
+      <div class="table-header">
+        <div class="table-title">All Courses</div>
+        <button class="btn-add" onclick="openCourseModal()">+ Add Course</button>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Icon</th><th>Title</th><th>Category</th><th>Price</th><th>Seats</th><th>Actions</th></tr></thead>
+        <tbody id="coursesBody"><tr><td colspan="6" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="page" id="page-students">
+      <div class="table-header">
+        <div class="table-title">All Students</div>
+        <input class="search-input" placeholder="Search by email..." id="studentSearch" oninput="searchStudents()">
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Email</th><th>Name</th><th>Joined</th></tr></thead>
+        <tbody id="studentsBody"><tr><td colspan="3" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- ENROLLMENTS -->
+    <div class="page" id="page-enrollments">
+      <div class="table-header"><div class="table-title">All Enrollments</div></div>
+      <table class="data-table">
+        <thead><tr><th>Student</th><th>Course</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="enrollmentsBody"><tr><td colspan="5" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- COURSE MODAL -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal">
+    <h3 id="courseModalTitle">Add New Course</h3>
+    <div class="modal-grid">
+      <div class="form-group full-width"><label>Course Title</label><input type="text" id="cTitle" placeholder="e.g. Full Stack Web Development"></div>
+      <div class="form-group"><label>Category</label><input type="text" id="cCategory" placeholder="Web Development"></div>
+      <div class="form-group"><label>Price (₹)</label><input type="number" id="cPrice" value="499"></div>
+      <div class="form-group"><label>Duration</label><input type="text" id="cDuration" placeholder="12 Weeks"></div>
+      <div class="form-group"><label>Emoji Icon</label><input type="text" id="cEmoji" placeholder="💻"></div>
+      <div class="form-group"><label>Total Seats</label><input type="number" id="cSeats" value="100"></div>
+      <div class="form-group"><label>Badge (LIVE/NEW/HOT)</label><input type="text" id="cBadge" placeholder="LIVE"></div>
+      <div class="form-group"><label>Badge Type</label><input type="text" id="cBadgeType" placeholder="live / new / hot"></div>
+      <div class="form-group full-width"><label>Description</label><input type="text" id="cDesc" placeholder="Short description of the course"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('courseModal')">Cancel</button>
+      <button class="btn-save" onclick="saveCourse()">Save Course</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://jjbvbojzrydidgiehubg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allStudents=[], allCourses=[], allEnrollments=[];
+let editingCourseId=null;
+let currentAdmin=null;
+
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3500);}
+function openModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+async function adminLogin(){
+  const email=document.getElementById('adminEmail').value.trim();
+  const pass=document.getElementById('adminPass').value;
+  const err=document.getElementById('loginErr');
+  err.style.display='none';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  const allowed = await verifyAdminAccess(data.user);
+  if(!allowed){
+    err.textContent='This account is not marked as admin in Supabase profiles.';
+    err.style.display='block';
+    await sb.auth.signOut();
+    return;
+  }
+  showDashboard();
+}
+
+async function checkAdminSession(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session) return;
+  const allowed = await verifyAdminAccess(session.user);
+  if(allowed) showDashboard();
+}
+
+function showDashboard(){
+  document.getElementById('adminLogin').style.display='none';
+  document.getElementById('sidebar').classList.add('visible');
+  document.getElementById('mainPanel').classList.add('visible');
+  document.getElementById('adminBadge').textContent = currentAdmin?.full_name ? currentAdmin.full_name + ' · ADMIN' : 'ADMIN';
+  loadAll();
+}
+
+async function verifyAdminAccess(user){
+  if(!user) return false;
+  try {
+    const {data,error} = await sb
+      .from('profiles')
+      .select('id, full_name, email, role')
+      .eq('id', user.id)
+      .limit(1);
+    if(error) { console.error('Profile fetch error:', error); return false; }
+    const profile = data && data[0];
+    if(!profile) { console.error('No profile found for user:', user.id); return false; }
+    if(profile.role !== 'admin') { console.error('Not admin, role is:', profile.role); return false; }
+    currentAdmin = profile;
+    return true;
+  } catch(e) {
+    console.error('verifyAdminAccess exception:', e);
+    return false;
+  }
+}
+
+async function adminLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('pageTitle').textContent={overview:'Overview',courses:'Courses',students:'Students',enrollments:'Enrollments'}[name];
+  event.currentTarget.classList.add('active');
+  if(name==='students') renderStudents();
+  if(name==='courses') renderCourses();
+  if(name==='enrollments') renderEnrollments();
+}
+
+async function loadAll(){
+  // Load courses
+  const {data:courses}=await sb.from('courses').select('*').order('id');
+  if(courses&&courses.length) allCourses=courses;
+  else allCourses=getDefaultCourses();
+
+  const {data:students}=await sb
+    .from('profiles')
+    .select('id, full_name, email, role, created_at')
+    .neq('role','admin')
+    .order('created_at',{ascending:false});
+  allStudents = students || [];
+
+  const {data:enrollments}=await sb.from('enrollments').select('*').order('enrolled_at',{ascending:false});
+  allEnrollments=enrollments||[];
+
+  // Update stats
+  document.getElementById('st-courses').textContent=allCourses.length;
+  document.getElementById('st-enrollments').textContent=allEnrollments.length;
+  document.getElementById('st-students').textContent=allStudents.length;
+  const paidRevenue=allEnrollments.reduce((sum,e)=>{
+    if(e.payment_status!=='paid') return sum;
+    const course = allCourses.find(c=>String(c.id)===String(e.course_id));
+    return sum + Number(course?.price || 0);
+  },0);
+  document.getElementById('st-revenue').textContent='₹'+paidRevenue.toLocaleString('en-IN');
+
+  // Recent enrollments
+  renderRecentEnrollments();
+  renderCourses();
+}
+
+function renderRecentEnrollments(){
+  const tbody=document.getElementById('recentBody');
+  if(!allEnrollments.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted)">No enrollments yet</td></tr>';return;}
+  tbody.innerHTML=allEnrollments.slice(0,10).map(e=>{
+    const course=allCourses.find(c=>c.id===e.course_id);
+    const student=allStudents.find(s=>s.id===e.user_id);
+    const date=e.enrolled_at?new Date(e.enrolled_at).toLocaleDateString('en-IN'):'—';
+    return `<tr>
+      <td>${student?.full_name || 'Student'}<div style="font-size:0.78rem;color:var(--muted)">${student?.email || e.user_id?.substring(0,12)+'...'}</div></td>
+      <td>${course?course.thumbnail_emoji+' '+course.title.substring(0,30)+'...':'Course #'+e.course_id}</td>
+      <td><span class="badge badge-${e.payment_status==='paid'?'paid':'free'}">${e.payment_status||'enrolled'}</span></td>
+      <td style="color:var(--muted)">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCourses(){
+  const tbody=document.getElementById('coursesBody');
+  tbody.innerHTML=allCourses.map(c=>`
+    <tr>
+      <td style="font-size:1.5rem">${c.thumbnail_emoji||'📚'}</td>
+      <td><div style="font-weight:600;color:var(--white)">${c.title}</div><div style="font-size:0.75rem;color:var(--muted)">${c.description||''}</div></td>
+      <td>${c.category||'—'}</td>
+      <td style="color:var(--accent);font-weight:700">₹${c.price||499}</td>
+      <td>${c.seats_filled||0}/${c.seats_total||100}</td>
+      <td>
+        <button class="btn-edit" onclick="editCourse(${c.id})">✏️ Edit</button>
+        <button class="btn-delete" onclick="deleteCourse(${c.id})">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderEnrollments(){
+  const tbody=document.getElementById('enrollmentsBody');
+  if(!allEnrollments.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted)">No enrollments yet</td></tr>';return;}
+  tbody.innerHTML=allEnrollments.map(e=>{
+    const course=allCourses.find(c=>c.id===e.course_id);
+    const student=allStudents.find(s=>s.id===e.user_id);
+    const date=e.enrolled_at?new Date(e.enrolled_at).toLocaleDateString('en-IN'):'—';
+    return `<tr>
+      <td>${student?.full_name || 'Student'}<div style="font-size:0.78rem;color:var(--muted)">${student?.email || e.user_id?.substring(0,16)+'...'}</div></td>
+      <td>${course?course.thumbnail_emoji+' '+course.title.substring(0,25)+'...':'Course #'+e.course_id}</td>
+      <td><span class="badge badge-${e.payment_status==='paid'?'paid':e.payment_status==='free_enrolled'?'free':'pending'}">${e.payment_status||'—'}</span></td>
+      <td style="color:var(--muted)">${date}</td>
+      <td><button class="btn-delete" onclick="deleteEnrollment('${e.id}')">🗑️</button></td>
+    </tr>`;
+  }).join('');
+}
+
+let studentsCache=[];
+async function renderStudents(){
+  const tbody=document.getElementById('studentsBody');
+  if(!allStudents.length){tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">No students yet</td></tr>';return;}
+  studentsCache = [...allStudents];
+  tbody.innerHTML=studentsCache.map(student=>`
+    <tr>
+      <td style="font-size:0.84rem;color:var(--text)">${student.email || '—'}</td>
+      <td>${student.full_name || 'Student'}</td>
+      <td style="color:var(--muted)">${student.created_at ? new Date(student.created_at).toLocaleDateString('en-IN') : '—'}</td>
+    </tr>`).join('');
+}
+
+function searchStudents(){
+  const query = document.getElementById('studentSearch').value.trim().toLowerCase();
+  const tbody = document.getElementById('studentsBody');
+  const filtered = allStudents.filter(student => {
+    const hay = [student.email, student.full_name].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(query);
+  });
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted)">No matching students</td></tr>';
+    return;
+  }
+  tbody.innerHTML=filtered.map(student=>`
+    <tr>
+      <td style="font-size:0.84rem;color:var(--text)">${student.email || '—'}</td>
+      <td>${student.full_name || 'Student'}</td>
+      <td style="color:var(--muted)">${student.created_at ? new Date(student.created_at).toLocaleDateString('en-IN') : '—'}</td>
+    </tr>`).join('');
+}
+
+// COURSE MODAL
+function openCourseModal(course=null){
+  editingCourseId=course?course.id:null;
+  document.getElementById('courseModalTitle').textContent=course?'Edit Course':'Add New Course';
+  document.getElementById('cTitle').value=course?.title||'';
+  document.getElementById('cCategory').value=course?.category||'';
+  document.getElementById('cPrice').value=course?.price||499;
+  document.getElementById('cDuration').value=course?.duration||'8 Weeks';
+  document.getElementById('cEmoji').value=course?.thumbnail_emoji||'📚';
+  document.getElementById('cSeats').value=course?.seats_total||100;
+  document.getElementById('cBadge').value=course?.badge||'';
+  document.getElementById('cBadgeType').value=course?.badge_type||'';
+  document.getElementById('cDesc').value=course?.description||'';
+  openModal('courseModal');
+}
+
+function editCourse(id){
+  const course=allCourses.find(c=>c.id===id);
+  if(course) openCourseModal(course);
+}
+
+async function saveCourse(){
+  const courseData={
+    title:document.getElementById('cTitle').value,
+    category:document.getElementById('cCategory').value,
+    price:parseInt(document.getElementById('cPrice').value)||499,
+    duration:document.getElementById('cDuration').value,
+    thumbnail_emoji:document.getElementById('cEmoji').value,
+    seats_total:parseInt(document.getElementById('cSeats').value)||100,
+    badge:document.getElementById('cBadge').value,
+    badge_type:document.getElementById('cBadgeType').value,
+    description:document.getElementById('cDesc').value,
+    seats_filled:0
+  };
+  if(!courseData.title){showToast('Please enter a course title','error');return;}
+  let error;
+  if(editingCourseId){
+    ({error}=await sb.from('courses').update(courseData).eq('id',editingCourseId));
+  } else {
+    ({error}=await sb.from('courses').insert(courseData));
+  }
+  if(error){showToast('Error: '+error.message,'error');return;}
+  showToast(editingCourseId?'Course updated! ✅':'Course added! ✅');
+  closeModal('courseModal');
+  await loadAll();
+}
+
+async function deleteCourse(id){
+  if(!confirm('Delete this course? This cannot be undone.')) return;
+  const {error}=await sb.from('courses').delete().eq('id',id);
+  if(error){showToast('Error: '+error.message,'error');return;}
+  showToast('Course deleted');
+  loadAll();
+}
+
+async function deleteEnrollment(id){
+  if(!confirm('Remove this enrollment?')) return;
+  const {error}=await sb.from('enrollments').delete().eq('id',id);
+  if(error){showToast('Error: '+error.message,'error');return;}
+  showToast('Enrollment removed');
+  loadAll();
+}
+
+function getDefaultCourses(){
+  return [
+    {id:1,title:'Full Stack Web Development Fellowship',category:'Web Development',price:499,duration:'12 Weeks',thumbnail_emoji:'💻',seats_total:100,seats_filled:78,badge:'LIVE',badge_type:'live'},
+    {id:2,title:'Machine Learning & AI Fellowship',category:'Data Science',price:499,duration:'10 Weeks',thumbnail_emoji:'🤖',seats_total:80,seats_filled:36,badge:'NEW',badge_type:'new'},
+    {id:3,title:'Data Science & Analytics Fellowship',category:'Data Science',price:499,duration:'8 Weeks',thumbnail_emoji:'📊',seats_total:90,seats_filled:82,badge:'HOT',badge_type:'hot'},
+  ];
+}
+
+checkAdminSession();
+</script>
+</body>
+</html>
