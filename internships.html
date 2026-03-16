@@ -95,6 +95,25 @@
     .benefit-shell{padding:24px}
     .benefit-shell h2,.section-head h2{margin:0 0 10px;font-size:clamp(2rem,4vw,2.7rem);letter-spacing:-.03em}
     .section-head p{margin:0;color:var(--muted);max-width:760px}
+    /* Hero CTA row */
+    .hero-cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+    /* Stats */
+    .stats-section{padding:0 0 56px}
+    .stats-row{border-radius:24px;padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .stat-item{text-align:center;flex:1;min-width:120px}
+    .stat-num{display:block;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-item span{display:block;color:var(--muted);font-size:.82rem;margin-top:6px}
+    .stat-divider{width:1px;height:48px;background:rgba(255,255,255,.08)}
+    /* Steps */
+    .steps-section{padding:0 0 72px}
+    .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .step-card{border-radius:22px;padding:26px;position:relative;transition:.22s ease}
+    .step-card:hover{transform:translateY(-4px)}
+    .step-num{position:absolute;top:20px;right:20px;font-size:.72rem;font-weight:800;color:rgba(167,139,250,.4);letter-spacing:.1em}
+    .step-icon{font-size:2rem;margin-bottom:16px}
+    .step-card strong{display:block;font-size:1rem;margin-bottom:10px}
+    .step-card p{color:var(--muted);font-size:.88rem;line-height:1.7;margin:0}
+    /* Benefits */
     .benefit-list{
       display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px;
     }
@@ -104,7 +123,17 @@
       border:1px solid var(--line);
       color:var(--muted);
     }
+    .benefit-icon{font-size:1.6rem;margin-bottom:12px}
     .benefit strong{display:block;color:var(--text);margin-bottom:6px}
+    .benefit span{color:var(--muted);font-size:.88rem;line-height:1.7}
+    /* Partners */
+    .partners-section{padding:0 0 72px}
+    .partners-grid-2{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .partner-card{border-radius:22px;padding:24px;transition:.22s ease}
+    .partner-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.4)}
+    .partner-region{font-size:.9rem;font-weight:800;margin-bottom:16px;color:#c4b5fd}
+    .partner-logos{display:flex;flex-direction:column;gap:10px}
+    .partner-logos span{font-size:.88rem;color:var(--muted);padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
     .filters{padding:28px 0 8px}
     .search-wrap{text-align:center}
     .search-shell{
@@ -203,9 +232,38 @@
       .nav-inner{flex-direction:column}
       .search-shell{grid-template-columns:1fr}
       .benefit-list,.meta{grid-template-columns:1fr}
+      .steps-grid{grid-template-columns:repeat(2,1fr)}
+      .partners-grid-2{grid-template-columns:repeat(2,1fr)}
+      .stats-row{gap:14px}
+      .stat-divider{display:none}
       .card-foot{flex-direction:column;align-items:stretch}
     }
-  </style>
+  
+    /* Expandable cards */
+    .expandable-card{transition:.3s ease}
+    .expandable-card.expanded{border-color:rgba(124,58,237,.5);box-shadow:0 0 0 1px rgba(124,58,237,.3),0 20px 40px rgba(91,33,182,.2)}
+    .card-badge{padding:5px 12px;border-radius:999px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;font-size:.75rem;font-weight:700}
+    .card-meta-row{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.82rem}
+    .expand-btn{display:flex;align-items:center;gap:8px;white-space:nowrap}
+    .expand-arrow{display:inline-block;transition:transform .3s ease;font-size:.75rem}
+    /* Plans panel */
+    .plans-panel{max-height:0;overflow:hidden;transition:max-height .4s ease, opacity .3s ease;opacity:0}
+    .plans-panel.open{max-height:600px;opacity:1}
+    .plans-divider{height:1px;background:rgba(255,255,255,.07);margin:20px 0}
+    .plans-label{color:var(--muted);font-size:.88rem;margin-bottom:16px}
+    .plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .plan-card{border-radius:18px;padding:22px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);position:relative;transition:.2s ease}
+    .plan-card:hover{border-color:rgba(124,58,237,.35)}
+    .plan-featured{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(91,33,182,.1));border-color:rgba(124,58,237,.4)}
+    .plan-popular{font-size:.72rem;font-weight:800;color:#c4b5fd;margin-bottom:12px;min-height:16px}
+    .plan-duration{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+    .plan-price{font-size:1.8rem;font-weight:800;letter-spacing:-.04em}
+    .plan-original{font-size:.82rem;color:var(--muted);text-decoration:line-through;margin-bottom:14px}
+    .plan-features{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:8px;font-size:.85rem;color:var(--muted)}
+    .plan-btn{width:100%;justify-content:center;text-align:center}
+    .card-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;flex-wrap:wrap}
+
+    </style>
 </head>
 <body>
   <header class="nav">
@@ -225,8 +283,12 @@
       <div class="container hero-grid">
         <div>
           <div class="eyebrow">Careers & Internship Programs</div>
-          <h1>Internship Programs</h1>
-          <p class="hero-copy">Join structured internship programs built around real consulting and business projects. Search by field, filter by domain, and explore role-specific learning paths that feel aligned with the rest of Zelvoqua.</p>
+          <h1>Launch Your Career with Real-World Internships</h1>
+          <p class="hero-copy">Join structured internship programs built around real consulting and business projects. Work on live assignments, get mentored by industry experts, and earn a verified certificate — in 45 to 90 days.</p>
+          <div class="hero-cta-row">
+            <a class="btn btn-primary" href="#internship-list">Browse Programs</a>
+            <a class="btn btn-outline" href="index.html#programs">Enroll Now</a>
+          </div>
         </div>
         <div class="glass hero-visual">
           <img src="singapore.jpg" alt="Zelvoqua consulting operations">
@@ -238,22 +300,176 @@
       </div>
     </section>
 
-    <section class="benefits">
+    <!-- STATS SECTION -->
+    <section class="stats-section">
       <div class="container">
-        <div class="glass benefit-shell">
-          <div class="section-head">
-            <h2>Why Choose Zelvoqua Internships</h2>
-            <p>Programs are designed to feel practical, structured, and career-relevant from day one.</p>
+        <div class="stats-row glass">
+          <div class="stat-item">
+            <strong class="stat-num">10,000+</strong>
+            <span>Students Enrolled</span>
           </div>
-          <div class="benefit-list">
-            <div class="benefit"><strong>Real project experience</strong>Work on assignments that resemble actual business problem solving.</div>
-            <div class="benefit"><strong>Structured mentorship</strong>Learn through guided tasks instead of unstructured content.</div>
-            <div class="benefit"><strong>Internship certification</strong>Build profile credibility with completion-based certificates.</div>
-            <div class="benefit"><strong>Industry-focused skills</strong>Develop reporting, analysis, planning, and execution skills.</div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">35+</strong>
+            <span>Internship Programs</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">200+</strong>
+            <span>Industry Partners</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">94%</strong>
+            <span>Certificate Completion Rate</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong class="stat-num">12+</strong>
+            <span>Countries Represented</span>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="steps-section">
+      <div class="container">
+        <div class="section-head" style="margin-bottom:40px">
+          <div>
+            <div class="eyebrow">How It Works</div>
+            <h2>From Signup to Certificate in 4 Steps</h2>
+          </div>
+          <p>Simple, structured, and designed for working students.</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card glass">
+            <div class="step-num">01</div>
+            <div class="step-icon">🎯</div>
+            <strong>Choose Your Track</strong>
+            <p>Browse 35+ programs across Finance, Marketing, HR, Supply Chain and more. Pick what aligns with your career goal.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">02</div>
+            <div class="step-icon">💳</div>
+            <strong>Enroll & Pay</strong>
+            <p>Secure your seat with a one-time fee starting at just ₹199. Instant confirmation + access code delivered to your email.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">03</div>
+            <div class="step-icon">🛠️</div>
+            <strong>Work on Real Projects</strong>
+            <p>Complete structured assignments, case studies, and business tasks guided by mentors — from your dashboard.</p>
+          </div>
+          <div class="step-card glass">
+            <div class="step-num">04</div>
+            <div class="step-icon">🎓</div>
+            <strong>Get Certified</strong>
+            <p>Receive a verified digital certificate with a unique ID. Share on LinkedIn, resume, or anywhere that matters.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS SECTION -->
+    <section class="benefits">
+      <div class="container">
+        <div class="glass benefit-shell">
+          <div class="section-head" style="margin-bottom:32px">
+            <div>
+              <div class="eyebrow">Why Zelvoqua</div>
+              <h2>Everything You Need to Grow</h2>
+            </div>
+            <p>Built for students who want more than just a certificate.</p>
+          </div>
+          <div class="benefit-list">
+            <div class="benefit">
+              <div class="benefit-icon">📁</div>
+              <strong>Real Project Experience</strong>
+              <span>Work on assignments that resemble actual business problem solving — not just theory.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🧑‍💼</div>
+              <strong>Expert Mentorship</strong>
+              <span>Learn through guided tasks from professionals with real industry backgrounds.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">📜</div>
+              <strong>Verified Certificate</strong>
+              <span>Earn a certificate with a unique verifiable ID — credible and shareable anywhere.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">⚡</div>
+              <strong>Fast Turnaround</strong>
+              <span>Complete in 45, 60 or 90 days — flexible enough to fit around your schedule.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">💰</div>
+              <strong>Affordable Pricing</strong>
+              <span>Starting at just ₹199 — one of the most accessible programs in the market.</span>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🌍</div>
+              <strong>Global Network</strong>
+              <span>Connect with peers and partners across Singapore, India, UAE and UK.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTNERS SECTION -->
+    <section class="partners-section">
+      <div class="container">
+        <div class="section-head" style="margin-bottom:36px">
+          <div>
+            <div class="eyebrow">Our Partners</div>
+            <h2>Backed by Industry Leaders</h2>
+          </div>
+          <p>Zelvoqua works with top organizations across regions to bring you real exposure.</p>
+        </div>
+        <div class="partners-grid-2">
+          <div class="partner-card glass">
+            <div class="partner-region">🇸🇬 Singapore</div>
+            <div class="partner-logos">
+              <span>🏦 DBS Bank</span>
+              <span>💼 Deloitte SEA</span>
+              <span>🌐 SkillsFuture SG</span>
+              <span>🎓 NTU Career Hub</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇮🇳 India</div>
+            <div class="partner-logos">
+              <span>🏢 HDFC Bank</span>
+              <span>💡 Infosys BPM</span>
+              <span>📊 ICICI Securities</span>
+              <span>🌟 Wipro TalentNext</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇦🇪 UAE</div>
+            <div class="partner-logos">
+              <span>🏙️ Dubai Future Foundation</span>
+              <span>✈️ Emirates Group</span>
+              <span>🌐 DIFC Innovation Hub</span>
+              <span>💼 PwC Middle East</span>
+            </div>
+          </div>
+          <div class="partner-card glass">
+            <div class="partner-region">🇬🇧 United Kingdom</div>
+            <div class="partner-logos">
+              <span>🏦 Barclays Graduate</span>
+              <span>📈 KPMG UK</span>
+              <span>🎓 Oxford Said Network</span>
+              <span>💻 TechNation UK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="internship-list"></div>
 
     <section class="filters">
       <div class="container">
@@ -417,29 +633,78 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(item => `
-        <article class="card">
+      grid.innerHTML = filtered.map((item, idx) => `
+        <article class="card expandable-card" id="card-${idx}">
           <div class="card-top">
             <span class="tag">${item.category}</span>
-            <span class="duration">${item.duration}</span>
+            <span class="card-badge">2 Plans</span>
           </div>
           <h3>${item.title}</h3>
           <p>${item.description}</p>
-          <div class="meta">
-            <div><strong>Duration</strong><span>${item.duration}</span></div>
-            <div><strong>Projects</strong><span>${item.projects}</span></div>
-            <div><strong>Certificate</strong><span>${item.certificate}</span></div>
-          </div>
-          <div>
-            <strong style="display:block;margin-bottom:10px">Skills</strong>
-            <div class="skills">${item.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}</div>
-          </div>
+          <div class="skills">${item.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}</div>
           <div class="card-foot">
-            <span style="color:var(--muted)">Structured internship program</span>
-            <a class="btn btn-primary" href="index.html?program=${encodeURIComponent(item.title)}#top">Enroll Now</a>
+            <div class="card-meta-row">
+              <span>📁 ${item.projects} Projects</span>
+              <span>📜 Certificate</span>
+              <span>🌍 Remote</span>
+            </div>
+            <button class="btn btn-primary expand-btn" onclick="togglePlans(${idx})">
+              View Plans <span class="expand-arrow" id="arrow-${idx}">▼</span>
+            </button>
+          </div>
+          <div class="plans-panel" id="plans-${idx}">
+            <div class="plans-divider"></div>
+            <p class="plans-label">Choose your internship duration:</p>
+            <div class="plans-grid">
+              <div class="plan-card">
+                <div class="plan-popular"></div>
+                <div class="plan-duration">45 Days</div>
+                <div class="plan-price">₹199</div>
+                <div class="plan-original">₹1,999</div>
+                <ul class="plan-features">
+                  <li>✅ 1 Real Project</li>
+                  <li>✅ Completion Certificate</li>
+                  <li>✅ Mentor Guidance</li>
+                  <li>✅ Dashboard Access</li>
+                  <li>❌ LinkedIn Recommendation</li>
+                </ul>
+                <a class="btn btn-outline plan-btn" href="index.html?program=${encodeURIComponent(item.title)}&plan=45#top">Enroll — ₹199</a>
+              </div>
+              <div class="plan-card plan-featured">
+                <div class="plan-popular">⭐ Most Popular</div>
+                <div class="plan-duration">60 Days</div>
+                <div class="plan-price">₹399</div>
+                <div class="plan-original">₹3,999</div>
+                <ul class="plan-features">
+                  <li>✅ 2 Real Projects</li>
+                  <li>✅ Verified Certificate</li>
+                  <li>✅ Senior Mentor</li>
+                  <li>✅ Dashboard Access</li>
+                  <li>✅ LinkedIn Recommendation</li>
+                </ul>
+                <a class="btn btn-primary plan-btn" href="index.html?program=${encodeURIComponent(item.title)}&plan=60#top">Enroll — ₹399</a>
+              </div>
+            </div>
           </div>
         </article>
       `).join('');
+    }
+
+    function togglePlans(idx) {
+      const panel = document.getElementById('plans-' + idx);
+      const arrow = document.getElementById('arrow-' + idx);
+      const card = document.getElementById('card-' + idx);
+      const isOpen = panel.classList.contains('open');
+      // Close all panels first
+      document.querySelectorAll('.plans-panel').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.expand-arrow').forEach(a => a.style.transform = '');
+      document.querySelectorAll('.expandable-card').forEach(c => c.classList.remove('expanded'));
+      if (!isOpen) {
+        panel.classList.add('open');
+        arrow.style.transform = 'rotate(180deg)';
+        card.classList.add('expanded');
+        setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+      }
     }
 
     document.getElementById('filterRow').addEventListener('click', event => {
