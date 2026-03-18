@@ -239,11 +239,21 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function verifyCertificate(){
+const SUPABASE_URL='https://jjbvbojzrydidgiehubg.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnZib2p6cnlkaWRnaWVodWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg0NTgsImV4cCI6MjA4ODgxNDQ1OH0._PUlECk5_9zyqjnXmhgbgA0QGl6k82hnXdg3XCEZ89w';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Auto-fill from URL param
+const urlParams = new URLSearchParams(window.location.search);
+const urlId = urlParams.get('id');
+if(urlId) { document.getElementById('certificateId').value = urlId; verifyCertificate(); }
+
+async function verifyCertificate(){
   const input = document.getElementById('certificateId');
   const result = document.getElementById('resultBox');
-  const value = input.value.trim();
+  const value = input.value.trim().toUpperCase();
 
   result.className = 'result';
   result.innerHTML = '';
@@ -254,8 +264,50 @@ function verifyCertificate(){
     return;
   }
 
+  result.innerHTML = '<span style="color:var(--muted)">🔍 Verifying...</span>';
   result.className = 'result success';
-  result.innerHTML = '<strong>Verification request recorded</strong><span>Certificate ID <b>' + value.replace(/[<>&"]/g, '') + '</b> has been captured for verification flow. Connect this page to your existing certificate dataset when ready.</span>';
+
+  // Search in enrollments table
+  const {data, error} = await sb
+    .from('enrollments')
+    .select('*, courses(title, duration), profiles(full_name, email)')
+    .eq('certificate_id', value)
+    .single();
+
+  if (error || !data) {
+    result.className = 'result error';
+    result.innerHTML = '<strong>❌ Certificate Not Found</strong><span>No certificate with ID <b>' + value + '</b> was found in our records. Please check the ID and try again.</span>';
+    return;
+  }
+
+  const name = data.profiles?.full_name || data.profiles?.email || 'Student';
+  const course = data.courses?.title || 'Internship Program';
+  const duration = data.courses?.duration || '60 Days';
+  const date = data.enrolled_at ? new Date(data.enrolled_at).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : '—';
+
+  result.className = 'result success';
+  result.innerHTML = \`
+    <strong>✅ Certificate Verified Successfully!</strong>
+    <span>This is an authentic Zelvoqua Global Solutions internship certificate.</span>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px">
+      <div style="padding:12px;background:rgba(16,185,129,.08);border-radius:10px;border:1px solid rgba(16,185,129,.2)">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6ee7b7;margin-bottom:4px">Student Name</div>
+        <div style="font-weight:700;color:#fff">\${name}</div>
+      </div>
+      <div style="padding:12px;background:rgba(16,185,129,.08);border-radius:10px;border:1px solid rgba(16,185,129,.2)">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6ee7b7;margin-bottom:4px">Program</div>
+        <div style="font-weight:700;color:#fff">\${course}</div>
+      </div>
+      <div style="padding:12px;background:rgba(16,185,129,.08);border-radius:10px;border:1px solid rgba(16,185,129,.2)">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6ee7b7;margin-bottom:4px">Duration</div>
+        <div style="font-weight:700;color:#fff">\${duration}</div>
+      </div>
+      <div style="padding:12px;background:rgba(16,185,129,.08);border-radius:10px;border:1px solid rgba(16,185,129,.2)">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6ee7b7;margin-bottom:4px">Issue Date</div>
+        <div style="font-weight:700;color:#fff">\${date}</div>
+      </div>
+    </div>
+  \`;
 }
 </script>
 </body>
