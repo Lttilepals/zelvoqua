@@ -92,6 +92,27 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:v
 .toast.error{border-color:#f87171;color:#f87171;}
 
 @media(max-width:900px){.admin-stats{grid-template-columns:repeat(2,1fr);}.sidebar{width:200px;}}
+
+    /* Student filter buttons */
+    .student-filter-btn{padding:0.4rem 1rem;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+    .student-filter-btn.active,.student-filter-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .badge-noenroll{background:rgba(156,163,175,0.15);color:#9ca3af;}
+    /* Access Codes */
+    .ac-generator{padding:1.5rem;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:1rem;}
+    .ac-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:1rem;align-items:end;}
+    .ac-field{display:flex;flex-direction:column;gap:0.5rem;}
+    .ac-field label{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .ac-field input,.ac-field select{padding:0.6rem 0.9rem;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:0.88rem;font-family:inherit;}
+    .ac-code-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:0.5rem;}
+    .ac-code-item{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(108,43,217,0.08);}
+    .ac-code-item:last-child{border-bottom:none;}
+    .ac-code-text{font-family:monospace;font-size:1rem;font-weight:700;color:var(--primary-light);letter-spacing:0.05em;}
+    .btn-copy{padding:0.3rem 0.8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;transition:all 0.2s;font-family:inherit;}
+    .btn-copy:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .status-used{padding:3px 10px;border-radius:999px;background:rgba(239,68,68,0.12);color:#f87171;font-size:0.75rem;font-weight:700;}
+    .status-active{padding:3px 10px;border-radius:999px;background:rgba(34,197,94,0.12);color:#4ade80;font-size:0.75rem;font-weight:700;}
+    @media(max-width:900px){.ac-form{grid-template-columns:1fr 1fr;}}
+
 </style>
 </head>
 <body>
@@ -118,6 +139,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:v
   <div class="sidebar-item" onclick="showPage('courses')"><span class="sidebar-icon">📚</span> Courses</div>
   <div class="sidebar-item" onclick="showPage('students')"><span class="sidebar-icon">👥</span> Students</div>
   <div class="sidebar-item" onclick="showPage('enrollments')"><span class="sidebar-icon">📋</span> Enrollments</div>
+  <div class="sidebar-item" onclick="showPage('accesscodes')"><span class="sidebar-icon">🎟️</span> Access Codes</div>
+  <div class="sidebar-label">Growth</div>
+  <div class="sidebar-item" onclick="showPage('coupons')"><span class="sidebar-icon">🏷️</span> Coupon Codes</div>
+  <div class="sidebar-item" onclick="showPage('referrals')"><span class="sidebar-icon">🔗</span> Referrals</div>
   <div class="sidebar-bottom">
     <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
   </div>
@@ -165,11 +190,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:v
     <div class="page" id="page-students">
       <div class="table-header">
         <div class="table-title">All Students</div>
-        <input class="search-input" placeholder="Search by email..." id="studentSearch" oninput="searchStudents()">
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <button class="student-filter-btn active" onclick="filterStudents('all',this)">All</button>
+          <button class="student-filter-btn" onclick="filterStudents('paid',this)">💳 Paid</button>
+          <button class="student-filter-btn" onclick="filterStudents('free',this)">🆓 Free</button>
+          <input class="search-input" placeholder="Search by email..." id="studentSearch" oninput="searchStudents()" style="margin-left:0.5rem">
+        </div>
       </div>
       <table class="data-table">
-        <thead><tr><th>Email</th><th>Name</th><th>Joined</th></tr></thead>
-        <tbody id="studentsBody"><tr><td colspan="3" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+        <thead><tr><th>Email</th><th>Name</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="studentsBody"><tr><td colspan="5" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
       </table>
     </div>
 
@@ -180,6 +210,102 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--darker);color:v
         <thead><tr><th>Student</th><th>Course</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
         <tbody id="enrollmentsBody"><tr><td colspan="5" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
       </table>
+    </div>
+
+    <!-- ACCESS CODES -->
+    <div class="page" id="page-accesscodes">
+      <div class="ac-generator">
+        <div class="table-title" style="margin-bottom:1.2rem">🎟️ Generate Access Codes</div>
+        <div class="ac-form">
+          <div class="ac-field">
+            <label>Select Course</label>
+            <select id="acCourse"><option value="">— Select Course —</option></select>
+          </div>
+          <div class="ac-field">
+            <label>Student Email (optional)</label>
+            <input type="email" id="acEmail" placeholder="student@email.com">
+          </div>
+          <div class="ac-field">
+            <label>How Many Codes?</label>
+            <select id="acCount">
+              <option value="1">1 Code</option>
+              <option value="5">5 Codes</option>
+              <option value="10">10 Codes</option>
+              <option value="25">25 Codes</option>
+              <option value="50">50 Codes</option>
+            </select>
+          </div>
+          <button class="btn-add" onclick="generateCodes()" style="align-self:flex-end;padding:0.7rem 1.8rem">⚡ Generate</button>
+        </div>
+        <div id="acResult" style="margin-top:1.2rem"></div>
+      </div>
+      <div style="margin-top:1.5rem">
+        <div class="table-header">
+          <div class="table-title">All Access Codes</div>
+          <input class="search-input" placeholder="Search code or email..." id="acSearch" oninput="searchCodes()">
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Course</th><th>Assigned To</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>
+          <tbody id="acBody"><tr><td colspan="6" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- COUPONS -->
+    <div class="page" id="page-coupons">
+      <div class="ac-generator">
+        <div class="table-title" style="margin-bottom:1.2rem">🏷️ Create Coupon Code</div>
+        <div class="ac-form" style="grid-template-columns:1fr 1fr 1fr 1fr auto">
+          <div class="ac-field">
+            <label>Coupon Code</label>
+            <input type="text" id="cpCode" placeholder="FLAT50" style="text-transform:uppercase">
+          </div>
+          <div class="ac-field">
+            <label>Discount Type</label>
+            <select id="cpType">
+              <option value="flat">Flat ₹ Off</option>
+              <option value="percent">Percent % Off</option>
+            </select>
+          </div>
+          <div class="ac-field">
+            <label>Discount Value</label>
+            <input type="number" id="cpValue" placeholder="50">
+          </div>
+          <div class="ac-field">
+            <label>Max Uses</label>
+            <input type="number" id="cpMaxUses" placeholder="100" value="100">
+          </div>
+          <button class="btn-add" onclick="createCoupon()" style="align-self:flex-end;padding:0.7rem 1.5rem">➕ Create</button>
+        </div>
+        <div id="cpResult" style="margin-top:1rem"></div>
+      </div>
+      <div style="margin-top:1.5rem">
+        <div class="table-header"><div class="table-title">All Coupons</div></div>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Max Uses</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="couponsBody"><tr><td colspan="7" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REFERRALS -->
+    <div class="page" id="page-referrals">
+      <div class="ac-generator">
+        <div class="table-title" style="margin-bottom:0.5rem">🔗 Referral Program</div>
+        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.2rem">Students get a unique referral link. When someone enrolls using it, referrer gets ₹50 discount on next purchase.</p>
+        <div class="admin-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+          <div class="admin-stat"><div class="admin-stat-icon">🔗</div><div class="admin-stat-num" id="ref-total">–</div><div class="admin-stat-lbl">Total Referrals</div></div>
+          <div class="admin-stat"><div class="admin-stat-icon">✅</div><div class="admin-stat-num" id="ref-success">–</div><div class="admin-stat-lbl">Successful</div></div>
+          <div class="admin-stat"><div class="admin-stat-icon">💰</div><div class="admin-stat-num" id="ref-savings">–</div><div class="admin-stat-lbl">Discounts Given</div></div>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem">
+        <div class="table-header"><div class="table-title">Referral Activity</div></div>
+        <table class="data-table">
+          <thead><tr><th>Referrer</th><th>Referred</th><th>Status</th><th>Discount</th><th>Date</th></tr></thead>
+          <tbody id="referralsBody"><tr><td colspan="5" style="text-align:center;color:var(--muted)">No referrals yet</td></tr></tbody>
+        </table>
+      </div>
     </div>
 
   </div>
@@ -257,22 +383,14 @@ function showDashboard(){
 
 async function verifyAdminAccess(user){
   if(!user) return false;
-  try {
-    const {data,error} = await sb
-      .from('profiles')
-      .select('id, full_name, email, role')
-      .eq('id', user.id)
-      .limit(1);
-    if(error) { console.error('Profile fetch error:', error); return false; }
-    const profile = data && data[0];
-    if(!profile) { console.error('No profile found for user:', user.id); return false; }
-    if(profile.role !== 'admin') { console.error('Not admin, role is:', profile.role); return false; }
-    currentAdmin = profile;
-    return true;
-  } catch(e) {
-    console.error('verifyAdminAccess exception:', e);
-    return false;
-  }
+  const {data,error} = await sb
+    .from('profiles')
+    .select('id, full_name, email, role')
+    .eq('id', user.id)
+    .maybeSingle();
+  if(error || !data || data.role !== 'admin') return false;
+  currentAdmin = data;
+  return true;
 }
 
 async function adminLogout(){
@@ -280,15 +398,19 @@ async function adminLogout(){
   location.reload();
 }
 
-function showPage(name){
+function showPage(name, e){
+  const ev = e || event;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  document.getElementById('pageTitle').textContent={overview:'Overview',courses:'Courses',students:'Students',enrollments:'Enrollments'}[name];
-  event.currentTarget.classList.add('active');
-  if(name==='students') renderStudents();
+  document.getElementById('pageTitle').textContent={overview:'Overview',courses:'Courses',students:'Students',enrollments:'Enrollments',accesscodes:'Access Codes',coupons:'Coupon Codes',referrals:'Referral Program'}[name]||name;
+  if(ev && ev.currentTarget) ev.currentTarget.classList.add('active');
+  if(name==='students'){renderStudentsFiltered();}
   if(name==='courses') renderCourses();
   if(name==='enrollments') renderEnrollments();
+  if(name==='accesscodes'){loadAccessCodes();populateCourseDropdown();}
+  if(name==='coupons'){loadCoupons();}
+  if(name==='referrals'){loadReferrals();}
 }
 
 async function loadAll(){
@@ -474,6 +596,230 @@ function getDefaultCourses(){
     {id:3,title:'Data Science & Analytics Fellowship',category:'Data Science',price:499,duration:'8 Weeks',thumbnail_emoji:'📊',seats_total:90,seats_filled:82,badge:'HOT',badge_type:'hot'},
   ];
 }
+
+
+let currentStudentFilter = 'all';
+
+function filterStudents(type, btn) {
+  currentStudentFilter = type;
+  document.querySelectorAll('.student-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStudentsFiltered();
+}
+
+function renderStudentsFiltered() {
+  const query = document.getElementById('studentSearch')?.value.trim().toLowerCase() || '';
+  const tbody = document.getElementById('studentsBody');
+  
+  let filtered = allStudents.filter(s => {
+    const hay = [s.email, s.full_name].filter(Boolean).join(' ').toLowerCase();
+    const queryMatch = !query || hay.includes(query);
+    const enrollment = allEnrollments.find(e => e.user_id === s.id);
+    const isPaid = enrollment?.payment_status === 'paid';
+    const isFree = enrollment && !isPaid;
+    const hasNoEnroll = !enrollment;
+    
+    if (currentStudentFilter === 'paid') return queryMatch && isPaid;
+    if (currentStudentFilter === 'free') return queryMatch && (isFree || hasNoEnroll);
+    return queryMatch;
+  });
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No students found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(s => {
+    const enrollment = allEnrollments.find(e => e.user_id === s.id);
+    const isPaid = enrollment?.payment_status === 'paid';
+    const statusLabel = isPaid ? '<span class="badge badge-paid">💳 Paid</span>' : enrollment ? '<span class="badge badge-free">🆓 Free</span>' : '<span class="badge badge-noenroll">No Enrollment</span>';
+    const hasCode = enrollment?.access_code;
+    const actionBtn = !isPaid ? `<button class="btn-edit" onclick="goToGenerateCode('${s.email}')">🎟️ Generate Code</button>` : hasCode ? `<span style="font-family:monospace;color:var(--primary-light);font-size:0.8rem">${hasCode}</span>` : `<span style="color:var(--muted);font-size:0.8rem">—</span>`;
+    return `<tr>
+      <td style="font-size:0.84rem">${s.email || '—'}</td>
+      <td>${s.full_name || 'Student'}</td>
+      <td style="color:var(--muted)">${s.created_at ? new Date(s.created_at).toLocaleDateString('en-IN') : '—'}</td>
+      <td>${statusLabel}</td>
+      <td>${actionBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+function goToGenerateCode(email) {
+  showPage('accesscodes', null);
+  document.getElementById('acEmail').value = email;
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.querySelector('[onclick*="accesscodes"]').classList.add('active');
+}
+
+// Access Codes functions
+async function loadAccessCodes() {
+  const { data, error } = await sb.from('access_codes').select('*').order('created_at', {ascending: false});
+  const body = document.getElementById('acBody');
+  if (error || !data || !data.length) {
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No codes yet. Generate some above!</td></tr>';
+    return;
+  }
+  window._allCodes = data;
+  renderCodesTable(data);
+}
+
+function renderCodesTable(codes) {
+  const body = document.getElementById('acBody');
+  const courseMap = {};
+  allCourses.forEach(c => courseMap[c.id] = c.title);
+  body.innerHTML = codes.map(c => `
+    <tr>
+      <td><span style="font-family:monospace;font-weight:700;color:var(--primary-light)">${c.code}</span></td>
+      <td style="font-size:0.82rem">${courseMap[c.course_id] ? courseMap[c.course_id].substring(0,30)+'...' : '—'}</td>
+      <td style="font-size:0.82rem">${c.assigned_email || '<span style="color:var(--muted)">Any</span>'}</td>
+      <td><span class="${c.used ? 'status-used' : 'status-active'}">${c.used ? '✅ Used' : '🟢 Active'}</span></td>
+      <td style="color:var(--muted);font-size:0.82rem">${c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN') : '—'}</td>
+      <td>
+        <button class="btn-copy" onclick="copyCode('${c.code}')">📋</button>
+        ${!c.used ? `<button class="btn-copy" style="margin-left:4px;color:#f87171" onclick="deleteCode('${c.id}')">🗑️</button>` : ''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function searchCodes() {
+  const q = document.getElementById('acSearch').value.toLowerCase();
+  if (!window._allCodes) return;
+  renderCodesTable(window._allCodes.filter(c =>
+    c.code.toLowerCase().includes(q) || (c.assigned_email||'').toLowerCase().includes(q)
+  ));
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code);
+  showToast('Copied: ' + code + ' ✅');
+}
+
+async function deleteCode(id) {
+  if (!confirm('Delete this code?')) return;
+  await sb.from('access_codes').delete().eq('id', id);
+  loadAccessCodes();
+}
+
+async function generateCodes() {
+  const courseId = document.getElementById('acCourse').value;
+  const email = document.getElementById('acEmail').value.trim() || null;
+  const count = parseInt(document.getElementById('acCount').value);
+  const result = document.getElementById('acResult');
+  if (!courseId) { showToast('Please select a course!', 'error'); return; }
+  result.innerHTML = '<div style="color:var(--muted)">⚡ Generating...</div>';
+  const codes = [];
+  for (let i = 0; i < count; i++) {
+    const code = 'ZEL-' + Math.random().toString(36).substring(2,6).toUpperCase() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
+    codes.push({ code, course_id: parseInt(courseId), assigned_email: email });
+  }
+  const { data, error } = await sb.from('access_codes').insert(codes).select();
+  if (error) { result.innerHTML = '<div style="color:#f87171">Error: ' + error.message + '</div>'; return; }
+  result.innerHTML = `
+    <div style="color:#4ade80;font-weight:700;margin-bottom:0.8rem">✅ ${count} code(s) generated!</div>
+    <div class="ac-code-box">
+      ${data.map(c => `
+        <div class="ac-code-item">
+          <span class="ac-code-text">${c.code}</span>
+          <button class="btn-copy" onclick="copyCode('${c.code}')">📋 Copy</button>
+        </div>
+      `).join('')}
+    </div>
+    <button class="btn-add" style="margin-top:0.8rem;padding:0.5rem 1.2rem;font-size:0.82rem" onclick="copyAllCodes(${JSON.stringify(data.map(c=>c.code))})">📋 Copy All</button>
+  `;
+  loadAccessCodes();
+}
+
+function copyAllCodes(codes) {
+  navigator.clipboard.writeText(codes.join('\n'));
+  showToast('All ' + codes.length + ' codes copied! ✅');
+}
+
+async function populateCourseDropdown() {
+  const sel = document.getElementById('acCourse');
+  if (!allCourses.length) return;
+  sel.innerHTML = '<option value="">— Select Course —</option>' +
+    allCourses.map(c => `<option value="${c.id}">${c.title.substring(0,45)}</option>`).join('');
+}
+
+
+
+// ===== COUPON CODES =====
+async function loadCoupons() {
+  const {data, error} = await sb.from('coupons').select('*').order('created_at', {ascending:false});
+  const body = document.getElementById('couponsBody');
+  if (error || !data || !data.length) {
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No coupons yet. Create one above!</td></tr>';
+    return;
+  }
+  body.innerHTML = data.map(c => `
+    <tr>
+      <td><span style="font-family:monospace;font-weight:800;color:var(--primary-light);font-size:1rem">${c.code}</span></td>
+      <td>${c.type === 'flat' ? 'Flat ₹' : 'Percent %'}</td>
+      <td style="font-weight:700;color:var(--accent)">${c.type === 'flat' ? '₹'+c.value : c.value+'%'} off</td>
+      <td>${c.used_count || 0}</td>
+      <td>${c.max_uses || '∞'}</td>
+      <td><span class="${(c.used_count||0) >= (c.max_uses||9999) ? 'status-used' : 'status-active'}">${(c.used_count||0) >= (c.max_uses||9999) ? 'Expired' : 'Active'}</span></td>
+      <td>
+        <button class="btn-copy" onclick="copyCoupon('${c.code}')">📋</button>
+        <button class="btn-copy" style="margin-left:4px;color:#f87171" onclick="deleteCoupon('${c.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function createCoupon() {
+  const code = document.getElementById('cpCode').value.trim().toUpperCase();
+  const type = document.getElementById('cpType').value;
+  const value = parseInt(document.getElementById('cpValue').value);
+  const maxUses = parseInt(document.getElementById('cpMaxUses').value) || 100;
+  const result = document.getElementById('cpResult');
+  if (!code || !value) { showToast('Please fill code and value!', 'error'); return; }
+  const {error} = await sb.from('coupons').insert({code, type, value, max_uses: maxUses, used_count: 0});
+  if (error) { result.innerHTML = '<div style="color:#f87171">Error: ' + error.message + '</div>'; return; }
+  result.innerHTML = `<div style="color:#4ade80;font-weight:700">✅ Coupon <span style="font-family:monospace">${code}</span> created! Share it with students.</div>`;
+  showToast('Coupon created! ✅');
+  document.getElementById('cpCode').value = '';
+  document.getElementById('cpValue').value = '';
+  loadCoupons();
+}
+
+function copyCoupon(code) {
+  navigator.clipboard.writeText(code);
+  showToast('Copied: ' + code + ' ✅');
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('Delete this coupon?')) return;
+  await sb.from('coupons').delete().eq('id', id);
+  showToast('Coupon deleted');
+  loadCoupons();
+}
+
+// ===== REFERRALS =====
+async function loadReferrals() {
+  const {data, error} = await sb.from('referrals').select('*').order('created_at', {ascending:false});
+  const body = document.getElementById('referralsBody');
+  document.getElementById('ref-total').textContent = data?.length || 0;
+  const success = data?.filter(r => r.status === 'completed') || [];
+  document.getElementById('ref-success').textContent = success.length;
+  document.getElementById('ref-savings').textContent = '₹' + (success.length * 50);
+  if (error || !data || !data.length) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No referrals yet</td></tr>';
+    return;
+  }
+  body.innerHTML = data.map(r => `
+    <tr>
+      <td style="font-size:0.84rem">${r.referrer_email || '—'}</td>
+      <td style="font-size:0.84rem">${r.referred_email || '—'}</td>
+      <td><span class="${r.status === 'completed' ? 'status-active' : 'badge badge-pending'}">${r.status || 'pending'}</span></td>
+      <td style="color:var(--accent);font-weight:700">${r.status === 'completed' ? '₹50' : '—'}</td>
+      <td style="color:var(--muted);font-size:0.82rem">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : '—'}</td>
+    </tr>
+  `).join('');
+}
+
 
 checkAdminSession();
 </script>
