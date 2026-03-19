@@ -70,12 +70,25 @@
 .ticker-item .t-name{font-weight:700;color:#fff;}
 .ticker-item .t-course{color:#94a3b8;}
 .ticker-item .t-time{color:#10b981;font-size:0.7rem;}
+
+.trust-ticker-wrap{background:rgba(124,58,237,0.06);border-bottom:1px solid rgba(124,58,237,0.12);padding:0;overflow:hidden;height:36px;display:flex;align-items:center;}
+.trust-ticker-track{display:flex;gap:0;animation:trustScroll 40s linear infinite;white-space:nowrap;align-items:center;}
+.trust-ticker-track:hover{animation-play-state:paused;}
+@keyframes trustScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.trust-item{display:inline-flex;align-items:center;gap:0.5rem;padding:0 1.8rem;border-right:1px solid rgba(124,58,237,0.15);height:36px;font-size:0.78rem;color:var(--muted);white-space:nowrap;}
+.trust-item .t-icon{font-size:0.85rem;}
+.trust-item .t-val{font-weight:700;color:#c4b5fd;}
+.trust-item .t-label{color:var(--muted);}
+
 </style>
 </head>
 <body>
 <div class="modal-overlay" id="authModal"><div class="modal"><button class="modal-close" onclick="closeModal('authModal')">X</button><h2>Student Access</h2><p>Continue to Zelvoqua with your student account. Signup stays available inside the same flow.</p><div class="modal-tabs"><button class="modal-tab active" onclick="switchTab('login')">Login</button><button class="modal-tab" onclick="switchTab('signup')">Sign Up</button></div><div id="loginForm"><div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div><div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div><div class="form-error" id="loginError"></div><button class="btn-submit" onclick="handleLogin()">Login</button><div class="form-success" id="loginSuccess"></div></div><div id="signupForm" class="hidden"><div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Rahul Sharma"></div><div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div><div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Minimum 6 characters"></div><div class="form-error" id="signupError"></div><button class="btn-submit" onclick="handleSignup()">Create Account</button><div class="form-success" id="signupSuccess"></div></div></div></div>
 <div class="modal-overlay" id="enrollModal"><div class="modal"><button class="modal-close" onclick="closeModal('enrollModal')">X</button><h2>Secure enrollment</h2><p>Review your program details below and continue with payment.</p><div class="enroll-course-info"><div class="enroll-emoji" id="enrollEmoji">CO</div><div><div class="enroll-title" id="enrollTitle">Course Name</div><div><span class="enroll-price" id="enrollPrice">₹499</span><span class="enroll-original">₹4,999</span></div></div></div><button class="razorpay-btn" onclick="handlePayment()">Pay and Enroll Now</button></div></div>
 <header class="site-nav" id="top"><div class="container nav-inner"><a href="#top" class="brand" onclick="showHome()">Zelvo<span>qua</span></a><ul class="nav-menu"><li><a href="#top" onclick="showHome()">Home</a></li><li><a href="#services">Services</a></li><li><a href="internships.html">Internships</a></li><li><a href="verify.html">Verify Certificate</a></li></ul><div class="nav-actions"><button class="btn btn-outline" onclick="openModal('authModal')" id="loginBtn">Student Login</button><a class="btn btn-outline" href="admin.html">Admin Login</a><button class="btn btn-primary hidden" id="userMenuBtn">My Dashboard</button><button id="signupBtn" class="hidden" type="button">Signup</button></div></div></header>
+<div class="trust-ticker-wrap">
+  <div class="trust-ticker-track" id="trustTickerTrack"></div>
+</div>
 <main id="homeSections"><section class="hero"><div class="container hero-grid"><div class="reveal"><div class="eyebrow">Zelvoqua Global Solutions</div><h1>Zelvoqua Global Solutions</h1><div class="hero-sub">Business - Consulting - Digital Innovation</div><p>Helping businesses grow through strategy, analytics and digital solutions while training the next generation of professionals.</p><div class="hero-actions"><a class="btn btn-primary" href="internships.html">Explore Internships</a><a class="btn btn-outline" href="#services">View Services</a></div></div><div class="hero-panel reveal"><div class="kicker">Global operating model</div><div style="font-size:1.5rem;font-weight:800;line-height:1.15">Consulting-grade services with internship-led talent pipelines.</div><div style="color:var(--muted);line-height:1.7;margin-top:8px">Zelvoqua combines business services and structured internship programs, letting companies execute projects while students learn through real-world work.</div><div class="metric-grid"><div class="metric"><strong id="statStudents">10K+</strong><span>Students enrolled</span></div><div class="metric"><strong>12+</strong><span>Countries supported</span></div><div class="metric"><strong>200+</strong><span>Business engagements</span></div><div class="metric"><strong>4.9/5</strong><span>Learner rating</span></div></div></div></div></section>
 <section class="section" id="services"><div class="container"><div class="section-head reveal"><div><div class="kicker">Services</div><h2>Modern business services designed for fast-moving teams.</h2></div><p class="head-sub">A clean consulting layer on the front end and your existing student/admin system behind it. This redesign changes the interface, not your Supabase logic.</p></div><div class="services-grid"><div class="card reveal"><div class="icon">BC</div><h3>Business Consulting</h3><p>Growth strategy, process planning, operational playbooks, and consulting support for emerging teams.</p></div><div class="card reveal"><div class="icon">FA</div><h3>Financial Analytics</h3><p>Dashboards, business reporting, forecasting logic, and financial analysis workflows for decision-making.</p></div><div class="card reveal"><div class="icon">HR</div><h3>HR Solutions</h3><p>Talent pipelines, recruitment operations, HR analytics, and workforce process design for scaling companies.</p></div><div class="card reveal"><div class="icon">SC</div><h3>Supply Chain Solutions</h3><p>Inventory, procurement, logistics, and operations frameworks built for distributed business teams.</p></div><div class="card reveal"><div class="icon">DM</div><h3>Digital Marketing</h3><p>Campaign planning, content systems, channel strategy, and analytics-led execution for growth programs.</p></div></div></div></section>
 <section class="section"><div class="container"><div class="section-head reveal"><div><div class="kicker">Our Global Presence</div><h2>Our Global Presence</h2></div><p class="head-sub">Zelvoqua Global Solutions is positioned as a cross-region consulting and training brand serving clients and learners through regional operating hubs.</p></div><div class="presence-grid"><div class="card presence reveal"><div class="office india"></div><div class="presence-body"><h3>India</h3><p>Operations, internship delivery, and talent development run through the India office with student-first execution at scale.</p></div></div><div class="card presence reveal"><div class="office singapore"></div><div class="presence-body"><h3>Singapore</h3><p>Regional strategy, business partnerships, and international-facing consulting work are positioned through Singapore.</p></div></div><div class="card presence reveal"><div class="office dubai"></div><div class="presence-body"><h3>Dubai</h3><p>Middle East collaboration, business development, and corporate engagement initiatives are represented through Dubai.</p></div></div></div></div></section>
@@ -126,6 +139,38 @@ function buildTicker(){
 }
 buildTicker();
 setInterval(()=>{tickerData.forEach((t,i)=>{t.time=`${(i+1)*3+Math.floor(Math.random()*3)} min ago`;});buildTicker();},30000);
+
+
+// Trust ticker
+const trustItems = [
+  { icon: "⭐", val: "4.9/5", label: "Student Rating" },
+  { icon: "🎓", val: "10,000+", label: "Students Enrolled" },
+  { icon: "🌍", val: "12+", label: "Countries" },
+  { icon: "🏆", val: "200+", label: "Industry Partners" },
+  { icon: "📜", val: "94%", label: "Certificate Completion Rate" },
+  { icon: "💼", val: "35+", label: "Internship Programs" },
+  { icon: "🇸🇬", val: "Singapore", label: "Global HQ" },
+  { icon: "⚡", val: "45–90 Days", label: "Program Duration" },
+  { icon: "💰", val: "Starting ₹199", label: "Affordable Pricing" },
+  { icon: "✅", val: "Verified", label: "Certificates Issued" },
+  { icon: "🤝", val: "DBS Bank", label: "Singapore Partner" },
+  { icon: "🏢", val: "Deloitte SEA", label: "Consulting Partner" },
+  { icon: "📊", val: "ICICI Securities", label: "Finance Partner" },
+  { icon: "💡", val: "Infosys BPM", label: "Technology Partner" },
+  { icon: "🎯", val: "Real Projects", label: "Learn by Doing" },
+  { icon: "🔐", val: "Secure Platform", label: "Data Protected" },
+];
+
+function buildTrustTicker() {
+  const track = document.getElementById('trustTickerTrack');
+  if (!track) return;
+  const all = [...trustItems, ...trustItems];
+  track.innerHTML = all.map(t =>
+    '<div class="trust-item"><span class="t-icon">' + t.icon + '</span><span class="t-val">' + t.val + '</span><span class="t-label">&nbsp;' + t.label + '</span></div>'
+  ).join('');
+}
+buildTrustTicker();
+
 
 checkSession();loadCourses();
 </script>
