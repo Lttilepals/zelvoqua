@@ -486,12 +486,13 @@
             <a class="btn btn-outline" href="index.html">Go to Enrollment</a>
           </div>
           <div class="filter-row" id="filterRow">
-            <button class="filter-btn active" type="button" data-filter="All">All</button>
-            <button class="filter-btn" type="button" data-filter="Finance">Finance</button>
-            <button class="filter-btn" type="button" data-filter="Human Resources">HR</button>
-            <button class="filter-btn" type="button" data-filter="Supply Chain">Supply Chain</button>
-            <button class="filter-btn" type="button" data-filter="Marketing">Marketing</button>
-            <button class="filter-btn" type="button" data-filter="Analytics">Analytics</button>
+            <button class="filter-btn active" type="button" data-filter="All">🌐 All</button>
+            <button class="filter-btn" type="button" data-filter="Marketing">📣 Marketing</button>
+            <button class="filter-btn" type="button" data-filter="Finance">💰 Finance</button>
+            <button class="filter-btn" type="button" data-filter="Management">💼 Management</button>
+            <button class="filter-btn" type="button" data-filter="HR">👥 HR</button>
+            <button class="filter-btn" type="button" data-filter="Supply Chain">🚚 Supply Chain</button>
+            <button class="filter-btn" type="button" data-filter="Technology">💻 Technology</button>
           </div>
         </div>
       </div>
@@ -574,33 +575,40 @@
       const category = String(item.category || '').toLowerCase();
       const title = String(item.title || '').toLowerCase();
 
-      if (category.includes('finance') || title.includes('finance')) {
+      if (category.includes('finance') || title.includes('finance') || title.includes('banking') || title.includes('accounting') || title.includes('tax')) {
         return ['Financial Analysis', 'Excel', 'Business Reporting'];
       }
-      if (category.includes('human') || category.includes('hr') || title.includes('hr')) {
+      if (category === 'hr' || category.includes('human') || title.includes('hr') || title.includes('talent') || title.includes('payroll') || title.includes('recruitment')) {
         return ['Recruitment', 'HR Operations', 'People Analytics'];
       }
-      if (category.includes('supply') || title.includes('supply')) {
+      if (category.includes('supply') || title.includes('supply') || title.includes('logistics') || title.includes('inventory') || title.includes('procurement')) {
         return ['Inventory Planning', 'Logistics', 'Process Mapping'];
       }
-      if (category.includes('market') || title.includes('marketing')) {
+      if (category.includes('market') || title.includes('marketing') || title.includes('brand') || title.includes('influencer') || title.includes('email')) {
         return ['Campaign Planning', 'Content Strategy', 'Performance Tracking'];
       }
-      if (category.includes('analytic') || title.includes('analytics')) {
-        return ['Data Analysis', 'Dashboards', 'Decision Support'];
+      if (category.includes('management') || title.includes('management') || title.includes('project') || title.includes('entrepreneur') || title.includes('e-commerce')) {
+        return ['Business Strategy', 'Leadership', 'Problem Solving'];
       }
-      if (category.includes('business') || category.includes('management') || title.includes('consult')) {
-        return ['Business Strategy', 'Research', 'Problem Solving'];
+      if (category.includes('tech') || title.includes('web') || title.includes('data') || title.includes('ai') || title.includes('cyber') || title.includes('cloud') || title.includes('code')) {
+        return ['Technical Skills', 'Tools & Software', 'Project Work'];
       }
       return ['Project Work', 'Structured Learning', 'Career Skills'];
     }
 
     function normalizeCourse(course) {
       return {
+        id: course.id,
         category: course.category || 'General',
         title: course.title || 'Internship Program',
-        duration: course.duration || '2 Months',
-        projects: '2',
+        duration: course.duration || '60 Days',
+        price: course.price || 299,
+        original_price: course.original_price || 2999,
+        badge: course.badge || '',
+        emoji: course.thumbnail_emoji || '📚',
+        seats_filled: course.seats_filled || 0,
+        seats_total: course.seats_total || 100,
+        projects: course.duration && course.duration.includes('90') ? '3' : course.duration && course.duration.includes('45') ? '1' : '2',
         certificate: 'Yes',
         skills: deriveSkills(course),
         description: course.description || 'Structured internship program with guided projects and practical business learning.'
@@ -636,8 +644,8 @@
       grid.innerHTML = filtered.map((item, idx) => `
         <article class="card expandable-card" id="card-${idx}">
           <div class="card-top">
-            <span class="tag">${item.category}</span>
-            <span class="card-badge">2 Plans</span>
+            <span class="tag">${item.emoji} ${item.category}</span>
+            ${item.badge ? `<span class="card-badge">${item.badge}</span>` : '<span class="card-badge">OPEN</span>'}
           </div>
           <h3>${item.title}</h3>
           <p>${item.description}</p>
@@ -646,7 +654,7 @@
             <div class="card-meta-row">
               <span>📁 ${item.projects} Projects</span>
               <span>📜 Certificate</span>
-              <span>🌍 Remote</span>
+              <span>⏱️ ${item.duration}</span>
             </div>
             <button class="btn btn-primary expand-btn" onclick="togglePlans(${idx})">
               View Plans <span class="expand-arrow" id="arrow-${idx}">▼</span>
@@ -668,13 +676,13 @@
                   <li>✅ Dashboard Access</li>
                   <li>❌ LinkedIn Recommendation</li>
                 </ul>
-                <a class="btn btn-outline plan-btn" href="index.html?program=${encodeURIComponent(item.title)}&plan=45#top">Enroll — ₹199</a>
+                <a class="btn btn-outline plan-btn" href="index.html#enroll" onclick="sessionStorage.setItem('enrollTitle','${item.title}');sessionStorage.setItem('enrollPrice','199')">Enroll — ₹199</a>
               </div>
               <div class="plan-card plan-featured">
                 <div class="plan-popular">⭐ Most Popular</div>
                 <div class="plan-duration">60 Days</div>
-                <div class="plan-price">₹399</div>
-                <div class="plan-original">₹3,999</div>
+                <div class="plan-price">₹${item.price}</div>
+                <div class="plan-original">₹${item.original_price}</div>
                 <ul class="plan-features">
                   <li>✅ 2 Real Projects</li>
                   <li>✅ Verified Certificate</li>
@@ -682,7 +690,7 @@
                   <li>✅ Dashboard Access</li>
                   <li>✅ LinkedIn Recommendation</li>
                 </ul>
-                <a class="btn btn-primary plan-btn" href="index.html?program=${encodeURIComponent(item.title)}&plan=60#top">Enroll — ₹399</a>
+                <a class="btn btn-primary plan-btn" href="index.html#enroll" onclick="sessionStorage.setItem('enrollTitle','${item.title}');sessionStorage.setItem('enrollPrice','${item.price}')">Enroll — ₹${item.price}</a>
               </div>
             </div>
           </div>
@@ -722,4 +730,3 @@
   </script>
 </body>
 </html>
-
